@@ -31,6 +31,7 @@
         <p><strong>Arresting Officer:</strong> <%= caseRecord.booking.arrestingOfficerName %> (<%= caseRecord.booking.arrestingOfficerRank %>)</p>
       </div>
       <div class="mt-8">
+
         <h3 class="text-xl font-bold text-gray-800 mb-4">Case Details</h3>
         <p><strong>Crime Scene Details:</strong> <%= caseRecord.crimeSceneDetails %></p>
         <p><strong>Interrogation Logs:</strong> <%= caseRecord.interrogationLogs %></p>
@@ -47,6 +48,7 @@
         <button class="tab-button" onclick="openTab(event, 'warrants')">Warrants</button>
         <button class="tab-button" onclick="openTab(event, 'hearings')">Hearings</button>
       </div>
+
 
       <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="md:col-span-2">
@@ -123,6 +125,7 @@
           <div id="hearings" class="tab-content" style="display:none;">
             <div class="bg-gray-50 rounded-lg p-6">
               <h3 class="text-xl font-bold text-gray-800 mb-4">Hearings</h3>
+
             <% if (caseRecord.status === 'Accepted' && user.role.name === 'Court') { %>
               <a href="/hearings/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Schedule Hearing</a>
             <% } %>
@@ -159,6 +162,7 @@
               </ul>
               </div>
             </div>
+
           <% } %>
         </div>
 
@@ -199,6 +203,7 @@
             <% } %>
           </div>
           <% if (user.role.name === 'Prosecutor' || user.role.name === 'Court') { %>
+
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Prosecutor Notes</h3>
             <ul>
