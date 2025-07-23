@@ -36,7 +36,9 @@
 
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Evidence</h3>
+            <% if (user.role.name === 'Police') { %>
             <a href="/evidence/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Evidence</a>
+            <% } %>
             <ul>
               <% caseRecord.evidence.forEach(item => { %>
                 <li class="border-b border-gray-200 py-2">
@@ -49,7 +51,9 @@
 
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Witnesses</h3>
+            <% if (user.role.name === 'Police') { %>
             <a href="/witnesses/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Witness</a>
+            <% } %>
             <ul>
               <% caseRecord.witnesses.forEach(witness => { %>
                 <li class="border-b border-gray-200 py-2">

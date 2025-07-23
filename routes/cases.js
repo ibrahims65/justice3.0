@@ -23,7 +23,11 @@ router.get('/:id', async (req, res) => {
       },
     },
   });
-  res.render('cases/show', { caseRecord, user: req.session });
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
+  });
+  res.render('cases/show', { caseRecord, user });
 });
 
 router.post('/:id/submit', checkRole(['Police']), async (req, res) => {
