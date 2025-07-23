@@ -202,20 +202,16 @@ model PleaBargain {
   updatedAt   DateTime @updatedAt
 }
 
-model Investigator {
-  id          Int            @id @default(autoincrement())
-  name        String
-  badgeNumber String         @unique
-  rank        String
-  investigations Investigation[]
-}
+
 
 model Investigation {
   id              Int          @id @default(autoincrement())
   caseId          Int
   case            Case         @relation(fields: [caseId], references: [id])
-  investigatorId  Int
-  investigator    Investigator @relation(fields: [investigatorId], references: [id])
+
+  investigatorName String
+  investigatorBadgeNumber String
+  investigatorRank String
   details         String?
   media           Media[]
 }
@@ -269,7 +265,6 @@ model NextOfKin {
   address   String?
   person    Person @relation(fields: [personId], references: [id])
 }
-
 
 model Notification {
   id        Int      @id @default(autoincrement())

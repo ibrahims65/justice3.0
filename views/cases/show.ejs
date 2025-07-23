@@ -208,7 +208,10 @@
             <ul>
               <% caseRecord.investigations.forEach(investigation => { %>
                 <li class="border-b border-gray-200 py-2">
-                  <p><strong>Investigator:</strong> <%= investigation.investigator.name %> (<%= investigation.investigator.badgeNumber %>)</p>
+
+                  <p><strong>Investigator:</strong> <%= investigation.investigatorName %> (<%= investigation.investigatorBadgeNumber %>)</p>
+                  <p><strong>Rank:</strong> <%= investigation.investigatorRank %></p>
+
                   <p><strong>Details:</strong> <%= investigation.details %></p>
                   <h4 class="font-bold mt-4">Media</h4>
                   <ul>
@@ -253,7 +256,6 @@
             </ul>
           </div>
           <% if (user.role.name === 'Prosecutor' || user.role.name === 'Court') { %>
-
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Prosecutor Evaluation</h3>
             <% if (user.role.name === 'Prosecutor') { %>
@@ -327,7 +329,6 @@
               <% }) %>
             </ul>
           </div>
-
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Action History</h3>
             <ul>

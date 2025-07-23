@@ -39,39 +39,7 @@ router.post('/', checkRole(['Police']), async (req, res) => {
   }
 });
 
-router.get('/new/:bookingId', checkRole(['Police']), async (req, res) => {
-  const booking = await prisma.booking.findUnique({
-    where: { id: parseInt(req.params.bookingId) },
-    include: { person: true },
-  });
-  res.render('cases/new', { booking });
-});
 
-router.post('/', checkRole(['Police']), async (req, res) => {
-  const { bookingId, caseNumber, crimeSceneDetails, interrogationLogs, preliminaryFindings } = req.body;
-  try {
-    const newCase = await prisma.case.create({
-      data: {
-        bookingId: parseInt(bookingId),
-        caseNumber,
-        status: 'New Arrest',
-        crimeSceneDetails,
-        interrogationLogs,
-        preliminaryFindings,
-      },
-    });
-    await prisma.actionHistory.create({
-      data: {
-        action: 'Case Created',
-        caseId: newCase.id,
-        userId: req.session.userId,
-      },
-    });
-    res.redirect(`/cases/${newCase.id}`);
-  } catch (error) {
-    res.redirect(`/people`);
-  }
-});
 
 router.get('/:id', async (req, res) => {
   const caseRecord = await prisma.case.findUnique({
@@ -100,7 +68,7 @@ router.get('/:id', async (req, res) => {
 
       investigations: {
         include: {
-          investigator: true,
+
           media: true,
         },
       },
@@ -108,7 +76,6 @@ router.get('/:id', async (req, res) => {
 
       warrants: true,
       searchWarrants: true,
-
     },
   });
   const user = await prisma.user.findUnique({

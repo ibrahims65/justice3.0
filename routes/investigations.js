@@ -6,18 +6,22 @@ const { checkRole } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
 router.get('/new/:caseId', checkRole(['Police']), async (req, res) => {
-  const investigators = await prisma.investigator.findMany();
-  res.render('investigations/new', { caseId: req.params.caseId, investigators });
+
+  res.render('investigations/new', { caseId: req.params.caseId });
 });
 
 router.post('/', checkRole(['Police']), upload.array('media'), async (req, res) => {
-  const { details, caseId, investigatorId } = req.body;
+  const { details, caseId, investigatorName, investigatorBadgeNumber, investigatorRank } = req.body;
+
   try {
     const investigation = await prisma.investigation.create({
       data: {
         details,
         caseId: parseInt(caseId),
-        investigatorId: parseInt(investigatorId),
+
+        investigatorName,
+        investigatorBadgeNumber,
+        investigatorRank,
       },
     });
 
