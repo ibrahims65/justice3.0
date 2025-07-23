@@ -25,20 +25,28 @@ model Role {
   users User[]
 }
 
-model Inmate {
+model Person {
   id        Int      @id @default(autoincrement())
   name      String
   dob       DateTime
-  status    String
   photoUrl  String?
-  case      Case?
+  bookings  Booking[]
+}
+
+model Booking {
+  id          Int      @id @default(autoincrement())
+  person      Person   @relation(fields: [personId], references: [id])
+  personId    Int
+  bookingDate DateTime @default(now())
+  status      String
+  case        Case?
 }
 
 model Case {
   id          Int      @id @default(autoincrement())
   caseNumber  String   @unique
-  inmate      Inmate   @relation(fields: [inmateId], references: [id])
-  inmateId    Int      @unique
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+  bookingId   Int      @unique
   status      String
   evidence    Evidence[]
   witnesses   Witness[]

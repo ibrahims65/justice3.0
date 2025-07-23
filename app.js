@@ -20,8 +20,8 @@ app.use(
 
 app.use('/auth', authRouter);
 
-const inmatesRouter = require('./routes/inmates');
-app.use('/inmates', inmatesRouter);
+const peopleRouter = require('./routes/people');
+app.use('/people', peopleRouter);
 
 const casesRouter = require('./routes/cases');
 app.use('/cases', casesRouter);
@@ -45,20 +45,15 @@ app.get('/dashboard', async (req, res) => {
   });
 
   let cases = [];
-  let inmates = [];
+  let bookings = [];
+  let people = [];
   if (user.role.name === 'Police') {
-    cases = await prisma.case.findMany({
-      where: {
-        actions: {
-          some: {
-            userId: user.id,
-          },
-        },
-      },
+    bookings = await prisma.booking.findMany({
       include: {
-        evidence: true,
-      }
+        person: true,
+      },
     });
+    people = await prisma.person.findMany();
   } else if (user.role.name === 'Prosecutor') {
     cases = await prisma.case.findMany({
       where: {
