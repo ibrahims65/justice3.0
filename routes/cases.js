@@ -3,6 +3,7 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
+const { createNotification } = require('./notifications');
 
 router.get('/new/:bookingId', checkRole(['Police']), async (req, res) => {
   const booking = await prisma.booking.findUnique({
@@ -93,6 +94,10 @@ router.post('/:id/submit', checkRole(['Police']), async (req, res) => {
       userId: req.session.userId,
     },
   });
+  const prosecutors = await prisma.user.findMany({ where: { role: { name: 'Prosecutor' } } });
+  for (const prosecutor of prosecutors) {
+    await createNotification(prosecutor.id, `Case #${caseId} has been submitted for review.`);
+  }
   res.redirect(`/cases/${caseId}`);
 });
 

@@ -49,10 +49,15 @@
             <a href="/evidence/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Evidence</a>
             <% } %>
             <ul>
-              <% caseRecord.evidence.forEach(item => { %>
+              <% caseRecord.evidence.sort((a, b) => b.version - a.version).forEach(item => { %>
                 <li class="border-b border-gray-200 py-2">
-                  <p><%= item.description %></p>
+                  <p><%= item.description %> (v<%= item.version %>)</p>
                   <a href="<%= item.fileUrl %>" class="text-blue-500 hover:underline">View File</a>
+                  <p class="text-sm text-gray-600">Tags: <%= item.tags %></p>
+                  <form action="/evidence/<%= item.id %>/new-version" method="POST" enctype="multipart/form-data" class="mt-2">
+                    <input type="file" name="file" required>
+                    <button type="submit" class="bg-yellow-500 text-white p-1 rounded">Upload New Version</button>
+                  </form>
                 </li>
               <% }) %>
             </ul>

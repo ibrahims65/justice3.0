@@ -22,6 +22,10 @@
             <% if (user.role.name === 'Police') { %>
               <a href="/warrants" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Warrants</a>
             <% } %>
+            <% if (user.role.name === 'Admin' || user.role.name === 'SuperAdmin') { %>
+              <a href="/reports" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Reports</a>
+            <% } %>
+            <a href="/notifications" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Notifications</a>
           </div>
         </div>
       </div>
