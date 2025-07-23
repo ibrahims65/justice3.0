@@ -5,12 +5,15 @@ const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
 router.post('/', checkRole(['Police']), async (req, res) => {
-  const { location, scope, caseId } = req.body;
+  const { requestedBy, reason, targetType, targetDetails, caseId } = req.body;
   try {
     await prisma.searchWarrant.create({
       data: {
-        location,
-        scope,
+        requestedBy,
+        reason,
+        targetType,
+        targetDetails,
+
         status: 'Requested',
         caseId: parseInt(caseId),
       },

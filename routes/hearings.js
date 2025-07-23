@@ -4,16 +4,17 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
-router.get('/new/:caseId', checkRole(['Court']), (req, res) => {
-  res.render('hearings/new', { caseId: req.params.caseId });
+router.get('/new/:caseId', checkRole(['Court']), async (req, res) => {
+  const courts = await prisma.court.findMany();
+  res.render('hearings/new', { caseId: req.params.caseId, courts });
 });
 
 router.post('/', checkRole(['Court']), async (req, res) => {
-  const { court, hearingDate, caseId } = req.body;
+  const { courtId, hearingDate, caseId } = req.body;
   try {
     await prisma.hearing.create({
       data: {
-        court,
+        courtId: parseInt(courtId),
         hearingDate: new Date(hearingDate),
         caseId: parseInt(caseId),
       },

@@ -72,7 +72,7 @@ router.get('/:id/bookings/new', checkRole(['Police']), async (req, res) => {
 });
 
 router.post('/:id/bookings', checkRole(['Police']), async (req, res) => {
-  const { status, charges, policeStationId } = req.body;
+  const { status, charges, policeStationId, arrestingOfficerName, arrestingOfficerRank } = req.body;
   const personId = parseInt(req.params.id);
   try {
     const newBooking = await prisma.booking.create({
@@ -81,6 +81,8 @@ router.post('/:id/bookings', checkRole(['Police']), async (req, res) => {
         status: 'New Booking',
         charges,
         policeStationId: parseInt(policeStationId),
+        arrestingOfficerName,
+        arrestingOfficerRank,
       },
     });
     const newCase = await prisma.case.create({

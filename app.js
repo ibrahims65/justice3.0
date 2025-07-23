@@ -50,7 +50,6 @@ app.use('/lawyers', lawyersRouter);
 const pleaBargainsRouter = require('./routes/pleaBargains');
 app.use('/plea-bargains', pleaBargainsRouter);
 
-
 const investigationsRouter = require('./routes/investigations');
 app.use('/investigations', investigationsRouter);
 

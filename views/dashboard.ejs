@@ -42,9 +42,14 @@
         <% if (user.role.name === 'Corrections') { %>
           <input type="text" name="facility" placeholder="Facility Name" class="border rounded p-2">
         <% } %>
-
         <button type="submit" class="bg-blue-500 text-white p-2 rounded">Search</button>
       </form>
+
+      <% if (caseRecord.status === 'Information Requested' || caseRecord.status === 'Sent Back to Prosecutor') { %>
+        <div class="bg-red-500 text-white p-4 rounded mb-4">
+          🚨 RETURNED – Additional Information Required
+        </div>
+      <% } %>
 
       <% if (user.role.name === 'Police') { %>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

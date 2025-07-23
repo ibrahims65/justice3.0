@@ -12,8 +12,12 @@
     <form action="/hearings" method="POST">
       <input type="hidden" name="caseId" value="<%= caseId %>">
       <div class="mb-4">
-        <label for="court" class="block text-gray-700">Court</label>
-        <input type="text" name="court" id="court" class="w-full border border-gray-300 p-2 rounded">
+        <label for="courtId" class="block text-gray-700">Court</label>
+        <select name="courtId" id="courtId" class="w-full border border-gray-300 p-2 rounded">
+          <% courts.forEach(court => { %>
+            <option value="<%= court.id %>"><%= court.name %></option>
+          <% }) %>
+        </select>
       </div>
       <div class="mb-4">
         <label for="hearingDate" class="block text-gray-700">Hearing Date</label>

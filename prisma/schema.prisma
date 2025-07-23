@@ -18,7 +18,6 @@ model User {
   roleId          Int
   actions         ActionHistory[]
   prosecutorNotes ProsecutorNote[]
-
   notifications Notification[]
 }
 
@@ -50,13 +49,15 @@ model Booking {
   policeStation   PoliceStation? @relation(fields: [policeStationId], references: [id])
   policeStationId Int?
   case            Case?
-  lawyers         Lawyer[]
-  medicalRecords  MedicalRecord[]
+
   incarcerationStartDate DateTime?
   facilityName String?
   rehabilitationPrograms String?
   releaseDate DateTime?
   paroleEligibility DateTime?
+  arrestingOfficerName String?
+  arrestingOfficerRank String?
+
 }
 
 model Case {
@@ -82,6 +83,8 @@ model Case {
   evidenceStrengthRating Int?
   warrants Warrant[]
   searchWarrants SearchWarrant[]
+  lawyers         Lawyer[]
+  medicalRecords  MedicalRecord[]
 }
 
 model Region {
@@ -168,9 +171,9 @@ model Lawyer {
   name        String
   firm        String
   license     String        @unique
+  case        Case          @relation(fields: [caseId], references: [id])
+  caseId      Int
 
-  booking     Booking       @relation(fields: [bookingId], references: [id])
-  bookingId   Int
   visits      LawyerVisit[]
 }
 
@@ -202,13 +205,10 @@ model PleaBargain {
   updatedAt   DateTime @updatedAt
 }
 
-
-
 model Investigation {
   id              Int          @id @default(autoincrement())
   caseId          Int
   case            Case         @relation(fields: [caseId], references: [id])
-
   investigatorName String
   investigatorBadgeNumber String
   investigatorRank String
@@ -241,7 +241,9 @@ model MedicalRecord {
   condition String
   allergies String?
   notes     String?
-  booking   Booking  @relation(fields: [bookingId], references: [id])
+  case      Case     @relation(fields: [caseId], references: [id])
+  caseId    Int
+
   medications MedicationSchedule[]
 }
 
@@ -286,15 +288,16 @@ model Warrant {
 }
 
 model SearchWarrant {
-  id          Int      @id @default(autoincrement())
-  caseId      Int
-  case        Case     @relation(fields: [caseId], references: [id])
-  status      String   // "Requested", "Approved", "Denied"
-  location    String
-  scope       String
-  requestedAt DateTime @default(now())
-  approvedAt  DateTime?
-  deniedAt    DateTime?
+  id             Int      @id @default(autoincrement())
+  caseId         Int
+  requestedBy    String
+  reason         String
+  targetType     String
+  targetDetails  String
+  dateRequested  DateTime @default(now())
+  status         String
+  case           Case     @relation(fields: [caseId], references: [id])
+
 }
 
 model Victim {

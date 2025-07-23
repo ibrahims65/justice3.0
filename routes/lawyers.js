@@ -4,27 +4,26 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
-router.get('/new/:bookingId', checkRole(['Police', 'Prosecutor', 'Court']), (req, res) => {
-  res.render('lawyers/new', { bookingId: req.params.bookingId });
+router.get('/new/:caseId', checkRole(['Police', 'Prosecutor', 'Court']), (req, res) => {
+  res.render('lawyers/new', { caseId: req.params.caseId });
 });
 
 router.post('/', checkRole(['Police', 'Prosecutor', 'Court']), async (req, res) => {
-  const { name, firm, license, bookingId } = req.body;
+  const { name, firm, license, caseId } = req.body;
   try {
-    const booking = await prisma.booking.findUnique({ where: { id: parseInt(bookingId) } });
 
     await prisma.lawyer.create({
       data: {
         name,
         firm,
         license,
-        bookingId: parseInt(bookingId),
+        caseId: parseInt(caseId),
       },
     });
-    res.redirect(`/people/${booking.personId}`);
+    res.redirect(`/cases/${caseId}`);
   } catch (error) {
-    const booking = await prisma.booking.findUnique({ where: { id: parseInt(bookingId) } });
-    res.redirect(`/people/${booking.personId}`);
+    res.redirect(`/cases/${caseId}`);
+
   }
 });
 
