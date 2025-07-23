@@ -3,36 +3,39 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
 router.get('/new/:caseId', checkRole(['Police']), (req, res) => {
-  res.render('witnesses/new', { caseId: req.params.caseId });
+  res.render('victims/new', { caseId: req.params.caseId });
 });
 
-const upload = require('../middleware/upload');
 router.post('/', checkRole(['Police']), (req, res) => {
   upload.single('media')(req, res, async (err) => {
     if (err) {
-      res.render('witnesses/new', { msg: err, caseId: req.body.caseId });
+      res.render('victims/new', { msg: err, caseId: req.body.caseId });
     } else {
-      const { name, statement, caseId, testimonyType } = req.body;
+      const { name, dob, address, phone, email, statement, caseId } = req.body;
       try {
-        await prisma.witness.create({
+        await prisma.victim.create({
           data: {
             name,
+            dob: new Date(dob),
+            address,
+            phone,
+            email,
             statement,
+            photoUrl: req.file ? `/uploads/${req.file.filename}` : null,
             caseId: parseInt(caseId),
-            testimonyType,
-            testimonyUrl: req.file ? `/uploads/${req.file.filename}` : null,
           },
         });
         await prisma.actionHistory.create({
-      data: {
-        action: 'Witness Added',
-        caseId: parseInt(caseId),
-        userId: req.session.userId,
-      },
-    });
-    res.redirect(`/cases/${caseId}`);
+          data: {
+            action: 'Victim Added',
+            caseId: parseInt(caseId),
+            userId: req.session.userId,
+          },
+        });
+        res.redirect(`/cases/${caseId}`);
       } catch (error) {
         res.redirect(`/cases/${caseId}`);
       }

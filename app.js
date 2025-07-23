@@ -35,6 +35,9 @@ app.use('/witnesses', witnessesRouter);
 const hearingsRouter = require('./routes/hearings');
 app.use('/hearings', hearingsRouter);
 
+const victimsRouter = require('./routes/victims');
+app.use('/victims', victimsRouter);
+
 const adminRouter = require('./routes/admin');
 app.use('/admin', adminRouter);
 
@@ -54,6 +57,18 @@ app.get('/dashboard', async (req, res) => {
     bookings = await prisma.booking.findMany({
       include: {
         person: true,
+      },
+    });
+    cases = await prisma.case.findMany({
+      where: {
+        status: 'Information Requested',
+      },
+      include: {
+        booking: {
+          include: {
+            person: true,
+          },
+        },
       },
     });
     people = await prisma.person.findMany();

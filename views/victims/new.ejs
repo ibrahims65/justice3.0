@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Inmate</title>
+  <title>New Victim</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
   <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="bg-white rounded-lg shadow-md p-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-8">Create New Person</h2>
-      <form action="/people" method="POST" enctype="multipart/form-data">
+      <h2 class="text-2xl font-bold text-gray-800 mb-8">Add New Victim</h2>
+      <form action="/victims" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="caseId" value="<%= caseId %>">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
@@ -33,13 +34,17 @@
             <input type="email" name="email" id="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
           </div>
           <div>
-            <label for="media" class="block text-gray-700 text-sm font-bold mb-2">Person Photo</label>
+            <label for="media" class="block text-gray-700 text-sm font-bold mb-2">Victim Photo</label>
             <input type="file" name="media" id="media" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div class="md:col-span-2">
+            <label for="statement" class="block text-gray-700 text-sm font-bold mb-2">Statement</label>
+            <textarea name="statement" id="statement" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
           </div>
         </div>
         <div class="mt-8 flex justify-end">
           <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Create Inmate
+            Add Victim
           </button>
         </div>
       </form>

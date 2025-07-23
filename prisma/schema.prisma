@@ -58,6 +58,7 @@ model Case {
   witnesses  Witness[]
   hearings   Hearing[]
   actions    ActionHistory[]
+  victims    Victim[]
 }
 
 model Region {
@@ -96,19 +97,24 @@ model Court {
 }
 
 model Evidence {
-  id          Int    @id @default(autoincrement())
-  description String
-  fileUrl     String
-  case        Case   @relation(fields: [caseId], references: [id])
-  caseId      Int
+  id              Int      @id @default(autoincrement())
+  description     String
+  fileUrl         String
+  case            Case     @relation(fields: [caseId], references: [id])
+  caseId          Int
+  receivedFrom    String?
+  storageLocation String?
+  dateReceived    DateTime?
 }
 
 model Witness {
-  id        Int    @id @default(autoincrement())
-  name      String
-  statement String
-  case      Case   @relation(fields: [caseId], references: [id])
-  caseId    Int
+  id           Int     @id @default(autoincrement())
+  name         String
+  statement    String
+  case         Case    @relation(fields: [caseId], references: [id])
+  caseId       Int
+  testimonyType String?
+  testimonyUrl  String?
 }
 
 model Hearing {
@@ -124,9 +130,23 @@ model Hearing {
 model ActionHistory {
   id        Int      @id @default(autoincrement())
   action    String
+  notes     String?
   timestamp DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
+  case      Case     @relation(fields: [caseId], references: [id])
+  caseId    Int
+}
+
+model Victim {
+  id        Int      @id @default(autoincrement())
+  name      String
+  dob       DateTime
+  photoUrl  String?
+  address   String?
+  phone     String?
+  email     String?  @unique
+  statement String?
   case      Case     @relation(fields: [caseId], references: [id])
   caseId    Int
 }

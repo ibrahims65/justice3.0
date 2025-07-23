@@ -16,6 +16,7 @@ router.get('/:id', async (req, res) => {
       evidence: true,
       witnesses: true,
       hearings: true,
+      victims: true,
       actions: {
         include: {
           user: true,
@@ -23,7 +24,11 @@ router.get('/:id', async (req, res) => {
       },
     },
   });
-  res.render('cases/show', { caseRecord, user: req.session });
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
+  });
+  res.render('cases/show', { caseRecord, user });
 });
 
 router.post('/:id/submit', checkRole(['Police']), async (req, res) => {
@@ -60,6 +65,7 @@ router.post('/:id/accept', checkRole(['Prosecutor']), async (req, res) => {
 
 router.post('/:id/reject', checkRole(['Prosecutor']), async (req, res) => {
   const caseId = parseInt(req.params.id);
+  const { notes } = req.body;
   await prisma.case.update({
     where: { id: caseId },
     data: { status: 'Rejected' },
@@ -67,6 +73,7 @@ router.post('/:id/reject', checkRole(['Prosecutor']), async (req, res) => {
   await prisma.actionHistory.create({
     data: {
       action: 'Case Rejected',
+      notes,
       caseId: caseId,
       userId: req.session.userId,
     },
@@ -76,6 +83,7 @@ router.post('/:id/reject', checkRole(['Prosecutor']), async (req, res) => {
 
 router.post('/:id/request-info', checkRole(['Prosecutor']), async (req, res) => {
   const caseId = parseInt(req.params.id);
+  const { notes } = req.body;
   await prisma.case.update({
     where: { id: caseId },
     data: { status: 'Information Requested' },
@@ -83,6 +91,7 @@ router.post('/:id/request-info', checkRole(['Prosecutor']), async (req, res) => 
   await prisma.actionHistory.create({
     data: {
       action: 'Information Requested',
+      notes,
       caseId: caseId,
       userId: req.session.userId,
     },

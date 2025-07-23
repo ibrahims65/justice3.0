@@ -12,13 +12,27 @@
       <h2 class="text-2xl font-bold text-gray-800 mb-8">Add New Evidence</h2>
       <form action="/evidence" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="caseId" value="<%= caseId %>">
-        <div class="mb-4">
-          <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
-          <textarea name="description" id="description" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required></textarea>
-        </div>
-        <div class="mb-6">
-          <label for="media" class="block text-gray-700 text-sm font-bold mb-2">Evidence File</label>
-          <input type="file" name="media" id="media" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="md:col-span-2">
+            <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+            <textarea name="description" id="description" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required></textarea>
+          </div>
+          <div>
+            <label for="media" class="block text-gray-700 text-sm font-bold mb-2">Evidence File</label>
+            <input type="file" name="media" id="media" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label for="dateReceived" class="block text-gray-700 text-sm font-bold mb-2">Date Received</label>
+            <input type="date" name="dateReceived" id="dateReceived" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label for="receivedFrom" class="block text-gray-700 text-sm font-bold mb-2">Received From</label>
+            <input type="text" name="receivedFrom" id="receivedFrom" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label for="storageLocation" class="block text-gray-700 text-sm font-bold mb-2">Storage Location</label>
+            <input type="text" name="storageLocation" id="storageLocation" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
         </div>
         <div class="flex justify-end">
           <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
