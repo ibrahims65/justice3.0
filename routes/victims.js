@@ -9,11 +9,9 @@ router.get('/new/:caseId', checkRole(['Police']), (req, res) => {
   res.render('victims/new', { caseId: req.params.caseId });
 });
 
-router.post('/', checkRole(['Police']), (req, res) => {
-  upload.single('media')(req, res, async (err) => {
+router.post('/', checkRole(['Police']), upload.single('media'), async (req, res) => {
     if (err) {
       res.render('victims/new', { msg: err, caseId: req.body.caseId });
-    } else {
       const { name, dob, address, phone, email, statement, caseId } = req.body;
       try {
         await prisma.victim.create({
@@ -39,8 +37,6 @@ router.post('/', checkRole(['Police']), (req, res) => {
       } catch (error) {
         res.redirect(`/cases/${caseId}`);
       }
-    }
-  });
 });
 
 module.exports = router;
