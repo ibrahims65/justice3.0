@@ -3,24 +3,28 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
+const upload = require('../middleware/upload');
+const { customAlphabet } = require('nanoid');
+const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
 
 router.get('/new', checkRole(['Police']), (req, res) => {
   res.render('people/new');
 });
-
-const upload = require('../middleware/upload');
 
 router.post('/', checkRole(['Police']), (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
       res.render('people/new', { msg: err });
     } else {
-      const { name, dob } = req.body;
+      const { name, dob, address, phone, email } = req.body;
       try {
         const newPerson = await prisma.person.create({
           data: {
             name,
             dob: new Date(dob),
+            address,
+            phone,
+            email,
             photoUrl: req.file ? `/uploads/${req.file.filename}` : null,
           },
         });
@@ -40,21 +44,21 @@ router.get('/:id', async (req, res) => {
   res.render('people/show', { person, user: req.session });
 });
 
-router.get('/:id/bookings/new', checkRole(['Police']), (req, res) => {
-  res.render('bookings/new', { personId: req.params.id });
+router.get('/:id/bookings/new', checkRole(['Police']), async (req, res) => {
+  const policeStations = await prisma.policeStation.findMany();
+  res.render('bookings/new', { personId: req.params.id, policeStations });
 });
 
-const { customAlphabet } = require('nanoid');
-const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
-
 router.post('/:id/bookings', checkRole(['Police']), async (req, res) => {
-  const { status } = req.body;
+  const { status, charges, policeStationId } = req.body;
   const personId = parseInt(req.params.id);
   try {
     const newBooking = await prisma.booking.create({
       data: {
         personId,
-        status,
+        status: 'New Booking',
+        charges,
+        policeStationId: parseInt(policeStationId),
       },
     });
     const newCase = await prisma.case.create({

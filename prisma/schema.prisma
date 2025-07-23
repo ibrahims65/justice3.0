@@ -30,16 +30,22 @@ model Person {
   name      String
   dob       DateTime
   photoUrl  String?
+  address   String?
+  phone     String?
+  email     String?  @unique
   bookings  Booking[]
 }
 
 model Booking {
-  id          Int      @id @default(autoincrement())
-  person      Person   @relation(fields: [personId], references: [id])
-  personId    Int
-  bookingDate DateTime @default(now())
-  status      String
-  case        Case?
+  id            Int      @id @default(autoincrement())
+  person        Person   @relation(fields: [personId], references: [id])
+  personId      Int
+  bookingDate   DateTime @default(now())
+  status        String
+  charges       String?
+  policeStation PoliceStation? @relation(fields: [policeStationId], references: [id])
+  policeStationId Int?
+  case          Case?
 }
 
 model Case {
@@ -52,6 +58,41 @@ model Case {
   witnesses   Witness[]
   hearings    Hearing[]
   actions     ActionHistory[]
+}
+
+model Region {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  districts District[]
+}
+
+model District {
+  id     Int    @id @default(autoincrement())
+  name   String @unique
+  region Region @relation(fields: [regionId], references: [id])
+  regionId Int
+  cities City[]
+}
+
+model City {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  district District @relation(fields: [districtId], references: [id])
+  districtId Int
+}
+
+model PoliceStation {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  cityId   Int
+  bookings Booking[]
+}
+
+model Court {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  cityId   Int
+  hearings Hearing[]
 }
 
 model Evidence {
