@@ -41,7 +41,11 @@ router.get('/:id', async (req, res) => {
     where: { id: parseInt(req.params.id) },
     include: { bookings: { include: { case: true } } },
   });
-  res.render('people/show', { person, user: req.session });
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
+  });
+  res.render('people/show', { person, user });
 });
 
 router.get('/:id/bookings/new', checkRole(['Police']), async (req, res) => {
