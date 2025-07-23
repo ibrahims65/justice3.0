@@ -4,23 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Witness</title>
-  <link href="/css/style.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <div class="container mx-auto">
-    <h1 class="text-2xl font-bold">New Witness</h1>
-    <form action="/witnesses" method="POST">
-      <input type="hidden" name="caseId" value="<%= caseId %>">
-      <div class="mb-4">
-        <label for="name" class="block text-gray-700">Name</label>
-        <input type="text" name="name" id="name" class="w-full border border-gray-300 p-2 rounded">
-      </div>
-      <div class="mb-4">
-        <label for="statement" class="block text-gray-700">Statement</label>
-        <textarea name="statement" id="statement" class="w-full border border-gray-300 p-2 rounded"></textarea>
-      </div>
-      <button type="submit" class="bg-blue-500 text-white p-2 rounded">Add Witness</button>
-    </form>
+<body class="bg-gray-100">
+  <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow-md p-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-8">Add New Witness</h2>
+      <form action="/witnesses" method="POST">
+        <input type="hidden" name="caseId" value="<%= caseId %>">
+        <div class="mb-4">
+          <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Witness Name</label>
+          <input type="text" name="name" id="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+        </div>
+        <div class="mb-6">
+          <label for="statement" class="block text-gray-700 text-sm font-bold mb-2">Witness Statement</label>
+          <textarea name="statement" id="statement" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required></textarea>
+        </div>
+        <div class="flex justify-end">
+          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Add Witness
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </body>
 </html>

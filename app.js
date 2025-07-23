@@ -55,6 +55,9 @@ app.get('/dashboard', async (req, res) => {
           },
         },
       },
+      include: {
+        evidence: true,
+      }
     });
   } else if (user.role.name === 'Prosecutor') {
     cases = await prisma.case.findMany({

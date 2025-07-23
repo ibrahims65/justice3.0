@@ -4,23 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Evidence</title>
-  <link href="/css/style.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <div class="container mx-auto">
-    <h1 class="text-2xl font-bold">New Evidence</h1>
-    <form action="/evidence" method="POST" enctype="multipart/form-data">
-      <input type="hidden" name="caseId" value="<%= caseId %>">
-      <div class="mb-4">
-        <label for="description" class="block text-gray-700">Description</label>
-        <textarea name="description" id="description" class="w-full border border-gray-300 p-2 rounded"></textarea>
-      </div>
-      <div class="mb-4">
-        <label for="media" class="block text-gray-700">File</label>
-        <input type="file" name="media" id="media" class="w-full border border-gray-300 p-2 rounded">
-      </div>
-      <button type="submit" class="bg-blue-500 text-white p-2 rounded">Add Evidence</button>
-    </form>
+<body class="bg-gray-100">
+  <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow-md p-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-8">Add New Evidence</h2>
+      <form action="/evidence" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="caseId" value="<%= caseId %>">
+        <div class="mb-4">
+          <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+          <textarea name="description" id="description" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required></textarea>
+        </div>
+        <div class="mb-6">
+          <label for="media" class="block text-gray-700 text-sm font-bold mb-2">Evidence File</label>
+          <input type="file" name="media" id="media" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="flex justify-end">
+          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Add Evidence
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </body>
 </html>

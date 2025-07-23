@@ -4,23 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Case</title>
-  <link href="/css/style.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <div class="container mx-auto">
-    <h1 class="text-2xl font-bold">New Case for <%= inmate.name %></h1>
-    <form action="/cases" method="POST">
-      <input type="hidden" name="inmateId" value="<%= inmate.id %>">
-      <div class="mb-4">
-        <label for="caseNumber" class="block text-gray-700">Case Number</label>
-        <input type="text" name="caseNumber" id="caseNumber" class="w-full border border-gray-300 p-2 rounded">
-      </div>
-      <div class="mb-4">
-        <label for="status" class="block text-gray-700">Status</label>
-        <input type="text" name="status" id="status" class="w-full border border-gray-300 p-2 rounded" value="New Arrest" readonly>
-      </div>
-      <button type="submit" class="bg-blue-500 text-white p-2 rounded">Create Case</button>
-    </form>
+<body class="bg-gray-100">
+  <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow-md p-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-8">New Case for <%= inmate.name %></h2>
+      <form action="/cases" method="POST">
+        <input type="hidden" name="inmateId" value="<%= inmate.id %>">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="caseNumber" class="block text-gray-700 text-sm font-bold mb-2">Case Number</label>
+            <input type="text" name="caseNumber" id="caseNumber" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+          </div>
+          <div>
+            <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Status</label>
+            <input type="text" name="status" id="status" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="New Arrest" readonly>
+          </div>
+        </div>
+        <div class="mt-8 flex justify-end">
+          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Create Case
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </body>
 </html>

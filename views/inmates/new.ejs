@@ -4,30 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Inmate</title>
-  <link href="/css/style.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <div class="container mx-auto">
-    <h1 class="text-2xl font-bold">New Inmate</h1>
-    <form action="/inmates" method="POST">
-      <div class="mb-4">
-        <label for="name" class="block text-gray-700">Name</label>
-        <input type="text" name="name" id="name" class="w-full border border-gray-300 p-2 rounded">
-      </div>
-      <div class="mb-4">
-        <label for="dob" class="block text-gray-700">Date of Birth</label>
-        <input type="date" name="dob" id="dob" class="w-full border border-gray-300 p-2 rounded">
-      </div>
-      <div class="mb-4">
-        <label for="status" class="block text-gray-700">Status</label>
-        <input type="text" name="status" id="status" class="w-full border border-gray-300 p-2 rounded">
-      </div>
-      <div class="mb-4">
-        <label for="media" class="block text-gray-700">Photo</label>
-        <input type="file" name="media" id="media" class="w-full border border-gray-300 p-2 rounded">
-      </div>
-      <button type="submit" class="bg-blue-500 text-white p-2 rounded">Create Inmate</button>
-    </form>
+<body class="bg-gray-100">
+  <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow-md p-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-8">Create New Inmate</h2>
+      <form action="/inmates" method="POST" enctype="multipart/form-data">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+            <input type="text" name="name" id="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+          </div>
+          <div>
+            <label for="dob" class="block text-gray-700 text-sm font-bold mb-2">Date of Birth</label>
+            <input type="date" name="dob" id="dob" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+          </div>
+          <div>
+            <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Status</label>
+            <input type="text" name="status" id="status" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="New Arrest" readonly>
+          </div>
+          <div>
+            <label for="media" class="block text-gray-700 text-sm font-bold mb-2">Inmate Photo</label>
+            <input type="file" name="media" id="media" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+        </div>
+        <div class="mt-8 flex justify-end">
+          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Create Inmate
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </body>
 </html>
