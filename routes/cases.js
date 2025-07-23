@@ -62,6 +62,7 @@ router.get('/:id', async (req, res) => {
         },
       },
       pleaBargains: true,
+
       investigations: {
         include: {
           investigator: true,
@@ -69,6 +70,7 @@ router.get('/:id', async (req, res) => {
         },
       },
       bailDecisions: true,
+
     },
   });
   const user = await prisma.user.findUnique({
@@ -236,5 +238,6 @@ router.post('/:id/evaluation', checkRole(['Prosecutor']), async (req, res) => {
     res.redirect(`/cases/${caseId}`);
   }
 });
+
 
 module.exports = router;

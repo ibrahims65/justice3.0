@@ -50,6 +50,7 @@ app.use('/lawyers', lawyersRouter);
 const pleaBargainsRouter = require('./routes/pleaBargains');
 app.use('/plea-bargains', pleaBargainsRouter);
 
+
 const investigationsRouter = require('./routes/investigations');
 app.use('/investigations', investigationsRouter);
 
@@ -65,6 +66,8 @@ app.use('/next-of-kin', nextOfKinRouter);
 const correctionsRouter = require('./routes/corrections');
 app.use('/corrections', correctionsRouter);
 
+
+
 app.get('/dashboard', async (req, res) => {
   if (!req.session.userId) {
     return res.redirect('/auth/login');
@@ -73,6 +76,7 @@ app.get('/dashboard', async (req, res) => {
     where: { id: req.session.userId },
     include: { role: true },
   });
+
 
   const { search, status, facility } = req.query;
   let where = {};
@@ -94,6 +98,7 @@ app.get('/dashboard', async (req, res) => {
 
   if (facility) {
     where.facilityName = { contains: facility, mode: 'insensitive' };
+
   }
 
   let cases = [];

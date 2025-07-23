@@ -35,7 +35,9 @@ model Person {
   phone    String?
   email    String?   @unique
   bookings Booking[]
+
   nextOfKin NextOfKin[]
+
 }
 
 model Booking {
@@ -73,11 +75,13 @@ model Case {
   victims          Victim[]
   prosecutorNotes  ProsecutorNote[]
   pleaBargains     PleaBargain[]
+
   investigations   Investigation[]
   bailDecisions    BailDecision[]
   recommendedCharges String?
   riskAssessment String?
   evidenceStrengthRating Int?
+
 }
 
 model Region {
@@ -162,8 +166,10 @@ model Lawyer {
   name        String
   firm        String
   license     String        @unique
+
   booking     Booking       @relation(fields: [bookingId], references: [id])
   bookingId   Int
+
   visits      LawyerVisit[]
 }
 
@@ -194,6 +200,7 @@ model PleaBargain {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
 
 model Investigator {
   id          Int            @id @default(autoincrement())
@@ -262,6 +269,7 @@ model NextOfKin {
   address   String?
   person    Person @relation(fields: [personId], references: [id])
 }
+
 
 model Victim {
   id        Int      @id @default(autoincrement())
