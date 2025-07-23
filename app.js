@@ -68,6 +68,9 @@ app.use('/corrections', correctionsRouter);
 const warrantsRouter = require('./routes/warrants');
 app.use('/warrants', warrantsRouter);
 
+const searchWarrantsRouter = require('./routes/searchWarrants');
+app.use('/search-warrants', searchWarrantsRouter);
+
 app.get('/dashboard', async (req, res) => {
   if (!req.session.userId) {
     return res.redirect('/auth/login');

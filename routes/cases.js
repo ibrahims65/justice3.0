@@ -70,6 +70,7 @@ router.get('/:id', async (req, res) => {
       },
       bailDecisions: true,
       warrants: true,
+      searchWarrants: true,
     },
   });
   const user = await prisma.user.findUnique({

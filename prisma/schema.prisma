@@ -79,6 +79,7 @@ model Case {
   riskAssessment String?
   evidenceStrengthRating Int?
   warrants Warrant[]
+  searchWarrants SearchWarrant[]
 }
 
 model Region {
@@ -272,6 +273,18 @@ model Warrant {
   details     String
   issuedAt    DateTime @default(now())
   expiresAt   DateTime
+}
+
+model SearchWarrant {
+  id          Int      @id @default(autoincrement())
+  caseId      Int
+  case        Case     @relation(fields: [caseId], references: [id])
+  status      String   // "Requested", "Approved", "Denied"
+  location    String
+  scope       String
+  requestedAt DateTime @default(now())
+  approvedAt  DateTime?
+  deniedAt    DateTime?
 }
 
 model Victim {
