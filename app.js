@@ -95,6 +95,13 @@ app.get('/dashboard', async (req, res) => {
           },
         },
       },
+      include: {
+        bookings: {
+          include: {
+            case: true,
+          },
+        },
+      },
     });
   }
 
