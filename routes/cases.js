@@ -62,6 +62,15 @@ router.get('/:id', async (req, res) => {
         },
       },
       pleaBargains: true,
+
+      investigations: {
+        include: {
+          investigator: true,
+          media: true,
+        },
+      },
+      bailDecisions: true,
+
     },
   });
   const user = await prisma.user.findUnique({
@@ -204,5 +213,31 @@ router.post('/:id', checkRole(['Police']), async (req, res) => {
     res.redirect(`/cases/${caseId}/edit`);
   }
 });
+
+router.post('/:id/evaluation', checkRole(['Prosecutor']), async (req, res) => {
+  const { recommendedCharges, riskAssessment, evidenceStrengthRating } = req.body;
+  const caseId = parseInt(req.params.id);
+  try {
+    await prisma.case.update({
+      where: { id: caseId },
+      data: {
+        recommendedCharges,
+        riskAssessment,
+        evidenceStrengthRating: parseInt(evidenceStrengthRating),
+      },
+    });
+    await prisma.actionHistory.create({
+      data: {
+        action: 'Case Evaluation Updated',
+        caseId: caseId,
+        userId: req.session.userId,
+      },
+    });
+    res.redirect(`/cases/${caseId}`);
+  } catch (error) {
+    res.redirect(`/cases/${caseId}`);
+  }
+});
+
 
 module.exports = router;

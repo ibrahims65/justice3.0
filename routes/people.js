@@ -40,8 +40,23 @@ router.get('/:id', async (req, res) => {
   const person = await prisma.person.findUnique({
     where: { id: parseInt(req.params.id) },
     include: {
-      bookings: { include: { case: true } },
-      lawyers: { include: { visits: true } },
+
+      bookings: {
+        include: {
+          case: true,
+          lawyers: {
+            include: {
+              visits: true,
+            },
+          },
+          medicalRecords: {
+            include: {
+              medications: true,
+            },
+          },
+        },
+      },
+      nextOfKin: true,
     },
   });
   const user = await prisma.user.findUnique({
