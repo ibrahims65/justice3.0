@@ -5,21 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Case Details</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .tab-button.active {
+      border-bottom: 2px solid #4f46e5;
+    }
+  </style>
 </head>
 <body class="bg-gray-100">
-  <nav class="bg-white shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex">
-          <div class="flex-shrink-0 flex items-center">
-            <a href="/dashboard">
-              <img class="h-8 w-8" src="/images/logo.svg" alt="Logo">
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <%- include('../partials/navbar', { user: user }) %>
   <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="bg-white rounded-lg shadow-md p-8">
       <div class="flex justify-between items-start">
@@ -29,13 +22,37 @@
         </div>
         <div class="text-right">
           <p class="text-gray-600">Booking Date: <%= caseRecord.booking.bookingDate.toLocaleString() %></p>
+          <a href="/cases/<%= caseRecord.id %>/edit" class="text-blue-500 hover:underline">Edit Case Details</a>
         </div>
+      </div>
+
+      <div class="mt-8">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Booking Summary</h3>
+        <p><strong>Arresting Officer:</strong> <%= caseRecord.booking.arrestingOfficerName %> (<%= caseRecord.booking.arrestingOfficerRank %>)</p>
+      </div>
+      <div class="mt-8">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Case Details</h3>
+        <p><strong>Crime Scene Details:</strong> <%= caseRecord.crimeSceneDetails %></p>
+        <p><strong>Interrogation Logs:</strong> <%= caseRecord.interrogationLogs %></p>
+        <p><strong>Preliminary Findings:</strong> <%= caseRecord.preliminaryFindings %></p>
+      </div>
+
+      <div class="tabs mt-8">
+        <button class="tab-button active" onclick="openTab(event, 'evidence')">Evidence</button>
+        <button class="tab-button" onclick="openTab(event, 'victims')">Victims</button>
+        <button class="tab-button" onclick="openTab(event, 'witnesses')">Witnesses</button>
+        <button class="tab-button" onclick="openTab(event, 'investigations')">Investigations</button>
+        <button class="tab-button" onclick="openTab(event, 'legal')">Legal</button>
+        <button class="tab-button" onclick="openTab(event, 'medical')">Medical</button>
+        <button class="tab-button" onclick="openTab(event, 'warrants')">Warrants</button>
+        <button class="tab-button" onclick="openTab(event, 'hearings')">Hearings</button>
       </div>
 
       <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="md:col-span-2">
-          <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Person Details</h3>
+          <div id="evidence" class="tab-content">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Person Details</h3>
             <div class="flex items-center">
               <% if (caseRecord.booking.person.photoUrl) { %>
                 <img src="<%= caseRecord.booking.person.photoUrl %>" alt="Person Photo" class="w-24 h-24 rounded-full mr-8">
@@ -45,25 +62,34 @@
                 <p><strong>Date of Birth:</strong> <%= caseRecord.booking.person.dob.toDateString() %></p>
               </div>
             </div>
+            </div>
           </div>
 
-          <div class="mt-8 bg-gray-50 rounded-lg p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Evidence</h3>
+          <div id="victims" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Evidence</h3>
             <% if (user.role.name === 'Police') { %>
             <a href="/evidence/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Evidence</a>
             <% } %>
             <ul>
-              <% caseRecord.evidence.forEach(item => { %>
+              <% caseRecord.evidence.sort((a, b) => b.version - a.version).forEach(item => { %>
                 <li class="border-b border-gray-200 py-2">
-                  <p><%= item.description %></p>
+                  <p><%= item.description %> (v<%= item.version %>)</p>
                   <a href="<%= item.fileUrl %>" class="text-blue-500 hover:underline">View File</a>
+                  <p class="text-sm text-gray-600">Tags: <%= item.tags %></p>
+                  <form action="/evidence/<%= item.id %>/new-version" method="POST" enctype="multipart/form-data" class="mt-2">
+                    <input type="file" name="file" required>
+                    <button type="submit" class="bg-yellow-500 text-white p-1 rounded">Upload New Version</button>
+                  </form>
                 </li>
               <% }) %>
             </ul>
+            </div>
           </div>
 
-          <div class="mt-8 bg-gray-50 rounded-lg p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Victims</h3>
+          <div id="witnesses" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Victims</h3>
             <% if (user.role.name === 'Police') { %>
             <a href="/victims/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Victim</a>
             <% } %>
@@ -75,10 +101,12 @@
                 </li>
               <% }) %>
             </ul>
+            </div>
           </div>
 
-          <div class="mt-8 bg-gray-50 rounded-lg p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Witnesses</h3>
+          <div id="investigations" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Investigations</h3>
             <% if (user.role.name === 'Police') { %>
             <a href="/witnesses/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Witness</a>
             <% } %>
@@ -91,15 +119,17 @@
             </ul>
           </div>
 
-          <div class="mt-8 bg-gray-50 rounded-lg p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Hearings</h3>
+          <% if (user.role.name === 'Court' || user.role.name === 'Prosecutor') { %>
+          <div id="hearings" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Hearings</h3>
             <% if (caseRecord.status === 'Accepted' && user.role.name === 'Court') { %>
               <a href="/hearings/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Schedule Hearing</a>
             <% } %>
             <ul>
               <% caseRecord.hearings.forEach(hearing => { %>
                 <li class="border-b border-gray-200 py-2">
-                  <p><strong><%= hearing.court %> on <%= hearing.hearingDate.toDateString() %></strong></p>
+                  <p><strong><%= hearing.court.name %> on <%= hearing.hearingDate.toDateString() %></strong></p>
                   <% if (hearing.verdict) { %>
                     <p>Verdict: <%= hearing.verdict %></p>
                   <% } else if (user.role.name === 'Court') { %>
@@ -115,6 +145,21 @@
               <% }) %>
             </ul>
           </div>
+          <% } else if (user.role.name === 'Police') { %>
+            <div id="hearings" class="tab-content" style="display:none;">
+              <div class="bg-gray-50 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Hearings</h3>
+              <ul>
+                <% caseRecord.hearings.forEach(hearing => { %>
+                  <li class="border-b border-gray-200 py-2">
+                    <p><strong><%= hearing.court.name %> on <%= hearing.hearingDate.toDateString() %></strong></p>
+                    <p class="text-red-500 font-bold">Officer presence required</p>
+                  </li>
+                <% }) %>
+              </ul>
+              </div>
+            </div>
+          <% } %>
         </div>
 
         <div>
@@ -126,16 +171,25 @@
               </form>
             <% } %>
             <% if (caseRecord.status === 'Prosecutor Review' && user.role.name === 'Prosecutor') { %>
-              <form action="/cases/<%= caseRecord.id %>/accept" method="POST" class="mb-2">
-                <button type="submit" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Accept</button>
-              </form>
-              <form action="/cases/<%= caseRecord.id %>/reject" method="POST" class="mb-2">
-                <textarea name="notes" placeholder="Reason for rejection" class="w-full border rounded p-2 mb-2"></textarea>
-                <button type="submit" class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Reject</button>
+              <form action="/cases/<%= caseRecord.id %>/submit-to-court" method="POST" class="mb-2">
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit to Court</button>
               </form>
               <form action="/cases/<%= caseRecord.id %>/request-info" method="POST">
                 <textarea name="notes" placeholder="Reason for requesting more info" class="w-full border rounded p-2 mb-2"></textarea>
                 <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Request More Info</button>
+              </form>
+            <% } %>
+            <% if (caseRecord.status === 'Submitted to Court' && user.role.name === 'Court') { %>
+              <form action="/cases/<%= caseRecord.id %>/accept" method="POST" class="mb-2">
+                <button type="submit" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Accept</button>
+              </form>
+              <form action="/cases/<%= caseRecord.id %>/send-back" method="POST" class="mb-2">
+                <textarea name="notes" placeholder="Reason for sending back" class="w-full border rounded p-2 mb-2"></textarea>
+                <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Send Back</button>
+              </form>
+              <form action="/cases/<%= caseRecord.id %>/reject" method="POST" class="mb-2">
+                <textarea name="notes" placeholder="Reason for rejection" class="w-full border rounded p-2 mb-2"></textarea>
+                <button type="submit" class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Reject</button>
               </form>
             <% } %>
             <% if (caseRecord.status === 'Rejected' && user.role.name === 'Police') { %>
@@ -144,8 +198,193 @@
               </form>
             <% } %>
           </div>
+          <% if (user.role.name === 'Prosecutor' || user.role.name === 'Court') { %>
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Action History</h3>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Prosecutor Notes</h3>
+            <ul>
+              <% caseRecord.prosecutorNotes.forEach(note => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p class="text-sm text-gray-600"><%= note.createdAt.toLocaleString() %></p>
+                  <p><%= note.content %></p>
+                  <p class="text-sm text-gray-500 mt-1">By: <%= note.user.username %></p>
+                </li>
+              <% }) %>
+            </ul>
+            <% if (user.role.name === 'Prosecutor') { %>
+            <form action="/prosecutor/cases/<%= caseRecord.id %>/notes" method="POST" class="mt-4">
+              <textarea name="content" placeholder="Add a note" class="w-full border rounded p-2 mb-2"></textarea>
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Note</button>
+            </form>
+            <% } %>
+          </div>
+          <% } %>
+          <div id="plea-bargains" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Plea Bargains</h3>
+            <% if (user.role.name === 'Prosecutor') { %>
+            <form action="/plea-bargains" method="POST" class="mb-4">
+              <input type="hidden" name="caseId" value="<%= caseRecord.id %>">
+              <textarea name="offer" placeholder="Plea bargain offer" class="w-full border rounded p-2 mb-2"></textarea>
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Propose Plea Bargain</button>
+            </form>
+            <% } %>
+            <ul>
+              <% caseRecord.pleaBargains.forEach(plea => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p><strong>Offer:</strong> <%= plea.offer %></p>
+                  <p><strong>Status:</strong> <%= plea.status %></p>
+                  <% if (plea.status === 'Proposed' && user.role.name === 'Court') { %>
+                    <form action="/plea-bargains/<%= plea.id %>/accept" method="POST" class="inline-block">
+                      <button type="submit" class="bg-green-500 text-white p-1 rounded">Accept</button>
+                    </form>
+                    <form action="/plea-bargains/<%= plea.id %>/reject" method="POST" class="inline-block">
+                      <button type="submit" class="bg-red-500 text-white p-1 rounded">Reject</button>
+                    </form>
+                  <% } %>
+                </li>
+              <% }) %>
+            </ul>
+          </div>
+          <div class="mt-8 bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Investigations</h3>
+            <a href="/investigations/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Investigation</a>
+            <ul>
+              <% caseRecord.investigations.forEach(investigation => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p><strong>Investigator:</strong> <%= investigation.investigatorName %> (<%= investigation.investigatorBadgeNumber %>)</p>
+                  <p><strong>Rank:</strong> <%= investigation.investigatorRank %></p>
+                  <p><strong>Details:</strong> <%= investigation.details %></p>
+                  <h4 class="font-bold mt-4">Media</h4>
+                  <ul>
+                    <% investigation.media.forEach(media => { %>
+                      <li class="border-t border-gray-200 py-2">
+                        <a href="<%= media.url %>" class="text-blue-500 hover:underline" target="_blank"><%= media.type %></a>
+                      </li>
+                    <% }) %>
+                  </ul>
+                </li>
+              <% }) %>
+            </ul>
+            </div>
+          </div>
+          <div id="bail-decisions" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Bail Decisions</h3>
+            <% if (user.role.name === 'Court') { %>
+            <form action="/bail-decisions" method="POST" class="mb-4">
+              <input type="hidden" name="caseId" value="<%= caseRecord.id %>">
+              <div class="grid grid-cols-2 gap-4">
+                <input type="text" name="judgeName" placeholder="Judge Name" class="border rounded p-2">
+                <input type="number" name="amount" placeholder="Bail Amount" class="border rounded p-2">
+                <select name="status" class="border rounded p-2">
+                  <option value="Granted">Granted</option>
+                  <option value="Denied">Denied</option>
+                  <option value="Revoked">Revoked</option>
+                </select>
+              </div>
+              <textarea name="conditions" placeholder="Bail Conditions" class="w-full border rounded p-2 mt-4"></textarea>
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Add Bail Decision</button>
+            </form>
+            <% } %>
+            <ul>
+              <% caseRecord.bailDecisions.forEach(decision => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p><strong>Status:</strong> <%= decision.status %></p>
+                  <p><strong>Amount:</strong> <%= decision.amount %></p>
+                  <p><strong>Conditions:</strong> <%= decision.conditions %></p>
+                  <p><strong>Judge:</strong> <%= decision.judgeName %></p>
+                  <p><strong>Date:</strong> <%= decision.decidedAt.toLocaleString() %></p>
+                </li>
+              <% }) %>
+            </ul>
+            </div>
+          </div>
+          <% if (user.role.name === 'Prosecutor' || user.role.name === 'Court') { %>
+          <div id="prosecutor-evaluation" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Prosecutor Evaluation</h3>
+            <% if (user.role.name === 'Prosecutor') { %>
+            <form action="/cases/<%= caseRecord.id %>/evaluation" method="POST" class="mb-4">
+              <div class="mb-4">
+                <label for="recommendedCharges" class="block text-gray-700">Recommended Charges</label>
+                <input type="text" name="recommendedCharges" id="recommendedCharges" value="<%= caseRecord.recommendedCharges || '' %>" class="w-full border rounded p-2">
+              </div>
+              <div class="mb-4">
+                <label for="riskAssessment" class="block text-gray-700">Risk Assessment</label>
+                <input type="text" name="riskAssessment" id="riskAssessment" value="<%= caseRecord.riskAssessment || '' %>" class="w-full border rounded p-2">
+              </div>
+              <div class="mb-4">
+                <label for="evidenceStrengthRating" class="block text-gray-700">Evidence Strength (1-5)</label>
+                <input type="number" name="evidenceStrengthRating" id="evidenceStrengthRating" value="<%= caseRecord.evidenceStrengthRating || '' %>" min="1" max="5" class="w-full border rounded p-2">
+              </div>
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Evaluation</button>
+            </form>
+            <% } else { %>
+              <p><strong>Recommended Charges:</strong> <%= caseRecord.recommendedCharges %></p>
+              <p><strong>Risk Assessment:</strong> <%= caseRecord.riskAssessment %></p>
+              <p><strong>Evidence Strength:</strong> <%= caseRecord.evidenceStrengthRating %></p>
+            <% } %>
+            </div>
+          </div>
+          <% } %>
+          <div id="warrants" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Warrants</h3>
+            <% if (user.role.name === 'Court') { %>
+            <form action="/warrants" method="POST" class="mb-4">
+              <input type="hidden" name="caseId" value="<%= caseRecord.id %>">
+              <textarea name="details" placeholder="Warrant Details" class="w-full border rounded p-2 mb-2"></textarea>
+              <input type="date" name="expiresAt" class="w-full border rounded p-2 mb-2">
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Issue Warrant</button>
+            </form>
+            <% } %>
+            <ul>
+              <% caseRecord.warrants.forEach(warrant => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p><strong>Status:</strong> <%= warrant.status %></p>
+                  <p><strong>Details:</strong> <%= warrant.details %></p>
+                  <p><strong>Expires:</strong> <%= warrant.expiresAt.toLocaleString() %></p>
+                </li>
+              <% }) %>
+            </ul>
+            </div>
+          </div>
+          <div id="search-warrants" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Search Warrants</h3>
+            <% if (user.role.name === 'Police') { %>
+            <form action="/search-warrants" method="POST" class="mb-4">
+              <input type="hidden" name="caseId" value="<%= caseRecord.id %>">
+              <input type="text" name="requestedBy" placeholder="Requesting Officer" class="w-full border rounded p-2 mb-2">
+              <textarea name="reason" placeholder="Reason for Warrant" class="w-full border rounded p-2 mb-2"></textarea>
+              <input type="text" name="targetType" placeholder="Target Type (e.g., Property, Vehicle)" class="w-full border rounded p-2 mb-2">
+              <input type="text" name="targetDetails" placeholder="Target Details (e.g., Address, License Plate)" class="w-full border rounded p-2 mb-2">
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Request Search Warrant</button>
+            </form>
+            <% } %>
+            <ul>
+              <% caseRecord.searchWarrants.forEach(warrant => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p><strong>Status:</strong> <%= warrant.status %></p>
+                  <p><strong>Location:</strong> <%= warrant.location %></p>
+                  <p><strong>Scope:</strong> <%= warrant.scope %></p>
+                  <% if (warrant.status === 'Requested' && user.role.name === 'Court') { %>
+                    <form action="/search-warrants/<%= warrant.id %>/approve" method="POST" class="inline-block">
+                      <button type="submit" class="bg-green-500 text-white p-1 rounded">Approve</button>
+                    </form>
+                    <form action="/search-warrants/<%= warrant.id %>/deny" method="POST" class="inline-block">
+                      <button type="submit" class="bg-red-500 text-white p-1 rounded">Deny</button>
+                    </form>
+                  <% } %>
+                </li>
+              <% }) %>
+            </ul>
+            </div>
+          </div>
+          <div class="mt-8 bg-gray-50 rounded-lg p-6">
+            <button onclick="toggleActionHistory()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">View Case History</button>
+            <div id="action-history" style="display:none;" class="mt-4">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Action History</h3>
             <ul>
               <% caseRecord.actions.forEach(action => { %>
                 <li class="border-b border-gray-200 py-2">
@@ -157,10 +396,35 @@
                 </li>
               <% }) %>
             </ul>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <script>
+    function openTab(evt, tabName) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tab-content");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tab-button");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+
+    function toggleActionHistory() {
+      const history = document.getElementById('action-history');
+      if (history.style.display === 'none') {
+        history.style.display = 'block';
+      } else {
+        history.style.display = 'none';
+      }
+    }
+  </script>
 </body>
 </html>
