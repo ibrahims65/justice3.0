@@ -92,7 +92,7 @@
         <div>
           <div class="bg-gray-50 rounded-lg p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Actions</h3>
-            <% if (caseRecord.status === 'New Arrest' && user.role.name === 'Police') { %>
+            <% if ((caseRecord.status === 'New Arrest' || caseRecord.status === 'Information Requested') && user.role.name === 'Police') { %>
               <form action="/cases/<%= caseRecord.id %>/submit" method="POST" class="mb-4">
                 <button type="submit" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Submit to Prosecutor</button>
               </form>

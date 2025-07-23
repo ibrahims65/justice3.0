@@ -56,6 +56,18 @@ app.get('/dashboard', async (req, res) => {
         person: true,
       },
     });
+    cases = await prisma.case.findMany({
+      where: {
+        status: 'Information Requested',
+      },
+      include: {
+        booking: {
+          include: {
+            person: true,
+          },
+        },
+      },
+    });
     people = await prisma.person.findMany();
   } else if (user.role.name === 'Prosecutor') {
     cases = await prisma.case.findMany({
