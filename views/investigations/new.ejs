@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>New Investigation</title>
+  <link rel="stylesheet" href="/css/input.css">
+</head>
+<body>
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">New Investigation</h1>
+    <div class="tabs">
+      <button class="tab-button active" onclick="openTab(event, 'details')">Details</button>
+      <button class="tab-button" onclick="openTab(event, 'investigator')">Investigator</button>
+      <button class="tab-button" onclick="openTab(event, 'media')">Media</button>
+    </div>
+
+    <form action="/investigations" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="caseId" value="<%= caseId %>">
+      <div id="details" class="tab-content">
+        <div class="mb-4">
+          <label for="details" class="block text-gray-700">Details</label>
+          <textarea name="details" id="details" class="w-full border rounded p-2"></textarea>
+        </div>
+      </div>
+
+      <div id="investigator" class="tab-content" style="display:none;">
+        <div class="mb-4">
+          <label for="investigatorName" class="block text-gray-700">Name</label>
+          <input type="text" name="investigatorName" id="investigatorName" class="w-full border rounded p-2" required>
+        </div>
+        <div class="mb-4">
+          <label for="investigatorBadgeNumber" class="block text-gray-700">Badge Number</label>
+          <input type="text" name="investigatorBadgeNumber" id="investigatorBadgeNumber" class="w-full border rounded p-2" required>
+        </div>
+        <div class="mb-4">
+          <label for="investigatorRank" class="block text-gray-700">Rank</label>
+          <input type="text" name="investigatorRank" id="investigatorRank" class="w-full border rounded p-2" required>
+        </div>
+      </div>
+
+      <div id="media" class="tab-content" style="display:none;">
+        <div class="mb-4">
+          <label for="media" class="block text-gray-700">Media (Video, Audio, Images)</label>
+          <input type="file" name="media" id="media" multiple>
+        </div>
+      </div>
+
+      <button type="submit" class="bg-blue-500 text-white p-2 rounded mt-4">Create Investigation</button>
+    </form>
+  </div>
+
+  <script>
+    function openTab(evt, tabName) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tab-content");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tab-button");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+  </script>
+</body>
+</html>

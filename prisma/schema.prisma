@@ -14,9 +14,11 @@ model User {
   id       Int             @id @default(autoincrement())
   username String          @unique
   password String
-  role     Role            @relation(fields: [roleId], references: [id])
-  roleId   Int
-  actions  ActionHistory[]
+  role            Role             @relation(fields: [roleId], references: [id])
+  roleId          Int
+  actions         ActionHistory[]
+  prosecutorNotes ProsecutorNote[]
+  notifications Notification[]
 }
 
 model Role {
@@ -34,6 +36,7 @@ model Person {
   phone    String?
   email    String?   @unique
   bookings Booking[]
+  nextOfKin NextOfKin[]
 }
 
 model Booking {
@@ -46,6 +49,13 @@ model Booking {
   policeStation   PoliceStation? @relation(fields: [policeStationId], references: [id])
   policeStationId Int?
   case            Case?
+  lawyers         Lawyer[]
+  medicalRecords  MedicalRecord[]
+  incarcerationStartDate DateTime?
+  facilityName String?
+  rehabilitationPrograms String?
+  releaseDate DateTime?
+  paroleEligibility DateTime?
 }
 
 model Case {
@@ -54,11 +64,23 @@ model Case {
   booking    Booking         @relation(fields: [bookingId], references: [id])
   bookingId  Int             @unique
   status     String
+  crimeSceneDetails String?
+  interrogationLogs String?
+  preliminaryFindings String?
   evidence   Evidence[]
   witnesses  Witness[]
   hearings   Hearing[]
-  actions    ActionHistory[]
-  victims    Victim[]
+  actions          ActionHistory[]
+  victims          Victim[]
+  prosecutorNotes  ProsecutorNote[]
+  pleaBargains     PleaBargain[]
+  investigations   Investigation[]
+  bailDecisions    BailDecision[]
+  recommendedCharges String?
+  riskAssessment String?
+  evidenceStrengthRating Int?
+  warrants Warrant[]
+  searchWarrants SearchWarrant[]
 }
 
 model Region {
@@ -105,6 +127,8 @@ model Evidence {
   receivedFrom    String?
   storageLocation String?
   dateReceived    DateTime?
+  version         Int      @default(1)
+  tags            String?
 }
 
 model Witness {
@@ -136,6 +160,136 @@ model ActionHistory {
   userId    Int
   case      Case     @relation(fields: [caseId], references: [id])
   caseId    Int
+}
+
+model Lawyer {
+  id          Int           @id @default(autoincrement())
+  name        String
+  firm        String
+  license     String        @unique
+  booking     Booking       @relation(fields: [bookingId], references: [id])
+  bookingId   Int
+  visits      LawyerVisit[]
+}
+
+model LawyerVisit {
+  id        Int      @id @default(autoincrement())
+  visitDate DateTime @default(now())
+  notes     String?
+  lawyer    Lawyer   @relation(fields: [lawyerId], references: [id])
+  lawyerId  Int
+}
+
+model ProsecutorNote {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  caseId    Int
+  case      Case     @relation(fields: [caseId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model PleaBargain {
+  id          Int      @id @default(autoincrement())
+  caseId      Int
+  case        Case     @relation(fields: [caseId], references: [id])
+  offer       String
+  status      String // Proposed, Accepted, Rejected
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Investigation {
+  id              Int          @id @default(autoincrement())
+  caseId          Int
+  case            Case         @relation(fields: [caseId], references: [id])
+  investigatorName String
+  investigatorBadgeNumber String
+  investigatorRank String
+  details         String?
+  media           Media[]
+}
+
+model Media {
+  id              Int      @id @default(autoincrement())
+  url             String
+  type            String // video, audio, image
+  investigationId Int
+  investigation   Investigation @relation(fields: [investigationId], references: [id])
+}
+
+model BailDecision {
+  id         Int      @id @default(autoincrement())
+  caseId     Int
+  amount     Float
+  status     String   // e.g., "Granted", "Denied", "Revoked"
+  conditions String?
+  decidedAt  DateTime @default(now())
+  judgeName  String
+  case       Case     @relation(fields: [caseId], references: [id])
+}
+
+model MedicalRecord {
+  id        Int      @id @default(autoincrement())
+  bookingId Int
+  condition String
+  allergies String?
+  notes     String?
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  medications MedicationSchedule[]
+}
+
+model MedicationSchedule {
+  id           Int      @id @default(autoincrement())
+  medicalId    Int
+  medication   String
+  dosage       String
+  frequency    String
+  startDate    DateTime
+  endDate      DateTime?
+  medicalRecord MedicalRecord @relation(fields: [medicalId], references: [id])
+}
+
+model NextOfKin {
+  id        Int    @id @default(autoincrement())
+  personId  Int
+  name      String
+  relationship String
+  phone     String
+  address   String?
+  person    Person @relation(fields: [personId], references: [id])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Warrant {
+  id          Int      @id @default(autoincrement())
+  caseId      Int
+  case        Case     @relation(fields: [caseId], references: [id])
+  status      String   // "Issued", "Executed", "Expired"
+  details     String
+  issuedAt    DateTime @default(now())
+  expiresAt   DateTime
+}
+
+model SearchWarrant {
+  id          Int      @id @default(autoincrement())
+  caseId      Int
+  case        Case     @relation(fields: [caseId], references: [id])
+  status      String   // "Requested", "Approved", "Denied"
+  location    String
+  scope       String
+  requestedAt DateTime @default(now())
+  approvedAt  DateTime?
+  deniedAt    DateTime?
 }
 
 model Victim {
