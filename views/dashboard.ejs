@@ -15,8 +15,33 @@
       <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, <%= user.username %>!</h2>
       <p class="text-gray-600 mb-8">Your role is: <%= user.role.name %></p>
 
-      <form action="/dashboard" method="GET" class="mb-4">
-        <input type="text" name="search" placeholder="Search..." class="border rounded p-2">
+      <form action="/dashboard" method="GET" class="mb-4 flex space-x-2">
+        <input type="text" name="search" placeholder="Search..." class="border rounded p-2 flex-grow">
+        <% if (user.role.name === 'Police') { %>
+          <select name="status" class="border rounded p-2">
+            <option value="">All Statuses</option>
+            <option value="New Booking">New Booking</option>
+            <option value="Information Requested">Information Requested</option>
+          </select>
+        <% } %>
+        <% if (user.role.name === 'Prosecutor') { %>
+          <select name="status" class="border rounded p-2">
+            <option value="">All Statuses</option>
+            <option value="Prosecutor Review">Prosecutor Review</option>
+            <option value="Plea Bargain Accepted">Plea Bargain Accepted</option>
+          </select>
+        <% } %>
+        <% if (user.role.name === 'Court') { %>
+          <select name="status" class="border rounded p-2">
+            <option value="">All Statuses</option>
+            <option value="Accepted">Accepted</option>
+            <option value="Granted">Bail Granted</option>
+            <option value="Denied">Bail Denied</option>
+          </select>
+        <% } %>
+        <% if (user.role.name === 'Corrections') { %>
+          <input type="text" name="facility" placeholder="Facility Name" class="border rounded p-2">
+        <% } %>
         <button type="submit" class="bg-blue-500 text-white p-2 rounded">Search</button>
       </form>
 

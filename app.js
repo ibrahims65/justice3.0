@@ -53,6 +53,18 @@ app.use('/plea-bargains', pleaBargainsRouter);
 const investigationsRouter = require('./routes/investigations');
 app.use('/investigations', investigationsRouter);
 
+const bailDecisionsRouter = require('./routes/bailDecisions');
+app.use('/bail-decisions', bailDecisionsRouter);
+
+const medicalRecordsRouter = require('./routes/medicalRecords');
+app.use('/medical-records', medicalRecordsRouter);
+
+const nextOfKinRouter = require('./routes/nextOfKin');
+app.use('/next-of-kin', nextOfKinRouter);
+
+const correctionsRouter = require('./routes/corrections');
+app.use('/corrections', correctionsRouter);
+
 app.get('/dashboard', async (req, res) => {
   if (!req.session.userId) {
     return res.redirect('/auth/login');
@@ -62,17 +74,26 @@ app.get('/dashboard', async (req, res) => {
     include: { role: true },
   });
 
-  const { search } = req.query;
+  const { search, status, facility } = req.query;
   let where = {};
 
   if (search) {
-    where = {
-      OR: [
-        { name: { contains: search, mode: 'insensitive' } },
-        { caseNumber: { contains: search, mode: 'insensitive' } },
-        { status: { contains: search, mode: 'insensitive' } },
-      ],
-    };
+    where.OR = [
+      { name: { contains: search, mode: 'insensitive' } },
+      { caseNumber: { contains: search, mode: 'insensitive' } },
+    ];
+  }
+
+  if (status) {
+    if (status === 'Bail Granted' || status === 'Bail Denied') {
+      where.bailDecisions = { some: { status: status.split(' ')[1] } };
+    } else {
+      where.status = status;
+    }
+  }
+
+  if (facility) {
+    where.facilityName = { contains: facility, mode: 'insensitive' };
   }
 
   let cases = [];

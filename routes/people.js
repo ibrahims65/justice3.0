@@ -48,8 +48,14 @@ router.get('/:id', async (req, res) => {
               visits: true,
             },
           },
+          medicalRecords: {
+            include: {
+              medications: true,
+            },
+          },
         },
       },
+      nextOfKin: true,
     },
   });
   const user = await prisma.user.findUnique({

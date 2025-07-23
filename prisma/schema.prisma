@@ -35,6 +35,7 @@ model Person {
   phone    String?
   email    String?   @unique
   bookings Booking[]
+  nextOfKin NextOfKin[]
 }
 
 model Booking {
@@ -48,6 +49,12 @@ model Booking {
   policeStationId Int?
   case            Case?
   lawyers         Lawyer[]
+  medicalRecords  MedicalRecord[]
+  incarcerationStartDate DateTime?
+  facilityName String?
+  rehabilitationPrograms String?
+  releaseDate DateTime?
+  paroleEligibility DateTime?
 }
 
 model Case {
@@ -67,6 +74,10 @@ model Case {
   prosecutorNotes  ProsecutorNote[]
   pleaBargains     PleaBargain[]
   investigations   Investigation[]
+  bailDecisions    BailDecision[]
+  recommendedCharges String?
+  riskAssessment String?
+  evidenceStrengthRating Int?
 }
 
 model Region {
@@ -208,6 +219,48 @@ model Media {
   type            String // video, audio, image
   investigationId Int
   investigation   Investigation @relation(fields: [investigationId], references: [id])
+}
+
+model BailDecision {
+  id         Int      @id @default(autoincrement())
+  caseId     Int
+  amount     Float
+  status     String   // e.g., "Granted", "Denied", "Revoked"
+  conditions String?
+  decidedAt  DateTime @default(now())
+  judgeName  String
+  case       Case     @relation(fields: [caseId], references: [id])
+}
+
+model MedicalRecord {
+  id        Int      @id @default(autoincrement())
+  bookingId Int
+  condition String
+  allergies String?
+  notes     String?
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  medications MedicationSchedule[]
+}
+
+model MedicationSchedule {
+  id           Int      @id @default(autoincrement())
+  medicalId    Int
+  medication   String
+  dosage       String
+  frequency    String
+  startDate    DateTime
+  endDate      DateTime?
+  medicalRecord MedicalRecord @relation(fields: [medicalId], references: [id])
+}
+
+model NextOfKin {
+  id        Int    @id @default(autoincrement())
+  personId  Int
+  name      String
+  relationship String
+  phone     String
+  address   String?
+  person    Person @relation(fields: [personId], references: [id])
 }
 
 model Victim {

@@ -216,6 +216,60 @@
             </ul>
           </div>
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Bail Decisions</h3>
+            <% if (user.role.name === 'Court') { %>
+            <form action="/bail-decisions" method="POST" class="mb-4">
+              <input type="hidden" name="caseId" value="<%= caseRecord.id %>">
+              <div class="grid grid-cols-2 gap-4">
+                <input type="text" name="judgeName" placeholder="Judge Name" class="border rounded p-2">
+                <input type="number" name="amount" placeholder="Bail Amount" class="border rounded p-2">
+                <select name="status" class="border rounded p-2">
+                  <option value="Granted">Granted</option>
+                  <option value="Denied">Denied</option>
+                  <option value="Revoked">Revoked</option>
+                </select>
+              </div>
+              <textarea name="conditions" placeholder="Bail Conditions" class="w-full border rounded p-2 mt-4"></textarea>
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Add Bail Decision</button>
+            </form>
+            <% } %>
+            <ul>
+              <% caseRecord.bailDecisions.forEach(decision => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p><strong>Status:</strong> <%= decision.status %></p>
+                  <p><strong>Amount:</strong> <%= decision.amount %></p>
+                  <p><strong>Conditions:</strong> <%= decision.conditions %></p>
+                  <p><strong>Judge:</strong> <%= decision.judgeName %></p>
+                  <p><strong>Date:</strong> <%= decision.decidedAt.toLocaleString() %></p>
+                </li>
+              <% }) %>
+            </ul>
+          </div>
+          <div class="mt-8 bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Prosecutor Evaluation</h3>
+            <% if (user.role.name === 'Prosecutor') { %>
+            <form action="/cases/<%= caseRecord.id %>/evaluation" method="POST" class="mb-4">
+              <div class="mb-4">
+                <label for="recommendedCharges" class="block text-gray-700">Recommended Charges</label>
+                <input type="text" name="recommendedCharges" id="recommendedCharges" value="<%= caseRecord.recommendedCharges || '' %>" class="w-full border rounded p-2">
+              </div>
+              <div class="mb-4">
+                <label for="riskAssessment" class="block text-gray-700">Risk Assessment</label>
+                <input type="text" name="riskAssessment" id="riskAssessment" value="<%= caseRecord.riskAssessment || '' %>" class="w-full border rounded p-2">
+              </div>
+              <div class="mb-4">
+                <label for="evidenceStrengthRating" class="block text-gray-700">Evidence Strength (1-5)</label>
+                <input type="number" name="evidenceStrengthRating" id="evidenceStrengthRating" value="<%= caseRecord.evidenceStrengthRating || '' %>" min="1" max="5" class="w-full border rounded p-2">
+              </div>
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Evaluation</button>
+            </form>
+            <% } else { %>
+              <p><strong>Recommended Charges:</strong> <%= caseRecord.recommendedCharges %></p>
+              <p><strong>Risk Assessment:</strong> <%= caseRecord.riskAssessment %></p>
+              <p><strong>Evidence Strength:</strong> <%= caseRecord.evidenceStrengthRating %></p>
+            <% } %>
+          </div>
+          <div class="mt-8 bg-gray-50 rounded-lg p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Action History</h3>
             <ul>
               <% caseRecord.actions.forEach(action => { %>
