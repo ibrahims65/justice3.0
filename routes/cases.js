@@ -49,7 +49,7 @@ router.get('/:id', async (req, res) => {
       },
     },
   });
-  res.render('cases/show', { caseRecord });
+  res.render('cases/show', { caseRecord, user: req.session });
 });
 
 router.post('/:id/submit', checkRole(['Police']), async (req, res) => {
