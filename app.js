@@ -59,22 +59,43 @@ app.get('/dashboard', async (req, res) => {
       where: {
         status: 'Prosecutor Review',
       },
+      include: {
+        booking: {
+          include: {
+            person: true,
+          },
+        },
+      },
     });
   } else if (user.role.name === 'Court') {
     cases = await prisma.case.findMany({
       where: {
         status: 'Accepted',
       },
+      include: {
+        booking: {
+          include: {
+            person: true,
+          },
+        },
+        hearings: true,
+      },
     });
   } else if (user.role.name === 'Corrections') {
-    inmates = await prisma.inmate.findMany({
+    people = await prisma.person.findMany({
       where: {
-        status: 'Convicted',
+        bookings: {
+          some: {
+            case: {
+              status: 'Convicted',
+            },
+          },
+        },
       },
     });
   }
 
-  res.render('dashboard', { user, cases, inmates });
+  res.render('dashboard', { user, cases, bookings, people });
 });
 
 app.get('/police', checkRole(['Police']), (req, res) => {

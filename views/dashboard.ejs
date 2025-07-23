@@ -110,12 +110,12 @@
       <% if (user.role.name === 'Corrections') { %>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Total Inmates</h3>
-            <p class="text-3xl font-bold text-indigo-500"><%= inmates.length %></p>
+            <h3 class="text-lg font-medium text-gray-800">Total People</h3>
+            <p class="text-3xl font-bold text-indigo-500"><%= people.length %></p>
           </div>
           <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Inmates by Status</h3>
-            <canvas id="inmateStatusChart" width="400" height="200"></canvas>
+            <h3 class="text-lg font-medium text-gray-800">People by Status</h3>
+            <canvas id="peopleStatusChart" width="400" height="200"></canvas>
           </div>
           <div class="bg-white rounded-lg shadow-md p-6">
             <h3 class="text-lg font-medium text-gray-800">Recent Releases</h3>
@@ -123,27 +123,28 @@
           </div>
         </div>
         <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">Inmate Records</h3>
+          <h3 class="text-lg font-medium text-gray-800 mb-4">People Records</h3>
           <ul>
-            <% inmates.forEach(inmate => { %>
-              <li class="border-b border-gray-200 py-2"><a href="/inmates/<%= inmate.id %>" class="text-blue-500 hover:underline"><%= inmate.name %></a> - <span class="font-semibold"><%= inmate.status %></span></li>
+            <% people.forEach(person => { %>
+              <li class="border-b border-gray-200 py-2"><a href="/people/<%= person.id %>" class="text-blue-500 hover:underline"><%= person.name %></a></li>
             <% }) %>
           </ul>
         </div>
         <script>
-          const inmateStatusData = <%- JSON.stringify(inmates.reduce((acc, inmate) => {
-            acc[inmate.status] = (acc[inmate.status] || 0) + 1;
+          const peopleStatusData = <%- JSON.stringify(people.reduce((acc, person) => {
+            const status = person.bookings.find(b => b.case?.status === 'Convicted')?.case.status || 'N/A';
+            acc[status] = (acc[status] || 0) + 1;
             return acc;
           }, {})) %>;
 
-          const ctx = document.getElementById('inmateStatusChart').getContext('2d');
+          const ctx = document.getElementById('peopleStatusChart').getContext('2d');
           new Chart(ctx, {
             type: 'pie',
             data: {
-              labels: Object.keys(inmateStatusData),
+              labels: Object.keys(peopleStatusData),
               datasets: [{
-                label: 'Inmates by Status',
-                data: Object.values(inmateStatusData),
+                label: 'People by Status',
+                data: Object.values(peopleStatusData),
                 backgroundColor: [
                   'rgba(255, 99, 132, 0.7)',
                   'rgba(54, 162, 235, 0.7)',
