@@ -49,10 +49,15 @@
             <a href="/evidence/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Evidence</a>
             <% } %>
             <ul>
-              <% caseRecord.evidence.forEach(item => { %>
+              <% caseRecord.evidence.sort((a, b) => b.version - a.version).forEach(item => { %>
                 <li class="border-b border-gray-200 py-2">
-                  <p><%= item.description %></p>
+                  <p><%= item.description %> (v<%= item.version %>)</p>
                   <a href="<%= item.fileUrl %>" class="text-blue-500 hover:underline">View File</a>
+                  <p class="text-sm text-gray-600">Tags: <%= item.tags %></p>
+                  <form action="/evidence/<%= item.id %>/new-version" method="POST" enctype="multipart/form-data" class="mt-2">
+                    <input type="file" name="file" required>
+                    <button type="submit" class="bg-yellow-500 text-white p-1 rounded">Upload New Version</button>
+                  </form>
                 </li>
               <% }) %>
             </ul>
@@ -87,6 +92,7 @@
             </ul>
           </div>
 
+          <% if (user.role.name === 'Court' || user.role.name === 'Prosecutor') { %>
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Hearings</h3>
             <% if (caseRecord.status === 'Accepted' && user.role.name === 'Court') { %>
@@ -111,6 +117,7 @@
               <% }) %>
             </ul>
           </div>
+          <% } %>
         </div>
 
         <div>
@@ -245,6 +252,8 @@
               <% }) %>
             </ul>
           </div>
+          <% if (user.role.name === 'Prosecutor' || user.role.name === 'Court') { %>
+
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Prosecutor Evaluation</h3>
             <% if (user.role.name === 'Prosecutor') { %>
@@ -268,6 +277,55 @@
               <p><strong>Risk Assessment:</strong> <%= caseRecord.riskAssessment %></p>
               <p><strong>Evidence Strength:</strong> <%= caseRecord.evidenceStrengthRating %></p>
             <% } %>
+          </div>
+          <% } %>
+          <div class="mt-8 bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Warrants</h3>
+            <% if (user.role.name === 'Court') { %>
+            <form action="/warrants" method="POST" class="mb-4">
+              <input type="hidden" name="caseId" value="<%= caseRecord.id %>">
+              <textarea name="details" placeholder="Warrant Details" class="w-full border rounded p-2 mb-2"></textarea>
+              <input type="date" name="expiresAt" class="w-full border rounded p-2 mb-2">
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Issue Warrant</button>
+            </form>
+            <% } %>
+            <ul>
+              <% caseRecord.warrants.forEach(warrant => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p><strong>Status:</strong> <%= warrant.status %></p>
+                  <p><strong>Details:</strong> <%= warrant.details %></p>
+                  <p><strong>Expires:</strong> <%= warrant.expiresAt.toLocaleString() %></p>
+                </li>
+              <% }) %>
+            </ul>
+          </div>
+          <div class="mt-8 bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Search Warrants</h3>
+            <% if (user.role.name === 'Police') { %>
+            <form action="/search-warrants" method="POST" class="mb-4">
+              <input type="hidden" name="caseId" value="<%= caseRecord.id %>">
+              <input type="text" name="location" placeholder="Location to be searched" class="w-full border rounded p-2 mb-2">
+              <textarea name="scope" placeholder="Scope of the search" class="w-full border rounded p-2 mb-2"></textarea>
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Request Search Warrant</button>
+            </form>
+            <% } %>
+            <ul>
+              <% caseRecord.searchWarrants.forEach(warrant => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p><strong>Status:</strong> <%= warrant.status %></p>
+                  <p><strong>Location:</strong> <%= warrant.location %></p>
+                  <p><strong>Scope:</strong> <%= warrant.scope %></p>
+                  <% if (warrant.status === 'Requested' && user.role.name === 'Court') { %>
+                    <form action="/search-warrants/<%= warrant.id %>/approve" method="POST" class="inline-block">
+                      <button type="submit" class="bg-green-500 text-white p-1 rounded">Approve</button>
+                    </form>
+                    <form action="/search-warrants/<%= warrant.id %>/deny" method="POST" class="inline-block">
+                      <button type="submit" class="bg-red-500 text-white p-1 rounded">Deny</button>
+                    </form>
+                  <% } %>
+                </li>
+              <% }) %>
+            </ul>
           </div>
 
           <div class="mt-8 bg-gray-50 rounded-lg p-6">

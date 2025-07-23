@@ -66,7 +66,17 @@ app.use('/next-of-kin', nextOfKinRouter);
 const correctionsRouter = require('./routes/corrections');
 app.use('/corrections', correctionsRouter);
 
+const warrantsRouter = require('./routes/warrants');
+app.use('/warrants', warrantsRouter);
 
+const searchWarrantsRouter = require('./routes/searchWarrants');
+app.use('/search-warrants', searchWarrantsRouter);
+
+const reportsRouter = require('./routes/reports');
+app.use('/reports', reportsRouter);
+
+const { router: notificationsRouter } = require('./routes/notifications');
+app.use('/notifications', notificationsRouter);
 
 app.get('/dashboard', async (req, res) => {
   if (!req.session.userId) {
@@ -76,7 +86,6 @@ app.get('/dashboard', async (req, res) => {
     where: { id: req.session.userId },
     include: { role: true },
   });
-
 
   const { search, status, facility } = req.query;
   let where = {};
@@ -98,7 +107,6 @@ app.get('/dashboard', async (req, res) => {
 
   if (facility) {
     where.facilityName = { contains: facility, mode: 'insensitive' };
-
   }
 
   let cases = [];

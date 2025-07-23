@@ -18,6 +18,8 @@ model User {
   roleId          Int
   actions         ActionHistory[]
   prosecutorNotes ProsecutorNote[]
+
+  notifications Notification[]
 }
 
 model Role {
@@ -35,9 +37,7 @@ model Person {
   phone    String?
   email    String?   @unique
   bookings Booking[]
-
   nextOfKin NextOfKin[]
-
 }
 
 model Booking {
@@ -75,13 +75,13 @@ model Case {
   victims          Victim[]
   prosecutorNotes  ProsecutorNote[]
   pleaBargains     PleaBargain[]
-
   investigations   Investigation[]
   bailDecisions    BailDecision[]
   recommendedCharges String?
   riskAssessment String?
   evidenceStrengthRating Int?
-
+  warrants Warrant[]
+  searchWarrants SearchWarrant[]
 }
 
 model Region {
@@ -128,6 +128,8 @@ model Evidence {
   receivedFrom    String?
   storageLocation String?
   dateReceived    DateTime?
+  version         Int      @default(1)
+  tags            String?
 }
 
 model Witness {
@@ -169,7 +171,6 @@ model Lawyer {
 
   booking     Booking       @relation(fields: [bookingId], references: [id])
   bookingId   Int
-
   visits      LawyerVisit[]
 }
 
@@ -200,7 +201,6 @@ model PleaBargain {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
-
 
 model Investigator {
   id          Int            @id @default(autoincrement())
@@ -270,6 +270,37 @@ model NextOfKin {
   person    Person @relation(fields: [personId], references: [id])
 }
 
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Warrant {
+  id          Int      @id @default(autoincrement())
+  caseId      Int
+  case        Case     @relation(fields: [caseId], references: [id])
+  status      String   // "Issued", "Executed", "Expired"
+  details     String
+  issuedAt    DateTime @default(now())
+  expiresAt   DateTime
+}
+
+model SearchWarrant {
+  id          Int      @id @default(autoincrement())
+  caseId      Int
+  case        Case     @relation(fields: [caseId], references: [id])
+  status      String   // "Requested", "Approved", "Denied"
+  location    String
+  scope       String
+  requestedAt DateTime @default(now())
+  approvedAt  DateTime?
+  deniedAt    DateTime?
+}
 
 model Victim {
   id        Int      @id @default(autoincrement())
