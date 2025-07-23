@@ -17,13 +17,16 @@ router.post('/', checkRole(['Police']), (req, res) => {
       if (req.file == undefined) {
         res.render('evidence/new', { msg: 'Error: No File Selected!', caseId: req.body.caseId });
       } else {
-        const { description, caseId } = req.body;
+        const { description, caseId, receivedFrom, storageLocation, dateReceived } = req.body;
         try {
           await prisma.evidence.create({
             data: {
               description,
               fileUrl: `/uploads/${req.file.filename}`,
               caseId: parseInt(caseId),
+              receivedFrom,
+              storageLocation,
+              dateReceived: new Date(dateReceived),
             },
           });
           await prisma.actionHistory.create({

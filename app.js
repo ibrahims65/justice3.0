@@ -35,6 +35,9 @@ app.use('/witnesses', witnessesRouter);
 const hearingsRouter = require('./routes/hearings');
 app.use('/hearings', hearingsRouter);
 
+const victimsRouter = require('./routes/victims');
+app.use('/victims', victimsRouter);
+
 const adminRouter = require('./routes/admin');
 app.use('/admin', adminRouter);
 
