@@ -4,43 +4,15 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
-router.get('/new/:bookingId', checkRole(['Police']), async (req, res) => {
-  const booking = await prisma.booking.findUnique({
-    where: { id: parseInt(req.params.bookingId) },
-    include: { person: true },
-  });
-  res.render('cases/new', { booking });
-});
-
-router.post('/', checkRole(['Police']), async (req, res) => {
-  const { caseNumber, status, bookingId } = req.body;
-  try {
-    const newCase = await prisma.case.create({
-      data: {
-        caseNumber,
-        status,
-        bookingId: parseInt(bookingId),
-      },
-    });
-    await prisma.actionHistory.create({
-      data: {
-        action: 'Case Created',
-        caseId: newCase.id,
-        userId: req.session.userId,
-      },
-    });
-    res.redirect(`/cases/${newCase.id}`);
-  } catch (error) {
-    const booking = await prisma.booking.findUnique({ where: { id: parseInt(bookingId) } });
-    res.redirect(`/people/${booking.personId}`);
-  }
-});
-
 router.get('/:id', async (req, res) => {
   const caseRecord = await prisma.case.findUnique({
     where: { id: parseInt(req.params.id) },
     include: {
-      inmate: true,
+      booking: {
+        include: {
+          person: true,
+        },
+      },
       evidence: true,
       witnesses: true,
       hearings: true,

@@ -44,6 +44,9 @@ router.get('/:id/bookings/new', checkRole(['Police']), (req, res) => {
   res.render('bookings/new', { personId: req.params.id });
 });
 
+const { customAlphabet } = require('nanoid');
+const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
+
 router.post('/:id/bookings', checkRole(['Police']), async (req, res) => {
   const { status } = req.body;
   const personId = parseInt(req.params.id);
@@ -54,7 +57,21 @@ router.post('/:id/bookings', checkRole(['Police']), async (req, res) => {
         status,
       },
     });
-    res.redirect(`/bookings/${newBooking.id}`);
+    const newCase = await prisma.case.create({
+      data: {
+        caseNumber: `CASE-${nanoid()}`,
+        status: 'New Arrest',
+        bookingId: newBooking.id,
+      },
+    });
+    await prisma.actionHistory.create({
+      data: {
+        action: 'Case Created',
+        caseId: newCase.id,
+        userId: req.session.userId,
+      },
+    });
+    res.redirect(`/cases/${newCase.id}`);
   } catch (error) {
     res.redirect(`/people/${personId}`);
   }
