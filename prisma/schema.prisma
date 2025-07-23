@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      Role     @relation(fields: [roleId], references: [id])
+  roleId    Int
+  actions   ActionHistory[]
+}
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
+}
+
+model Inmate {
+  id        Int      @id @default(autoincrement())
+  name      String
+  dob       DateTime
+  status    String
+  photoUrl  String?
+  case      Case?
+}
+
+model Case {
+  id          Int      @id @default(autoincrement())
+  caseNumber  String   @unique
+  inmate      Inmate   @relation(fields: [inmateId], references: [id])
+  inmateId    Int      @unique
+  status      String
+  evidence    Evidence[]
+  witnesses   Witness[]
+  hearings    Hearing[]
+  actions     ActionHistory[]
+}
+
+model Evidence {
+  id          Int      @id @default(autoincrement())
+  description String
+  fileUrl     String
+  case        Case     @relation(fields: [caseId], references: [id])
+  caseId      Int
+}
+
+model Witness {
+  id        Int      @id @default(autoincrement())
+  name      String
+  statement String
+  case      Case     @relation(fields: [caseId], references: [id])
+  caseId    Int
+}
+
+model Hearing {
+  id          Int      @id @default(autoincrement())
+  court       String
+  hearingDate DateTime
+  verdict     String?
+  case        Case     @relation(fields: [caseId], references: [id])
+  caseId      Int
+}
+
+model ActionHistory {
+  id        Int      @id @default(autoincrement())
+  action    String
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  case      Case     @relation(fields: [caseId], references: [id])
+  caseId    Int
+}

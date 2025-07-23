@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Details</title>
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mx-auto">
+    <h1 class="text-2xl font-bold">Case Details</h1>
+    <p><strong>Case Number:</strong> <%= caseRecord.caseNumber %></p>
+    <p><strong>Status:</strong> <%= caseRecord.status %></p>
+    <h2 class="text-xl font-bold mt-4">Inmate Details</h2>
+    <p><strong>Name:</strong> <%= caseRecord.inmate.name %></p>
+    <p><strong>Date of Birth:</strong> <%= caseRecord.inmate.dob.toDateString() %></p>
+    <p><strong>Status:</strong> <%= caseRecord.inmate.status %></p>
+    <% if (caseRecord.inmate.photoUrl) { %>
+      <img src="<%= caseRecord.inmate.photoUrl %>" alt="Inmate Photo" class="w-64 h-64">
+    <% } %>
+
+    <h2 class="text-xl font-bold mt-4">Action History</h2>
+    <ul>
+      <% caseRecord.actions.forEach(action => { %>
+        <li><%= action.timestamp.toLocaleString() %> - <%= action.action %> by <%= action.user.username %></li>
+      <% }) %>
+    </ul>
+
+    <% if (caseRecord.status === 'New Arrest' && session.role === 'Police') { %>
+      <form action="/cases/<%= caseRecord.id %>/submit" method="POST" class="mt-4">
+        <button type="submit" class="bg-green-500 text-white p-2 rounded">Submit to Prosecutor</button>
+      </form>
+    <% } %>
+  </div>
+</body>
+</html>

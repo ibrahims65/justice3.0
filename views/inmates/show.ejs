@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inmate Details</title>
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mx-auto">
+    <h1 class="text-2xl font-bold">Inmate Details</h1>
+    <p><strong>Name:</strong> <%= inmate.name %></p>
+    <p><strong>Date of Birth:</strong> <%= inmate.dob.toDateString() %></p>
+    <p><strong>Status:</strong> <%= inmate.status %></p>
+    <% if (inmate.photoUrl) { %>
+      <img src="<%= inmate.photoUrl %>" alt="Inmate Photo" class="w-64 h-64">
+    <% } %>
+    <% if (inmate.case) { %>
+      <h2 class="text-xl font-bold mt-4">Case Details</h2>
+      <p><strong>Case Number:</strong> <%= inmate.case.caseNumber %></p>
+      <p><strong>Status:</strong> <%= inmate.case.status %></p>
+    <% } else { %>
+      <a href="/cases/new/<%= inmate.id %>" class="bg-blue-500 text-white p-2 rounded mt-4 inline-block">Create Case</a>
+    <% } %>
+  </div>
+</body>
+</html>
