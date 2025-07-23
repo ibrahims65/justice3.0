@@ -8,29 +8,50 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100">
-  <nav class="bg-white shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex-shrink-0">
-          <a href="/dashboard">
-            <img class="h-8 w-8" src="/images/logo.svg" alt="Logo">
-          </a>
-        </div>
-        <div class="hidden md:block">
-          <div class="ml-10 flex items-baseline space-x-4">
-            <a href="/dashboard" class="text-gray-800 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-            <a href="/auth/logout" class="text-gray-800 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium">Logout</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <%- include('partials/navbar', { user: user }) %>
 
   <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="px-4 py-6 sm:px-0">
       <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, <%= user.username %>!</h2>
       <p class="text-gray-600 mb-8">Your role is: <%= user.role.name %></p>
 
+      <form action="/dashboard" method="GET" class="mb-4 flex space-x-2">
+        <input type="text" name="search" placeholder="Search..." class="border rounded p-2 flex-grow">
+        <% if (user.role.name === 'Police') { %>
+          <select name="status" class="border rounded p-2">
+            <option value="">All Statuses</option>
+            <option value="New Booking">New Booking</option>
+            <option value="Information Requested">Information Requested</option>
+          </select>
+        <% } %>
+        <% if (user.role.name === 'Prosecutor') { %>
+          <select name="status" class="border rounded p-2">
+            <option value="">All Statuses</option>
+            <option value="Prosecutor Review">Prosecutor Review</option>
+            <option value="Plea Bargain Accepted">Plea Bargain Accepted</option>
+          </select>
+        <% } %>
+        <% if (user.role.name === 'Court') { %>
+          <select name="status" class="border rounded p-2">
+            <option value="">All Statuses</option>
+            <option value="Accepted">Accepted</option>
+            <option value="Granted">Bail Granted</option>
+            <option value="Denied">Bail Denied</option>
+          </select>
+        <% } %>
+        <% if (user.role.name === 'Corrections') { %>
+          <input type="text" name="facility" placeholder="Facility Name" class="border rounded p-2">
+        <% } %>
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded">Search</button>
+      </form>
+
+      <% cases.forEach(caseRecord => { %>
+        <% if (caseRecord.status === 'Information Requested' || caseRecord.status === 'Sent Back to Prosecutor') { %>
+          <div class="bg-red-500 text-white p-4 rounded mb-4">
+            🚨 RETURNED – Additional Information Required: <a href="/cases/<%= caseRecord.id %>" class="text-white underline"><%= caseRecord.caseNumber %></a>
+          </div>
+        <% } %>
+      <% }) %>
       <% if (user.role.name === 'Police') { %>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="bg-white rounded-lg shadow-md p-6">

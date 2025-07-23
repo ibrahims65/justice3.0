@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reports</title>
+  <link rel="stylesheet" href="/css/input.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Reports</h1>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <h2 class="text-xl font-bold mb-2">Case Volume</h2>
+        <div class="flex space-x-2">
+          <input type="date" id="case-volume-start-date" class="border rounded p-2">
+          <input type="date" id="case-volume-end-date" class="border rounded p-2">
+          <button onclick="generateCaseVolumeReport()" class="bg-blue-500 text-white p-2 rounded">Generate</button>
+        </div>
+        <canvas id="case-volume-chart"></canvas>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold mb-2">Conviction Rates</h2>
+        <div class="flex space-x-2">
+          <input type="date" id="conviction-rates-start-date" class="border rounded p-2">
+          <input type="date" id="conviction-rates-end-date" class="border rounded p-2">
+          <button onclick="generateConvictionRatesReport()" class="bg-blue-500 text-white p-2 rounded">Generate</button>
+        </div>
+        <canvas id="conviction-rates-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let caseVolumeChart;
+    async function generateCaseVolumeReport() {
+      const startDate = document.getElementById('case-volume-start-date').value;
+      const endDate = document.getElementById('case-volume-end-date').value;
+      const response = await fetch('/reports/case-volume', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startDate, endDate }),
+      });
+      const data = await response.json();
+
+      if (caseVolumeChart) {
+        caseVolumeChart.destroy();
+      }
+      caseVolumeChart = new Chart(document.getElementById('case-volume-chart'), {
+        type: 'bar',
+        data: {
+          labels: ['Case Volume'],
+          datasets: [{
+            label: 'Cases',
+            data: [data.caseVolume],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1,
+          }],
+        },
+      });
+    }
+
+    let convictionRatesChart;
+    async function generateConvictionRatesReport() {
+      const startDate = document.getElementById('conviction-rates-start-date').value;
+      const endDate = document.getElementById('conviction-rates-end-date').value;
+      const response = await fetch('/reports/conviction-rates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startDate, endDate }),
+      });
+      const data = await response.json();
+
+      if (convictionRatesChart) {
+        convictionRatesChart.destroy();
+      }
+      convictionRatesChart = new Chart(document.getElementById('conviction-rates-chart'), {
+        type: 'pie',
+        data: {
+          labels: ['Convicted', 'Not Convicted'],
+          datasets: [{
+            data: [data.convictionRate, 100 - data.convictionRate],
+            backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+            borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+            borderWidth: 1,
+          }],
+        },
+      });
+    }
+  </script>
+</body>
+</html>
