@@ -49,6 +49,7 @@ model Booking {
   policeStation   PoliceStation? @relation(fields: [policeStationId], references: [id])
   policeStationId Int?
   case            Case?
+
   incarcerationStartDate DateTime?
   facilityName String?
   rehabilitationPrograms String?
@@ -56,6 +57,7 @@ model Booking {
   paroleEligibility DateTime?
   arrestingOfficerName String?
   arrestingOfficerRank String?
+
 }
 
 model Case {
@@ -171,6 +173,7 @@ model Lawyer {
   license     String        @unique
   case        Case          @relation(fields: [caseId], references: [id])
   caseId      Int
+
   visits      LawyerVisit[]
 }
 
@@ -240,6 +243,7 @@ model MedicalRecord {
   notes     String?
   case      Case     @relation(fields: [caseId], references: [id])
   caseId    Int
+
   medications MedicationSchedule[]
 }
 
@@ -293,6 +297,7 @@ model SearchWarrant {
   dateRequested  DateTime @default(now())
   status         String
   case           Case     @relation(fields: [caseId], references: [id])
+
 }
 
 model Victim {

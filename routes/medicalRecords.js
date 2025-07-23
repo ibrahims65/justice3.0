@@ -10,6 +10,7 @@ router.get('/new/:caseId', checkRole(['Police', 'Corrections']), (req, res) => {
 
 router.post('/', checkRole(['Police', 'Corrections']), async (req, res) => {
   const { condition, allergies, notes, caseId } = req.body;
+
   try {
     const medicalRecord = await prisma.medicalRecord.create({
       data: {
@@ -29,6 +30,7 @@ router.post('/', checkRole(['Police', 'Corrections']), async (req, res) => {
     res.redirect(`/cases/${caseId}`);
   } catch (error) {
     res.redirect(`/cases/${caseId}`);
+
   }
 });
 

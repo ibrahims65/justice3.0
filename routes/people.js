@@ -40,6 +40,7 @@ router.get('/:id', async (req, res) => {
   const person = await prisma.person.findUnique({
     where: { id: parseInt(req.params.id) },
     include: {
+
       bookings: {
         include: {
           case: true,
