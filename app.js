@@ -41,6 +41,33 @@ app.use('/victims', victimsRouter);
 const adminRouter = require('./routes/admin');
 app.use('/admin', adminRouter);
 
+const prosecutorRouter = require('./routes/prosecutor');
+app.use('/prosecutor', prosecutorRouter);
+
+const lawyersRouter = require('./routes/lawyers');
+app.use('/lawyers', lawyersRouter);
+
+const pleaBargainsRouter = require('./routes/pleaBargains');
+app.use('/plea-bargains', pleaBargainsRouter);
+
+const investigationsRouter = require('./routes/investigations');
+app.use('/investigations', investigationsRouter);
+
+const bailDecisionsRouter = require('./routes/bailDecisions');
+app.use('/bail-decisions', bailDecisionsRouter);
+
+const medicalRecordsRouter = require('./routes/medicalRecords');
+app.use('/medical-records', medicalRecordsRouter);
+
+const nextOfKinRouter = require('./routes/nextOfKin');
+app.use('/next-of-kin', nextOfKinRouter);
+
+const correctionsRouter = require('./routes/corrections');
+app.use('/corrections', correctionsRouter);
+
+const warrantsRouter = require('./routes/warrants');
+app.use('/warrants', warrantsRouter);
+
 app.get('/dashboard', async (req, res) => {
   if (!req.session.userId) {
     return res.redirect('/auth/login');
@@ -50,19 +77,40 @@ app.get('/dashboard', async (req, res) => {
     include: { role: true },
   });
 
+  const { search, status, facility } = req.query;
+  let where = {};
+
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: 'insensitive' } },
+      { caseNumber: { contains: search, mode: 'insensitive' } },
+    ];
+  }
+
+  if (status) {
+    if (status === 'Bail Granted' || status === 'Bail Denied') {
+      where.bailDecisions = { some: { status: status.split(' ')[1] } };
+    } else {
+      where.status = status;
+    }
+  }
+
+  if (facility) {
+    where.facilityName = { contains: facility, mode: 'insensitive' };
+  }
+
   let cases = [];
   let bookings = [];
   let people = [];
   if (user.role.name === 'Police') {
     bookings = await prisma.booking.findMany({
+      where,
       include: {
         person: true,
       },
     });
     cases = await prisma.case.findMany({
-      where: {
-        status: 'Information Requested',
-      },
+      where,
       include: {
         booking: {
           include: {
@@ -71,12 +119,10 @@ app.get('/dashboard', async (req, res) => {
         },
       },
     });
-    people = await prisma.person.findMany();
+    people = await prisma.person.findMany({ where });
   } else if (user.role.name === 'Prosecutor') {
     cases = await prisma.case.findMany({
-      where: {
-        status: 'Prosecutor Review',
-      },
+      where: { ...where, status: 'Prosecutor Review' },
       include: {
         booking: {
           include: {
@@ -87,9 +133,7 @@ app.get('/dashboard', async (req, res) => {
     });
   } else if (user.role.name === 'Court') {
     cases = await prisma.case.findMany({
-      where: {
-        status: 'Accepted',
-      },
+      where: { ...where, status: 'Accepted' },
       include: {
         booking: {
           include: {
@@ -102,6 +146,7 @@ app.get('/dashboard', async (req, res) => {
   } else if (user.role.name === 'Corrections') {
     people = await prisma.person.findMany({
       where: {
+        ...where,
         bookings: {
           some: {
             case: {
