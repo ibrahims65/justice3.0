@@ -26,6 +26,12 @@ app.use('/inmates', inmatesRouter);
 const casesRouter = require('./routes/cases');
 app.use('/cases', casesRouter);
 
+const evidenceRouter = require('./routes/evidence');
+app.use('/evidence', evidenceRouter);
+
+const witnessesRouter = require('./routes/witnesses');
+app.use('/witnesses', witnessesRouter);
+
 app.get('/dashboard', async (req, res) => {
   if (!req.session.userId) {
     return res.redirect('/auth/login');
@@ -34,7 +40,40 @@ app.get('/dashboard', async (req, res) => {
     where: { id: req.session.userId },
     include: { role: true },
   });
-  res.render('dashboard', { user });
+
+  let cases = [];
+  let inmates = [];
+  if (user.role.name === 'Police') {
+    cases = await prisma.case.findMany({
+      where: {
+        actions: {
+          some: {
+            userId: user.id,
+          },
+        },
+      },
+    });
+  } else if (user.role.name === 'Prosecutor') {
+    cases = await prisma.case.findMany({
+      where: {
+        status: 'Prosecutor Review',
+      },
+    });
+  } else if (user.role.name === 'Court') {
+    cases = await prisma.case.findMany({
+      where: {
+        status: 'Accepted',
+      },
+    });
+  } else if (user.role.name === 'Corrections') {
+    inmates = await prisma.inmate.findMany({
+      where: {
+        status: 'Convicted',
+      },
+    });
+  }
+
+  res.render('dashboard', { user, cases, inmates });
 });
 
 app.get('/police', checkRole(['Police']), (req, res) => {

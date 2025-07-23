@@ -9,20 +9,25 @@ router.get('/register', (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-  const { username, password, role } = req.body;
+  const { username, password, roleName } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const newRole = await prisma.role.create({
-      data: {
-        name: role,
-      },
+    let role = await prisma.role.findUnique({
+      where: { name: roleName },
     });
+    if (!role) {
+      role = await prisma.role.create({
+        data: {
+          name: roleName,
+        },
+      });
+    }
     const newUser = await prisma.user.create({
       data: {
         username,
         password: hashedPassword,
-        roleId: newRole.id,
+        roleId: role.id,
       },
     });
     res.redirect('/auth/login');

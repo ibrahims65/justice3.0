@@ -68,4 +68,52 @@ router.post('/:id/submit', checkRole(['Police']), async (req, res) => {
   res.redirect(`/cases/${caseId}`);
 });
 
+router.post('/:id/accept', checkRole(['Prosecutor']), async (req, res) => {
+  const caseId = parseInt(req.params.id);
+  await prisma.case.update({
+    where: { id: caseId },
+    data: { status: 'Accepted' },
+  });
+  await prisma.actionHistory.create({
+    data: {
+      action: 'Case Accepted',
+      caseId: caseId,
+      userId: req.session.userId,
+    },
+  });
+  res.redirect(`/cases/${caseId}`);
+});
+
+router.post('/:id/reject', checkRole(['Prosecutor']), async (req, res) => {
+  const caseId = parseInt(req.params.id);
+  await prisma.case.update({
+    where: { id: caseId },
+    data: { status: 'Rejected' },
+  });
+  await prisma.actionHistory.create({
+    data: {
+      action: 'Case Rejected',
+      caseId: caseId,
+      userId: req.session.userId,
+    },
+  });
+  res.redirect(`/cases/${caseId}`);
+});
+
+router.post('/:id/request-info', checkRole(['Prosecutor']), async (req, res) => {
+  const caseId = parseInt(req.params.id);
+  await prisma.case.update({
+    where: { id: caseId },
+    data: { status: 'Information Requested' },
+  });
+  await prisma.actionHistory.create({
+    data: {
+      action: 'Information Requested',
+      caseId: caseId,
+      userId: req.session.userId,
+    },
+  });
+  res.redirect(`/cases/${caseId}`);
+});
+
 module.exports = router;

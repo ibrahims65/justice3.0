@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Witness</title>
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mx-auto">
+    <h1 class="text-2xl font-bold">New Witness</h1>
+    <form action="/witnesses" method="POST">
+      <input type="hidden" name="caseId" value="<%= caseId %>">
+      <div class="mb-4">
+        <label for="name" class="block text-gray-700">Name</label>
+        <input type="text" name="name" id="name" class="w-full border border-gray-300 p-2 rounded">
+      </div>
+      <div class="mb-4">
+        <label for="statement" class="block text-gray-700">Statement</label>
+        <textarea name="statement" id="statement" class="w-full border border-gray-300 p-2 rounded"></textarea>
+      </div>
+      <button type="submit" class="bg-blue-500 text-white p-2 rounded">Add Witness</button>
+    </form>
+  </div>
+</body>
+</html>

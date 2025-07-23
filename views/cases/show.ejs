@@ -26,10 +26,40 @@
       <% }) %>
     </ul>
 
-    <% if (caseRecord.status === 'New Arrest' && session.role === 'Police') { %>
+    <h2 class="text-xl font-bold mt-4">Evidence</h2>
+    <ul>
+      <% caseRecord.evidence.forEach(item => { %>
+        <li><%= item.description %> - <a href="<%= item.fileUrl %>" class="text-blue-500">View</a></li>
+      <% }) %>
+    </ul>
+    <a href="/evidence/new/<%= caseRecord.id %>" class="text-blue-500">Add Evidence</a>
+
+    <h2 class="text-xl font-bold mt-4">Witnesses</h2>
+    <ul>
+      <% caseRecord.witnesses.forEach(witness => { %>
+        <li><strong><%= witness.name %>:</strong> <%= witness.statement %></li>
+      <% }) %>
+    </ul>
+    <a href="/witnesses/new/<%= caseRecord.id %>" class="text-blue-500">Add Witness</a>
+
+    <% if (caseRecord.status === 'New Arrest' && user.role.name === 'Police') { %>
       <form action="/cases/<%= caseRecord.id %>/submit" method="POST" class="mt-4">
         <button type="submit" class="bg-green-500 text-white p-2 rounded">Submit to Prosecutor</button>
       </form>
+    <% } %>
+
+    <% if (caseRecord.status === 'Prosecutor Review' && user.role.name === 'Prosecutor') { %>
+      <div class="mt-4">
+        <form action="/cases/<%= caseRecord.id %>/accept" method="POST" class="inline-block">
+          <button type="submit" class="bg-green-500 text-white p-2 rounded">Accept</button>
+        </form>
+        <form action="/cases/<%= caseRecord.id %>/reject" method="POST" class="inline-block">
+          <button type="submit" class="bg-red-500 text-white p-2 rounded">Reject</button>
+        </form>
+        <form action="/cases/<%= caseRecord.id %>/request-info" method="POST" class="inline-block">
+          <button type="submit" class="bg-yellow-500 text-white p-2 rounded">Request More Info</button>
+        </form>
+      </div>
     <% } %>
   </div>
 </body>

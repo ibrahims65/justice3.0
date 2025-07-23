@@ -16,21 +16,42 @@
     <% if (user.role.name === 'Police') { %>
       <h2 class="text-xl font-bold mt-4">Police Dashboard</h2>
       <a href="/inmates/new" class="text-blue-500">Create New Inmate</a>
+      <h3 class="text-lg font-bold mt-4">Your Cases</h3>
+      <ul>
+        <% cases.forEach(caseRecord => { %>
+          <li><a href="/cases/<%= caseRecord.id %>" class="text-blue-500"><%= caseRecord.caseNumber %></a> - <%= caseRecord.status %></li>
+        <% }) %>
+      </ul>
     <% } %>
 
     <% if (user.role.name === 'Prosecutor') { %>
       <h2 class="text-xl font-bold mt-4">Prosecutor Dashboard</h2>
-      <p>Cases for review will be listed here.</p>
+      <h3 class="text-lg font-bold mt-4">Cases for Review</h3>
+      <ul>
+        <% cases.forEach(caseRecord => { %>
+          <li><a href="/cases/<%= caseRecord.id %>" class="text-blue-500"><%= caseRecord.caseNumber %></a> - <%= caseRecord.status %></li>
+        <% }) %>
+      </ul>
     <% } %>
 
     <% if (user.role.name === 'Court') { %>
       <h2 class="text-xl font-bold mt-4">Court Dashboard</h2>
-      <p>Cases for hearing will be listed here.</p>
+      <h3 class="text-lg font-bold mt-4">Cases for Hearing</h3>
+      <ul>
+        <% cases.forEach(caseRecord => { %>
+          <li><a href="/cases/<%= caseRecord.id %>" class="text-blue-500"><%= caseRecord.caseNumber %></a> - <%= caseRecord.status %></li>
+        <% }) %>
+      </ul>
     <% } %>
 
     <% if (user.role.name === 'Corrections') { %>
       <h2 class="text-xl font-bold mt-4">Corrections Dashboard</h2>
-      <p>Inmate records will be listed here.</p>
+      <h3 class="text-lg font-bold mt-4">Inmate Records</h3>
+      <ul>
+        <% inmates.forEach(inmate => { %>
+          <li><a href="/inmates/<%= inmate.id %>" class="text-blue-500"><%= inmate.name %></a> - <%= inmate.status %></li>
+        <% }) %>
+      </ul>
     <% } %>
   </div>
 </body>
