@@ -12,6 +12,7 @@ router.post('/', checkRole(['Police', 'Prosecutor', 'Court']), async (req, res) 
   const { name, firm, license, bookingId } = req.body;
   try {
     const booking = await prisma.booking.findUnique({ where: { id: parseInt(bookingId) } });
+
     await prisma.lawyer.create({
       data: {
         name,
