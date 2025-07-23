@@ -7,19 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
-  <nav class="bg-white shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex">
-          <div class="flex-shrink-0 flex items-center">
-            <a href="/dashboard">
-              <img class="h-8 w-8" src="/images/logo.svg" alt="Logo">
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <%- include('../partials/navbar', { user: user }) %>
   <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="bg-white rounded-lg shadow-md p-8">
       <div class="flex justify-between items-start">
@@ -29,7 +17,15 @@
         </div>
         <div class="text-right">
           <p class="text-gray-600">Booking Date: <%= caseRecord.booking.bookingDate.toLocaleString() %></p>
+          <a href="/cases/<%= caseRecord.id %>/edit" class="text-blue-500 hover:underline">Edit Case Details</a>
         </div>
+      </div>
+
+      <div class="mt-8">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Case Details</h3>
+        <p><strong>Crime Scene Details:</strong> <%= caseRecord.crimeSceneDetails %></p>
+        <p><strong>Interrogation Logs:</strong> <%= caseRecord.interrogationLogs %></p>
+        <p><strong>Preliminary Findings:</strong> <%= caseRecord.preliminaryFindings %></p>
       </div>
 
       <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -126,16 +122,25 @@
               </form>
             <% } %>
             <% if (caseRecord.status === 'Prosecutor Review' && user.role.name === 'Prosecutor') { %>
-              <form action="/cases/<%= caseRecord.id %>/accept" method="POST" class="mb-2">
-                <button type="submit" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Accept</button>
-              </form>
-              <form action="/cases/<%= caseRecord.id %>/reject" method="POST" class="mb-2">
-                <textarea name="notes" placeholder="Reason for rejection" class="w-full border rounded p-2 mb-2"></textarea>
-                <button type="submit" class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Reject</button>
+              <form action="/cases/<%= caseRecord.id %>/submit-to-court" method="POST" class="mb-2">
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit to Court</button>
               </form>
               <form action="/cases/<%= caseRecord.id %>/request-info" method="POST">
                 <textarea name="notes" placeholder="Reason for requesting more info" class="w-full border rounded p-2 mb-2"></textarea>
                 <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Request More Info</button>
+              </form>
+            <% } %>
+            <% if (caseRecord.status === 'Submitted to Court' && user.role.name === 'Court') { %>
+              <form action="/cases/<%= caseRecord.id %>/accept" method="POST" class="mb-2">
+                <button type="submit" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Accept</button>
+              </form>
+              <form action="/cases/<%= caseRecord.id %>/send-back" method="POST" class="mb-2">
+                <textarea name="notes" placeholder="Reason for sending back" class="w-full border rounded p-2 mb-2"></textarea>
+                <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Send Back</button>
+              </form>
+              <form action="/cases/<%= caseRecord.id %>/reject" method="POST" class="mb-2">
+                <textarea name="notes" placeholder="Reason for rejection" class="w-full border rounded p-2 mb-2"></textarea>
+                <button type="submit" class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Reject</button>
               </form>
             <% } %>
             <% if (caseRecord.status === 'Rejected' && user.role.name === 'Police') { %>
@@ -143,6 +148,72 @@
                 <button type="submit" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Resubmit to Prosecutor</button>
               </form>
             <% } %>
+          </div>
+          <% if (user.role.name === 'Prosecutor' || user.role.name === 'Court') { %>
+          <div class="mt-8 bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Prosecutor Notes</h3>
+            <ul>
+              <% caseRecord.prosecutorNotes.forEach(note => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p class="text-sm text-gray-600"><%= note.createdAt.toLocaleString() %></p>
+                  <p><%= note.content %></p>
+                  <p class="text-sm text-gray-500 mt-1">By: <%= note.user.username %></p>
+                </li>
+              <% }) %>
+            </ul>
+            <% if (user.role.name === 'Prosecutor') { %>
+            <form action="/prosecutor/cases/<%= caseRecord.id %>/notes" method="POST" class="mt-4">
+              <textarea name="content" placeholder="Add a note" class="w-full border rounded p-2 mb-2"></textarea>
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Note</button>
+            </form>
+            <% } %>
+          </div>
+          <% } %>
+          <div class="mt-8 bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Plea Bargains</h3>
+            <% if (user.role.name === 'Prosecutor') { %>
+            <form action="/plea-bargains" method="POST" class="mb-4">
+              <input type="hidden" name="caseId" value="<%= caseRecord.id %>">
+              <textarea name="offer" placeholder="Plea bargain offer" class="w-full border rounded p-2 mb-2"></textarea>
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Propose Plea Bargain</button>
+            </form>
+            <% } %>
+            <ul>
+              <% caseRecord.pleaBargains.forEach(plea => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p><strong>Offer:</strong> <%= plea.offer %></p>
+                  <p><strong>Status:</strong> <%= plea.status %></p>
+                  <% if (plea.status === 'Proposed' && user.role.name === 'Court') { %>
+                    <form action="/plea-bargains/<%= plea.id %>/accept" method="POST" class="inline-block">
+                      <button type="submit" class="bg-green-500 text-white p-1 rounded">Accept</button>
+                    </form>
+                    <form action="/plea-bargains/<%= plea.id %>/reject" method="POST" class="inline-block">
+                      <button type="submit" class="bg-red-500 text-white p-1 rounded">Reject</button>
+                    </form>
+                  <% } %>
+                </li>
+              <% }) %>
+            </ul>
+          </div>
+          <div class="mt-8 bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Investigations</h3>
+            <a href="/investigations/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Investigation</a>
+            <ul>
+              <% caseRecord.investigations.forEach(investigation => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p><strong>Investigator:</strong> <%= investigation.investigator.name %> (<%= investigation.investigator.badgeNumber %>)</p>
+                  <p><strong>Details:</strong> <%= investigation.details %></p>
+                  <h4 class="font-bold mt-4">Media</h4>
+                  <ul>
+                    <% investigation.media.forEach(media => { %>
+                      <li class="border-t border-gray-200 py-2">
+                        <a href="<%= media.url %>" class="text-blue-500 hover:underline" target="_blank"><%= media.type %></a>
+                      </li>
+                    <% }) %>
+                  </ul>
+                </li>
+              <% }) %>
+            </ul>
           </div>
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Action History</h3>

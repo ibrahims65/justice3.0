@@ -39,7 +39,18 @@ router.post('/', checkRole(['Police']), (req, res) => {
 router.get('/:id', async (req, res) => {
   const person = await prisma.person.findUnique({
     where: { id: parseInt(req.params.id) },
-    include: { bookings: { include: { case: true } } },
+    include: {
+      bookings: {
+        include: {
+          case: true,
+          lawyers: {
+            include: {
+              visits: true,
+            },
+          },
+        },
+      },
+    },
   });
   const user = await prisma.user.findUnique({
     where: { id: req.session.userId },
