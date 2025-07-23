@@ -51,6 +51,7 @@
       </ul>
 
       <h3 class="text-xl font-bold text-gray-800 mt-8 mb-4">Legal Representation</h3>
+
       <% person.bookings.forEach(booking => { %>
         <div class="border-b border-gray-200 py-4">
           <h4 class="font-bold">Booking #<%= booking.id %></h4>
@@ -114,6 +115,7 @@
             <p><strong>Relationship:</strong> <%= kin.relationship %></p>
             <p><strong>Phone:</strong> <%= kin.phone %></p>
             <p><strong>Address:</strong> <%= kin.address %></p>
+
           </li>
         <% }) %>
       </ul>
