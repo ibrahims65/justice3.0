@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Hearing</title>
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mx-auto">
+    <h1 class="text-2xl font-bold">New Hearing</h1>
+    <form action="/hearings" method="POST">
+      <input type="hidden" name="caseId" value="<%= caseId %>">
+      <div class="mb-4">
+        <label for="court" class="block text-gray-700">Court</label>
+        <input type="text" name="court" id="court" class="w-full border border-gray-300 p-2 rounded">
+      </div>
+      <div class="mb-4">
+        <label for="hearingDate" class="block text-gray-700">Hearing Date</label>
+        <input type="date" name="hearingDate" id="hearingDate" class="w-full border border-gray-300 p-2 rounded">
+      </div>
+      <button type="submit" class="bg-blue-500 text-white p-2 rounded">Schedule Hearing</button>
+    </form>
+  </div>
+</body>
+</html>

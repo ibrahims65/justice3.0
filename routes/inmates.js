@@ -42,7 +42,25 @@ router.get('/:id', async (req, res) => {
     where: { id: parseInt(req.params.id) },
     include: { case: true },
   });
-  res.render('inmates/show', { inmate });
+  res.render('inmates/show', { inmate, user: req.session });
+});
+
+router.post('/:id/update', checkRole(['Corrections']), async (req, res) => {
+  const { status } = req.body;
+  const inmateId = parseInt(req.params.id);
+  await prisma.inmate.update({
+    where: { id: inmateId },
+    data: { status },
+  });
+  const inmate = await prisma.inmate.findUnique({ where: { id: inmateId }, include: { case: true } });
+  await prisma.actionHistory.create({
+    data: {
+      action: `Inmate Status Updated: ${status}`,
+      caseId: inmate.case.id,
+      userId: req.session.userId,
+    },
+  });
+  res.redirect(`/inmates/${inmateId}`);
 });
 
 module.exports = router;

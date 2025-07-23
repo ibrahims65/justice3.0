@@ -32,6 +32,9 @@ app.use('/evidence', evidenceRouter);
 const witnessesRouter = require('./routes/witnesses');
 app.use('/witnesses', witnessesRouter);
 
+const hearingsRouter = require('./routes/hearings');
+app.use('/hearings', hearingsRouter);
+
 app.get('/dashboard', async (req, res) => {
   if (!req.session.userId) {
     return res.redirect('/auth/login');

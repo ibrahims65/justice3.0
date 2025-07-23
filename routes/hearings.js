@@ -1,0 +1,69 @@
+const express = require('express');
+const router = express.Router();
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+const { checkRole } = require('../middleware/auth');
+
+router.get('/new/:caseId', checkRole(['Court']), (req, res) => {
+  res.render('hearings/new', { caseId: req.params.caseId });
+});
+
+router.post('/', checkRole(['Court']), async (req, res) => {
+  const { court, hearingDate, caseId } = req.body;
+  try {
+    await prisma.hearing.create({
+      data: {
+        court,
+        hearingDate: new Date(hearingDate),
+        caseId: parseInt(caseId),
+      },
+    });
+    await prisma.actionHistory.create({
+      data: {
+        action: 'Hearing Scheduled',
+        caseId: parseInt(caseId),
+        userId: req.session.userId,
+      },
+    });
+    res.redirect(`/cases/${caseId}`);
+  } catch (error) {
+    res.redirect(`/cases/${caseId}`);
+  }
+});
+
+router.post('/:id/verdict', checkRole(['Court']), async (req, res) => {
+  const { verdict } = req.body;
+  const hearingId = parseInt(req.params.id);
+  const hearing = await prisma.hearing.findUnique({
+    where: { id: hearingId },
+  });
+  await prisma.hearing.update({
+    where: { id: hearingId },
+    data: { verdict },
+  });
+  await prisma.actionHistory.create({
+    data: {
+      action: `Verdict Recorded: ${verdict}`,
+      caseId: hearing.caseId,
+      userId: req.session.userId,
+    },
+  });
+
+  if (verdict === 'Convicted') {
+    await prisma.case.update({
+      where: { id: hearing.caseId },
+      data: { status: 'Convicted' },
+    });
+    const caseRecord = await prisma.case.findUnique({
+      where: { id: hearing.caseId },
+    });
+    await prisma.inmate.update({
+      where: { id: caseRecord.inmateId },
+      data: { status: 'Convicted' },
+    });
+  }
+
+  res.redirect(`/cases/${hearing.caseId}`);
+});
+
+module.exports = router;

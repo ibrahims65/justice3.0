@@ -17,10 +17,21 @@
     <% } %>
     <% if (inmate.case) { %>
       <h2 class="text-xl font-bold mt-4">Case Details</h2>
-      <p><strong>Case Number:</strong> <%= inmate.case.caseNumber %></p>
+      <p><strong>Case Number:</strong> <a href="/cases/<%= inmate.case.id %>" class="text-blue-500"><%= inmate.case.caseNumber %></a></p>
       <p><strong>Status:</strong> <%= inmate.case.status %></p>
-    <% } else { %>
+    <% } else if (user.role === 'Police') { %>
       <a href="/cases/new/<%= inmate.id %>" class="bg-blue-500 text-white p-2 rounded mt-4 inline-block">Create Case</a>
+    <% } %>
+
+    <% if (user.role === 'Corrections') { %>
+      <h2 class="text-xl font-bold mt-4">Update Inmate Status</h2>
+      <form action="/inmates/<%= inmate.id %>/update" method="POST">
+        <div class="mb-4">
+          <label for="status" class="block text-gray-700">Status</label>
+          <input type="text" name="status" id="status" class="w-full border border-gray-300 p-2 rounded" value="<%= inmate.status %>">
+        </div>
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded">Update Status</button>
+      </form>
     <% } %>
   </div>
 </body>

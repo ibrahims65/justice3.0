@@ -48,6 +48,29 @@
       </form>
     <% } %>
 
+    <h2 class="text-xl font-bold mt-4">Hearings</h2>
+    <ul>
+      <% caseRecord.hearings.forEach(hearing => { %>
+        <li>
+          <strong><%= hearing.court %> on <%= hearing.hearingDate.toDateString() %></strong>
+          <% if (hearing.verdict) { %>
+            - Verdict: <%= hearing.verdict %>
+          <% } else if (user.role.name === 'Court') { %>
+            <form action="/hearings/<%= hearing.id %>/verdict" method="POST" class="inline-block ml-4">
+              <select name="verdict" class="border border-gray-300 p-1 rounded">
+                <option value="Convicted">Convicted</option>
+                <option value="Acquitted">Acquitted</option>
+              </select>
+              <button type="submit" class="bg-blue-500 text-white p-1 rounded">Record Verdict</button>
+            </form>
+          <% } %>
+        </li>
+      <% }) %>
+    </ul>
+    <% if (caseRecord.status === 'Accepted' && user.role.name === 'Court') { %>
+      <a href="/hearings/new/<%= caseRecord.id %>" class="text-blue-500">Schedule Hearing</a>
+    <% } %>
+
     <% if (caseRecord.status === 'Prosecutor Review' && user.role.name === 'Prosecutor') { %>
       <div class="mt-4">
         <form action="/cases/<%= caseRecord.id %>/accept" method="POST" class="inline-block">
