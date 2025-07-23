@@ -11,12 +11,12 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  password  String
-  role      Role     @relation(fields: [roleId], references: [id])
-  roleId    Int
-  actions   ActionHistory[]
+  id       Int             @id @default(autoincrement())
+  username String          @unique
+  password String
+  role     Role            @relation(fields: [roleId], references: [id])
+  roleId   Int
+  actions  ActionHistory[]
 }
 
 model Role {
@@ -26,94 +26,95 @@ model Role {
 }
 
 model Person {
-  id        Int      @id @default(autoincrement())
-  name      String
-  dob       DateTime
-  photoUrl  String?
-  address   String?
-  phone     String?
-  email     String?  @unique
-  bookings  Booking[]
+  id       Int       @id @default(autoincrement())
+  name     String
+  dob      DateTime
+  photoUrl String?
+  address  String?
+  phone    String?
+  email    String?   @unique
+  bookings Booking[]
 }
 
 model Booking {
-  id            Int      @id @default(autoincrement())
-  person        Person   @relation(fields: [personId], references: [id])
-  personId      Int
-  bookingDate   DateTime @default(now())
-  status        String
-  charges       String?
-  policeStation PoliceStation? @relation(fields: [policeStationId], references: [id])
+  id              Int            @id @default(autoincrement())
+  person          Person         @relation(fields: [personId], references: [id])
+  personId        Int
+  bookingDate     DateTime       @default(now())
+  status          String
+  charges         String?
+  policeStation   PoliceStation? @relation(fields: [policeStationId], references: [id])
   policeStationId Int?
-  case          Case?
+  case            Case?
 }
 
 model Case {
-  id          Int      @id @default(autoincrement())
-  caseNumber  String   @unique
-  booking     Booking  @relation(fields: [bookingId], references: [id])
-  bookingId   Int      @unique
-  status      String
-  evidence    Evidence[]
-  witnesses   Witness[]
-  hearings    Hearing[]
-  actions     ActionHistory[]
+  id         Int             @id @default(autoincrement())
+  caseNumber String          @unique
+  booking    Booking         @relation(fields: [bookingId], references: [id])
+  bookingId  Int             @unique
+  status     String
+  evidence   Evidence[]
+  witnesses  Witness[]
+  hearings   Hearing[]
+  actions    ActionHistory[]
 }
 
 model Region {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
   districts District[]
 }
 
 model District {
-  id     Int    @id @default(autoincrement())
-  name   String @unique
-  region Region @relation(fields: [regionId], references: [id])
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  region   Region @relation(fields: [regionId], references: [id])
   regionId Int
-  cities City[]
+  cities   City[]
 }
 
 model City {
-  id       Int    @id @default(autoincrement())
-  name     String @unique
-  district District @relation(fields: [districtId], references: [id])
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  district   District @relation(fields: [districtId], references: [id])
   districtId Int
 }
 
 model PoliceStation {
-  id       Int    @id @default(autoincrement())
-  name     String @unique
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
   cityId   Int
   bookings Booking[]
 }
 
 model Court {
-  id       Int    @id @default(autoincrement())
-  name     String @unique
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
   cityId   Int
   hearings Hearing[]
 }
 
 model Evidence {
-  id          Int      @id @default(autoincrement())
+  id          Int    @id @default(autoincrement())
   description String
   fileUrl     String
-  case        Case     @relation(fields: [caseId], references: [id])
+  case        Case   @relation(fields: [caseId], references: [id])
   caseId      Int
 }
 
 model Witness {
-  id        Int      @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   name      String
   statement String
-  case      Case     @relation(fields: [caseId], references: [id])
+  case      Case   @relation(fields: [caseId], references: [id])
   caseId    Int
 }
 
 model Hearing {
   id          Int      @id @default(autoincrement())
-  court       String
+  court       Court    @relation(fields: [courtId], references: [id])
+  courtId     Int
   hearingDate DateTime
   verdict     String?
   case        Case     @relation(fields: [caseId], references: [id])
