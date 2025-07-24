@@ -28,15 +28,16 @@ model Role {
 }
 
 model Person {
-  id       Int       @id @default(autoincrement())
-  name     String
-  dob      DateTime
-  photoUrl String?
-  address  String?
-  phone    String?
-  email    String?   @unique
-  bookings Booking[]
+  id        Int       @id @default(autoincrement())
+  name      String
+  dob       DateTime
+  photoUrl  String?
+  address   String?
+  phone     String?
+  email     String?   @unique
+  bookings  Booking[]
   nextOfKin NextOfKin[]
+  deletedAt DateTime?
 }
 
 model Booking {
@@ -83,6 +84,7 @@ model Case {
   searchWarrants SearchWarrant[]
   lawyers         Lawyer[]
   medicalRecords  MedicalRecord[]
+  deletedAt DateTime?
 }
 
 model Region {

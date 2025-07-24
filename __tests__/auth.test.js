@@ -1,0 +1,70 @@
+const request = require('supertest');
+const express = require('express');
+const session = require('express-session');
+const { isAuthenticated, checkRole } = require('../middleware/auth');
+
+const app = express();
+
+app.use(
+  session({
+    secret: 'secret-key',
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+app.get('/test/protected', isAuthenticated, (req, res) => {
+  res.send('Protected Route');
+});
+
+app.get('/test/police', isAuthenticated, checkRole(['Police']), (req, res) => {
+  res.send('Police Dashboard');
+});
+
+describe('Auth Middleware', () => {
+  it('should redirect to login if not authenticated', async () => {
+    const res = await request(app).get('/test/protected');
+    expect(res.statusCode).toEqual(302);
+    expect(res.headers.location).toBe('/auth/login');
+  });
+
+  it('should return 403 if user does not have the correct role', () => {
+    const req = {
+      session: {
+        userId: 1,
+        role: 'Prosecutor',
+      },
+    };
+    const res = {
+      status: jest.fn(() => res),
+      send: jest.fn(),
+    };
+    const next = jest.fn();
+
+    checkRole(['Police'])(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.send).toHaveBeenCalledWith('Forbidden');
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should call next if user has the correct role', () => {
+    const req = {
+      session: {
+        userId: 1,
+        role: 'Police',
+      },
+    };
+    const res = {
+      status: jest.fn(() => res),
+      send: jest.fn(),
+    };
+    const next = jest.fn();
+
+    checkRole(['Police'])(req, res, next);
+
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.send).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
+  });
+});

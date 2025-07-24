@@ -1,3 +1,11 @@
+const isAuthenticated = (req, res, next) => {
+  if (req.session.userId) {
+    next();
+  } else {
+    res.redirect('/auth/login');
+  }
+};
+
 const checkRole = (roles) => {
   return (req, res, next) => {
     if (req.session.userId && roles.includes(req.session.role)) {
@@ -8,4 +16,4 @@ const checkRole = (roles) => {
   };
 };
 
-module.exports = { checkRole };
+module.exports = { isAuthenticated, checkRole };
