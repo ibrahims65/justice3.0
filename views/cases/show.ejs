@@ -72,16 +72,17 @@
             </div>
           </div>
 
-          <div id="witnesses" class="tab-content" style="display:none;">
+          <div id="victims" class="tab-content" style="display:none;">
             <div class="bg-gray-50 rounded-lg p-6">
-              <h3 class="text-xl font-bold text-gray-800 mb-4">Witnesses</h3>
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Victims</h3>
             <% if (user.role.name === 'Police') { %>
-            <a href="/witnesses/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Witness</a>
+            <a href="/victims/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Victim</a>
             <% } %>
             <ul>
-              <% caseRecord.witnesses.forEach(witness => { %>
+              <% caseRecord.victims.forEach(victim => { %>
                 <li class="border-b border-gray-200 py-2">
-                  <p><strong><%= witness.name %>:</strong> <%= witness.statement %></p>
+                  <p><strong><%= victim.name %></strong></p>
+                  <p><%= victim.statement %></p>
                 </li>
               <% }) %>
             </ul>
@@ -111,6 +112,59 @@
                 </li>
               <% }) %>
             </ul>
+            </div>
+          </div>
+          <div id="legal" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Legal Representation</h3>
+              <a href="/lawyers/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Lawyer</a>
+              <ul>
+                <% caseRecord.lawyers.forEach(lawyer => { %>
+                  <li class="border-b border-gray-200 py-2">
+                    <p><strong>Name:</strong> <%= lawyer.name %></p>
+                    <p><strong>Firm:</strong> <%= lawyer.firm %></p>
+                    <p><strong>License:</strong> <%= lawyer.license %></p>
+                    <a href="/lawyers/<%= lawyer.id %>/visits/new" class="text-blue-500 hover:underline">Add Visit</a>
+                    <h4 class="font-bold mt-4">Visits</h4>
+                    <ul>
+                      <% lawyer.visits.forEach(visit => { %>
+                        <li class="border-t border-gray-200 py-2">
+                          <p><strong>Date:</strong> <%= visit.visitDate.toLocaleString() %></p>
+                          <p><strong>Notes:</strong> <%= visit.notes %></p>
+                        </li>
+                      <% }) %>
+                    </ul>
+                  </li>
+                <% }) %>
+              </ul>
+            </div>
+          </div>
+
+          <div id="medical" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Medical Records</h3>
+              <a href="/medical-records/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Medical Record</a>
+              <ul>
+                <% caseRecord.medicalRecords.forEach(record => { %>
+                  <li class="border-b border-gray-200 py-4">
+                    <p><strong>Condition:</strong> <%= record.condition %></p>
+                    <p><strong>Allergies:</strong> <%= record.allergies %></p>
+                    <p><strong>Notes:</strong> <%= record.notes %></p>
+                    <a href="/medical-records/<%= record.id %>/medications/new" class="text-blue-500 hover:underline">Add Medication</a>
+                    <h4 class="font-bold mt-4">Medications</h4>
+                    <ul>
+                      <% record.medications.forEach(med => { %>
+                        <li class="border-t border-gray-200 py-2">
+                          <p><strong>Medication:</strong> <%= med.medication %></p>
+                          <p><strong>Dosage:</strong> <%= med.dosage %></p>
+                          <p><strong>Frequency:</strong> <%= med.frequency %></p>
+                        </li>
+                      <% }) %>
+                    </ul>
+                  </li>
+                <% }) %>
+              </ul>
+            </div>
           </div>
 
           <% if (user.role.name === 'Court' || user.role.name === 'Prosecutor') { %>
