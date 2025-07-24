@@ -37,35 +37,20 @@
         <p><strong>Preliminary Findings:</strong> <%= caseRecord.preliminaryFindings %></p>
       </div>
 
-      <div class="tabs mt-8">
-        <button class="tab-button active" onclick="openTab(event, 'evidence')">Evidence</button>
-        <button class="tab-button" onclick="openTab(event, 'victims')">Victims</button>
-        <button class="tab-button" onclick="openTab(event, 'witnesses')">Witnesses</button>
-        <button class="tab-button" onclick="openTab(event, 'investigations')">Investigations</button>
-        <button class="tab-button" onclick="openTab(event, 'legal')">Legal</button>
-        <button class="tab-button" onclick="openTab(event, 'medical')">Medical</button>
-        <button class="tab-button" onclick="openTab(event, 'warrants')">Warrants</button>
-        <button class="tab-button" onclick="openTab(event, 'hearings')">Hearings</button>
+      <div class="flex space-x-2 border-b border-gray-600 mb-4">
+        <button class="px-4 py-2 rounded-t bg-gray-700 text-white hover:bg-blue-500 tab-button active" onclick="openTab(event, 'evidence')">Evidence</button>
+        <button class="px-4 py-2 rounded-t bg-gray-700 text-white hover:bg-blue-500 tab-button" onclick="openTab(event, 'victims')">Victims</button>
+        <button class="px-4 py-2 rounded-t bg-gray-700 text-white hover:bg-blue-500 tab-button" onclick="openTab(event, 'witnesses')">Witnesses</button>
+        <button class="px-4 py-2 rounded-t bg-gray-700 text-white hover:bg-blue-500 tab-button" onclick="openTab(event, 'investigations')">Investigations</button>
+        <button class="px-4 py-2 rounded-t bg-gray-700 text-white hover:bg-blue-500 tab-button" onclick="openTab(event, 'legal')">Legal</button>
+        <button class="px-4 py-2 rounded-t bg-gray-700 text-white hover:bg-blue-500 tab-button" onclick="openTab(event, 'medical')">Medical</button>
+        <button class="px-4 py-2 rounded-t bg-gray-700 text-white hover:bg-blue-500 tab-button" onclick="openTab(event, 'warrants')">Warrants</button>
+        <button class="px-4 py-2 rounded-t bg-gray-700 text-white hover:bg-blue-500 tab-button" onclick="openTab(event, 'hearings')">Hearings</button>
       </div>
 
       <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="md:col-span-2">
           <div id="evidence" class="tab-content">
-            <div class="bg-gray-50 rounded-lg p-6">
-              <h3 class="text-xl font-bold text-gray-800 mb-4">Person Details</h3>
-            <div class="flex items-center">
-              <% if (caseRecord.booking.person.photoUrl) { %>
-                <img src="<%= caseRecord.booking.person.photoUrl %>" alt="Person Photo" class="w-24 h-24 rounded-full mr-8">
-              <% } %>
-              <div>
-                <p><strong>Name:</strong> <%= caseRecord.booking.person.name %></p>
-                <p><strong>Date of Birth:</strong> <%= caseRecord.booking.person.dob.toDateString() %></p>
-              </div>
-            </div>
-            </div>
-          </div>
-
-          <div id="victims" class="tab-content" style="display:none;">
             <div class="bg-gray-50 rounded-lg p-6">
               <h3 class="text-xl font-bold text-gray-800 mb-4">Evidence</h3>
             <% if (user.role.name === 'Police') { %>
@@ -89,15 +74,14 @@
 
           <div id="witnesses" class="tab-content" style="display:none;">
             <div class="bg-gray-50 rounded-lg p-6">
-              <h3 class="text-xl font-bold text-gray-800 mb-4">Victims</h3>
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Witnesses</h3>
             <% if (user.role.name === 'Police') { %>
-            <a href="/victims/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Victim</a>
+            <a href="/witnesses/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Witness</a>
             <% } %>
             <ul>
-              <% caseRecord.victims.forEach(victim => { %>
+              <% caseRecord.witnesses.forEach(witness => { %>
                 <li class="border-b border-gray-200 py-2">
-                  <p><strong><%= victim.name %></strong></p>
-                  <p><%= victim.statement %></p>
+                  <p><strong><%= witness.name %>:</strong> <%= witness.statement %></p>
                 </li>
               <% }) %>
             </ul>
@@ -108,12 +92,22 @@
             <div class="bg-gray-50 rounded-lg p-6">
               <h3 class="text-xl font-bold text-gray-800 mb-4">Investigations</h3>
             <% if (user.role.name === 'Police') { %>
-            <a href="/witnesses/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Witness</a>
+            <a href="/investigations/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Investigation</a>
             <% } %>
             <ul>
-              <% caseRecord.witnesses.forEach(witness => { %>
+              <% caseRecord.investigations.forEach(investigation => { %>
                 <li class="border-b border-gray-200 py-2">
-                  <p><strong><%= witness.name %>:</strong> <%= witness.statement %></p>
+                  <p><strong>Investigator:</strong> <%= investigation.investigatorName %> (<%= investigation.investigatorBadgeNumber %>)</p>
+                  <p><strong>Rank:</strong> <%= investigation.investigatorRank %></p>
+                  <p><strong>Details:</strong> <%= investigation.details %></p>
+                  <h4 class="font-bold mt-4">Media</h4>
+                  <ul>
+                    <% investigation.media.forEach(media => { %>
+                      <li class="border-t border-gray-200 py-2">
+                        <a href="<%= media.url %>" class="text-blue-500 hover:underline" target="_blank"><%= media.type %></a>
+                      </li>
+                    <% }) %>
+                  </ul>
                 </li>
               <% }) %>
             </ul>
