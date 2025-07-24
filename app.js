@@ -82,6 +82,9 @@ app.use('/search-warrants', searchWarrantsRouter);
 const reportsRouter = require('./routes/reports');
 app.use('/reports', reportsRouter);
 
+const printRouter = require('./routes/print');
+app.use('/print', printRouter);
+
 const { router: notificationsRouter } = require('./routes/notifications');
 app.use('/notifications', notificationsRouter);
 
