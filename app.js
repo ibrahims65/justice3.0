@@ -18,6 +18,14 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  if (req.session.userId || req.path === '/auth/login' || req.path === '/auth/register') {
+    next();
+  } else {
+    res.redirect('/auth/login');
+  }
+});
+
 app.use('/auth', authRouter);
 
 const peopleRouter = require('./routes/people');

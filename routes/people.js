@@ -11,7 +11,7 @@ router.get('/new', checkRole(['Police']), (req, res) => {
   res.render('people/new');
 });
 
-router.post('/', checkRole(['Police']), upload.single('photo'), async (req, res) => {
+router.post('/', checkRole(['Police']), upload.single('photoUrl'), async (req, res) => {
     const { name, dob, address, phone, email } = req.body;
       try {
         const newPerson = await prisma.person.create({
@@ -36,10 +36,18 @@ router.get('/:id', async (req, res) => {
     include: {
       bookings: {
         include: {
-          case: true,
-          medicalRecords: {
+          case: {
             include: {
-              medications: true,
+              lawyers: {
+                include: {
+                  visits: true,
+                },
+              },
+              medicalRecords: {
+                include: {
+                  medications: true,
+                },
+              },
             },
           },
         },
