@@ -37,11 +37,6 @@ router.get('/:id', async (req, res) => {
       bookings: {
         include: {
           case: true,
-          medicalRecords: {
-            include: {
-              medications: true,
-            },
-          },
         },
       },
       nextOfKin: true,

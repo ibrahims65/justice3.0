@@ -50,7 +50,11 @@ router.get('/:id', async (req, res) => {
       },
       evidence: true,
       witnesses: true,
-      hearings: true,
+      hearings: {
+        include: {
+          court: true,
+        },
+      },
       victims: true,
       actions: {
         include: {
