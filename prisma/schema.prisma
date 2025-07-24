@@ -57,8 +57,6 @@ model Booking {
   paroleEligibility DateTime?
   arrestingOfficerName String?
   arrestingOfficerRank String?
-  disciplinaryActions DisciplinaryAction[]
-  visitationLogs      VisitationLog[]
 }
 
 model Case {
@@ -166,25 +164,6 @@ model ActionHistory {
   userId    Int
   case      Case     @relation(fields: [caseId], references: [id])
   caseId    Int
-}
-
-model DisciplinaryAction {
-  id          Int      @id @default(autoincrement())
-  bookingId   Int
-  booking     Booking  @relation(fields: [bookingId], references: [id])
-  date        DateTime
-  infraction  String
-  sanction    String
-  notes       String?
-}
-
-model VisitationLog {
-  id          Int      @id @default(autoincrement())
-  bookingId   Int
-  booking     Booking  @relation(fields: [bookingId], references: [id])
-  visitorName String
-  date        DateTime
-  notes       String?
 }
 
 model Lawyer {
