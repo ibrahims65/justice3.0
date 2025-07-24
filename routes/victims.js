@@ -10,7 +10,6 @@ router.get('/new/:caseId', checkRole(['Police']), (req, res) => {
 });
 
 router.post('/', checkRole(['Police']), upload.single('media'), async (req, res) => {
-
     if (req.fileValidationError) {
       return res.render('victims/new', { msg: req.fileValidationError, caseId: req.body.caseId });
     }

@@ -48,7 +48,6 @@
         <button class="tab-button" onclick="openTab(event, 'hearings')">Hearings</button>
       </div>
 
-
       <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="md:col-span-2">
           <div id="evidence" class="tab-content">
@@ -124,7 +123,6 @@
           <div id="hearings" class="tab-content" style="display:none;">
             <div class="bg-gray-50 rounded-lg p-6">
               <h3 class="text-xl font-bold text-gray-800 mb-4">Hearings</h3>
-
             <% if (caseRecord.status === 'Accepted' && user.role.name === 'Court') { %>
               <a href="/hearings/new/<%= caseRecord.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Schedule Hearing</a>
             <% } %>
@@ -384,7 +382,6 @@
             </div>
           </div>
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
-
             <button onclick="toggleActionHistory()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">View Case History</button>
             <div id="action-history" style="display:none;" class="mt-4">
               <h3 class="text-xl font-bold text-gray-800 mb-4">Action History</h3>
