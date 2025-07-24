@@ -22,7 +22,8 @@
         </div>
         <div class="text-right">
           <p class="text-gray-600">Booking Date: <%= caseRecord.booking.bookingDate.toLocaleString() %></p>
-          <a href="/cases/<%= caseRecord.id %>/edit" class="text-blue-500 hover:underline">Edit Case Details</a>
+          <a href="/cases/<%= caseRecord.id %>/edit" class="text-blue-500 hover:underline mr-4">Edit Case Details</a>
+          <a href="/print/case/<%= caseRecord.id %>" class="btn-primary">Print Case Summary</a>
         </div>
       </div>
 
