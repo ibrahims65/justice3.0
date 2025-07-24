@@ -3,7 +3,7 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const PDFDocument = require('pdfkit');
-const bwipjs = require('bwip-js');
+const { createPdf, addBarcode, addFooter } = require('../services/printService');
 
 router.get('/case/:id', async (req, res) => {
   const caseRecord = await prisma.case.findUnique({
@@ -21,26 +21,8 @@ router.get('/case/:id', async (req, res) => {
   res.setHeader('Content-Disposition', `attachment; filename=case-${caseRecord.caseNumber}.pdf`);
   doc.pipe(res);
 
-  doc.fontSize(25).text(`Case Summary: ${caseRecord.caseNumber}`, { align: 'center' });
-
-  bwipjs.toBuffer({
-    bcid: 'code128',
-    text: caseRecord.caseNumber,
-    scale: 3,
-    height: 10,
-    includetext: true,
-    textxalign: 'center',
-  }, (err, png) => {
-    if (err) {
-      console.log(err);
-    } else {
-      doc.image(png, {
-        fit: [250, 100],
-        align: 'center',
-        valign: 'center'
-      });
-    }
-  });
+  createPdf(doc, `Case Summary: ${caseRecord.caseNumber}`);
+  await addBarcode(doc, caseRecord.caseNumber);
 
   doc.fontSize(18).text('Defendant Details', { underline: true });
   doc.fontSize(12).text(`Name: ${caseRecord.booking.person.name}`);
@@ -68,6 +50,7 @@ router.get('/case/:id', async (req, res) => {
     doc.fontSize(12).text(`- ${victim.name}: ${victim.statement}`);
   });
 
+  addFooter(doc);
   doc.end();
 });
 
@@ -92,21 +75,22 @@ router.get('/wrapsheet/:personId', async (req, res) => {
   res.setHeader('Content-Disposition', `attachment; filename=wrapsheet-${person.name}.pdf`);
   doc.pipe(res);
 
-  doc.fontSize(25).text(`Criminal Record: ${person.name}`, { align: 'center' });
-  doc.fontSize(12).text(`Date of Birth: ${person.dob.toDateString()}`);
+  createPdf(doc, 'Criminal Wrap Sheet', person.name);
 
-  person.bookings.forEach(booking => {
-    doc.moveDown();
-    doc.fontSize(18).text(`Booking Date: ${booking.bookingDate.toLocaleString()}`, { underline: true });
-    doc.fontSize(12).text(`Charges: ${booking.charges}`);
+  person.bookings.forEach(async (booking, index) => {
+    doc.fontSize(14).text(`Booking Date: ${booking.bookingDate.toLocaleString()}`);
+    doc.text(`Charges: ${booking.charges}`);
     if (booking.case) {
       doc.text(`Case Number: ${booking.case.caseNumber}`);
+      await addBarcode(doc, booking.case.caseNumber);
       booking.case.hearings.forEach(hearing => {
         doc.text(`- Hearing on ${hearing.hearingDate.toDateString()}: Verdict - ${hearing.verdict || 'N/A'}`);
       });
     }
+    doc.moveDown();
   });
 
+  addFooter(doc);
   doc.end();
 });
 
