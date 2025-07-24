@@ -50,10 +50,19 @@ router.post('/:id/verdict', checkRole(['Court']), async (req, res) => {
     },
   });
 
-  if (verdict === 'Convicted') {
-    await prisma.case.update({
+  if (verdict === 'Guilty') {
+    const updatedCase = await prisma.case.update({
       where: { id: hearing.caseId },
       data: { status: 'Convicted' },
+      include: { booking: true },
+    });
+
+    await prisma.booking.update({
+      where: { id: updatedCase.booking.id },
+      data: {
+        incarcerationStartDate: new Date(),
+        facilityName: 'Unassigned',
+      },
     });
   }
 

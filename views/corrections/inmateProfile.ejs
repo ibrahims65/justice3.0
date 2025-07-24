@@ -57,6 +57,18 @@
               <p class="font-bold">Address</p>
               <p><%= person.address %></p>
             </div>
+            <% person.bookings.forEach(booking => { %>
+              <% if (booking.case.status === 'Convicted') { %>
+                <div>
+                  <p class="font-bold">Sentence</p>
+                  <p><%= booking.rehabilitationPrograms %></p>
+                </div>
+                <div>
+                  <p class="font-bold">Release Date</p>
+                  <p><%= booking.releaseDate ? new Date(booking.releaseDate).toLocaleDateString() : 'N/A' %></p>
+                </div>
+              <% } %>
+            <% }) %>
           </div>
         </div>
       </div>
