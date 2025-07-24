@@ -8,9 +8,10 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100">
-  <%- include('partials/navbar', { user: user }) %>
+  <%- include('partials/navbar', { user: user, page: page }) %>
 
   <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <%- include('partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
     <div class="px-4 py-6 sm:px-0">
       <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, <%= user.username %>!</h2>
       <p class="text-gray-600 mb-8">Your role is: <%= user.role.name %></p>
@@ -99,7 +100,13 @@
           <h3 class="text-lg font-medium text-gray-800 mb-4">Cases for Review</h3>
           <ul>
             <% cases.filter(c => c.status === 'Prosecutor Review').forEach(caseRecord => { %>
-              <li class="border-b border-gray-200 py-2"><a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline"><%= caseRecord.caseNumber %></a> - <span class="font-semibold"><%= caseRecord.status %></span></li>
+              <li class="border-b border-gray-200 py-2 flex items-center">
+                <img src="<%= caseRecord.booking.person.photoUrl %>" alt="Person Photo" class="w-12 h-12 rounded-full mr-4">
+                <div>
+                  <a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline"><%= caseRecord.caseNumber %></a> - <span class="font-semibold"><%= caseRecord.status %></span>
+                  <p class="text-sm text-gray-600"><%= caseRecord.booking.person.name %></p>
+                </div>
+              </li>
             <% }) %>
           </ul>
         </div>
@@ -124,7 +131,13 @@
           <h3 class="text-lg font-medium text-gray-800 mb-4">Cases for Hearing</h3>
           <ul>
             <% cases.filter(c => c.status === 'Accepted').forEach(caseRecord => { %>
-              <li class="border-b border-gray-200 py-2"><a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline"><%= caseRecord.caseNumber %></a> - <span class="font-semibold"><%= caseRecord.status %></span></li>
+              <li class="border-b border-gray-200 py-2 flex items-center">
+                <img src="<%= caseRecord.booking.person.photoUrl %>" alt="Person Photo" class="w-12 h-12 rounded-full mr-4">
+                <div>
+                  <a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline"><%= caseRecord.caseNumber %></a> - <span class="font-semibold"><%= caseRecord.status %></span>
+                  <p class="text-sm text-gray-600"><%= caseRecord.booking.person.name %></p>
+                </div>
+              </li>
             <% }) %>
           </ul>
         </div>
