@@ -1,0 +1,48 @@
+const express = require('express');
+const router = express.Router();
+
+const authRouter = require('./auth');
+const peopleRouter = require('./people');
+const casesRouter = require('./cases');
+const evidenceRouter = require('./evidence');
+const witnessesRouter = require('./witnesses');
+const hearingsRouter = require('./hearings');
+const victimsRouter = require('./victims');
+const adminRouter = require('./admin');
+const prosecutorRouter = require('./prosecutor');
+const lawyersRouter = require('./lawyers');
+const pleaBargainsRouter = require('./pleaBargains');
+const investigationsRouter = require('./investigations');
+const bailDecisionsRouter = require('./bailDecisions');
+const medicalRecordsRouter = require('./medicalRecords');
+const nextOfKinRouter = require('./nextOfKin');
+const correctionsRouter = require('./corrections');
+const warrantsRouter = require('./warrants');
+const searchWarrantsRouter = require('./searchWarrants');
+const reportsRouter = require('./reports');
+const printRouter = require('./print');
+const { router: notificationsRouter } = require('./notifications');
+
+router.use('/auth', authRouter);
+router.use('/people', peopleRouter);
+router.use('/cases', casesRouter);
+router.use('/evidence', evidenceRouter);
+router.use('/witnesses', witnessesRouter);
+router.use('/hearings', hearingsRouter);
+router.use('/victims', victimsRouter);
+router.use('/admin', adminRouter);
+router.use('/prosecutor', prosecutorRouter);
+router.use('/lawyers', lawyersRouter);
+router.use('/plea-bargains', pleaBargainsRouter);
+router.use('/investigations', investigationsRouter);
+router.use('/bail-decisions', bailDecisionsRouter);
+router.use('/medical-records', medicalRecordsRouter);
+router.use('/next-of-kin', nextOfKinRouter);
+router.use('/corrections', correctionsRouter);
+router.use('/warrants', warrantsRouter);
+router.use('/search-warrants', searchWarrantsRouter);
+router.use('/reports', reportsRouter);
+router.use('/print', printRouter);
+router.use('/notifications', notificationsRouter);
+
+module.exports = router;

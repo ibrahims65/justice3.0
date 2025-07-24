@@ -4,13 +4,13 @@ const bwipjs = require('bwip-js');
 function createPdf(doc, title, subtitle) {
   doc.image('public/images/logo1.png', doc.page.width / 2 - 40, 40, { width: 80 });
   doc.moveDown(2);
-  doc.fontSize(16).font('Courier-Bold').text('Republic of Somaliland', { align: 'center' });
-  doc.fontSize(14).font('Courier').text('Unified Justice System', { align: 'center' });
+  doc.fontSize(16).font('Helvetica-Bold').fillColor('#003366').text('Republic of Somaliland', { align: 'center' });
+  doc.fontSize(14).font('Helvetica').fillColor('#003366').text('Unified Justice System', { align: 'center' });
   doc.moveDown(2);
 
-  doc.fontSize(12).font('Courier-Bold').text(title, { align: 'center', underline: true });
+  doc.fontSize(12).font('Helvetica-Bold').fillColor('#003366').text(title, { align: 'center', underline: true });
   if (subtitle) {
-    doc.fontSize(12).font('Courier').text(subtitle, { align: 'center' });
+    doc.fontSize(12).font('Helvetica').fillColor('#003366').text(subtitle, { align: 'center' });
   }
   doc.moveDown();
 }
