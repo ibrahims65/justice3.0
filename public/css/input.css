@@ -62,3 +62,12 @@ h1, h2, h3, h4, h5, h6 {
 .alert-danger {
   @apply text-red-700 bg-red-100;
 }
+
+@keyframes scroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
