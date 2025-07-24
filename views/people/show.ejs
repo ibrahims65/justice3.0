@@ -52,11 +52,12 @@
 
       <h3 class="text-xl font-bold text-gray-800 mt-8 mb-4">Legal Representation</h3>
       <% person.bookings.forEach(booking => { %>
+        <% if (booking.case) { %>
         <div class="border-b border-gray-200 py-4">
-          <h4 class="font-bold">Booking #<%= booking.id %></h4>
-          <a href="/lawyers/new/<%= booking.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Lawyer</a>
+          <h4 class="font-bold">Case #<%= booking.case.caseNumber %></h4>
+          <a href="/lawyers/new/<%= booking.case.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Lawyer</a>
           <ul>
-            <% booking.lawyers.forEach(lawyer => { %>
+            <% booking.case.lawyers.forEach(lawyer => { %>
               <li class="border-b border-gray-200 py-4">
                 <p><strong>Name:</strong> <%= lawyer.name %></p>
                 <p><strong>Firm:</strong> <%= lawyer.firm %></p>
@@ -75,15 +76,17 @@
             <% }) %>
           </ul>
         </div>
+        <% } %>
       <% }) %>
 
       <h3 class="text-xl font-bold text-gray-800 mt-8 mb-4">Medical Records</h3>
       <% person.bookings.forEach(booking => { %>
+        <% if (booking.case) { %>
         <div class="border-b border-gray-200 py-4">
-          <h4 class="font-bold">Booking #<%= booking.id %></h4>
-          <a href="/medical-records/new/<%= booking.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Medical Record</a>
+          <h4 class="font-bold">Case #<%= booking.case.caseNumber %></h4>
+          <a href="/medical-records/new/<%= booking.case.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Medical Record</a>
           <ul>
-            <% booking.medicalRecords.forEach(record => { %>
+            <% booking.case.medicalRecords.forEach(record => { %>
               <li class="border-b border-gray-200 py-4">
                 <p><strong>Condition:</strong> <%= record.condition %></p>
                 <p><strong>Allergies:</strong> <%= record.allergies %></p>
@@ -103,6 +106,7 @@
             <% }) %>
           </ul>
         </div>
+        <% } %>
       <% }) %>
 
       <h3 class="text-xl font-bold text-gray-800 mt-8 mb-4">Next of Kin</h3>
