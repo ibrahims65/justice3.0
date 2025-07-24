@@ -75,6 +75,16 @@ router.get('/:id', async (req, res) => {
       bailDecisions: true,
       warrants: true,
       searchWarrants: true,
+      lawyers: {
+        include: {
+          visits: true,
+        },
+      },
+      medicalRecords: {
+        include: {
+          medications: true,
+        },
+      },
     },
   });
   const user = await prisma.user.findUnique({
