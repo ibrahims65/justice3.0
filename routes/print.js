@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const PDFDocument = require('pdfkit');
+const PDFDocument = require('pdfkit-table');
 const { createPdf, addBarcode, addFooter } = require('../services/printService');
 
 router.get('/case/:id', async (req, res) => {
