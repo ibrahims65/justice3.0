@@ -18,8 +18,6 @@
 
       <form action="/dashboard" method="GET" class="mb-4 flex space-x-2">
         <input type="text" name="search" placeholder="Search..." class="border rounded p-2 flex-grow">
-        <input type="date" name="startDate" class="border rounded p-2">
-        <input type="date" name="endDate" class="border rounded p-2">
         <% if (user.role.name === 'Police') { %>
           <select name="status" class="border rounded p-2">
             <option value="">All Statuses</option>
