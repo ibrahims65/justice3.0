@@ -11,7 +11,6 @@ router.get('/new/:caseId', checkRole(['Police', 'Prosecutor', 'Court']), (req, r
 router.post('/', checkRole(['Police', 'Prosecutor', 'Court']), async (req, res) => {
   const { name, firm, license, caseId } = req.body;
   try {
-
     await prisma.lawyer.create({
       data: {
         name,
@@ -23,7 +22,6 @@ router.post('/', checkRole(['Police', 'Prosecutor', 'Court']), async (req, res) 
     res.redirect(`/cases/${caseId}`);
   } catch (error) {
     res.redirect(`/cases/${caseId}`);
-
   }
 });
 

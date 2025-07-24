@@ -98,8 +98,4 @@ router.post('/courts', async (req, res) => {
   res.redirect('/admin/courts');
 });
 
-// Investigators
-const investigatorsRouter = require('./admin/investigators');
-router.use('/investigators', investigatorsRouter);
-
 module.exports = router;

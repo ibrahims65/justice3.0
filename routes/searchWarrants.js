@@ -13,7 +13,6 @@ router.post('/', checkRole(['Police']), async (req, res) => {
         reason,
         targetType,
         targetDetails,
-
         status: 'Requested',
         caseId: parseInt(caseId),
       },

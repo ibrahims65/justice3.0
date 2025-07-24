@@ -11,12 +11,8 @@ router.get('/new', checkRole(['Police']), (req, res) => {
   res.render('people/new');
 });
 
-router.post('/', checkRole(['Police']), (req, res) => {
-  upload(req, res, async (err) => {
-    if (err) {
-      res.render('people/new', { msg: err });
-    } else {
-      const { name, dob, address, phone, email } = req.body;
+router.post('/', checkRole(['Police']), upload.single('photo'), async (req, res) => {
+    const { name, dob, address, phone, email } = req.body;
       try {
         const newPerson = await prisma.person.create({
           data: {
@@ -32,23 +28,15 @@ router.post('/', checkRole(['Police']), (req, res) => {
       } catch (error) {
         res.redirect('/people/new');
       }
-    }
-  });
 });
 
 router.get('/:id', async (req, res) => {
   const person = await prisma.person.findUnique({
     where: { id: parseInt(req.params.id) },
     include: {
-
       bookings: {
         include: {
           case: true,
-          lawyers: {
-            include: {
-              visits: true,
-            },
-          },
           medicalRecords: {
             include: {
               medications: true,

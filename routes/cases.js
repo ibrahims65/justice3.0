@@ -39,7 +39,6 @@ router.post('/', checkRole(['Police']), async (req, res) => {
   }
 });
 
-
 router.get('/:id', async (req, res) => {
   const caseRecord = await prisma.case.findUnique({
     where: { id: parseInt(req.params.id) },
@@ -66,12 +65,10 @@ router.get('/:id', async (req, res) => {
       pleaBargains: true,
       investigations: {
         include: {
-
           media: true,
         },
       },
       bailDecisions: true,
-
       warrants: true,
       searchWarrants: true,
     },
