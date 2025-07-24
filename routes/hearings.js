@@ -55,13 +55,6 @@ router.post('/:id/verdict', checkRole(['Court']), async (req, res) => {
       where: { id: hearing.caseId },
       data: { status: 'Convicted' },
     });
-    const caseRecord = await prisma.case.findUnique({
-      where: { id: hearing.caseId },
-    });
-    await prisma.inmate.update({
-      where: { id: caseRecord.inmateId },
-      data: { status: 'Convicted' },
-    });
   }
 
   res.redirect(`/cases/${hearing.caseId}`);
