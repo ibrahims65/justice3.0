@@ -19,6 +19,12 @@ app.use(
 );
 
 app.use((req, res, next) => {
+  res.locals.page = req.path;
+  const breadcrumbs = req.path.split('/').filter(Boolean).map((part, index, arr) => {
+    const url = '/' + arr.slice(0, index + 1).join('/');
+    return { name: part.charAt(0).toUpperCase() + part.slice(1), url };
+  });
+  res.locals.breadcrumbs = breadcrumbs;
   if (req.session.userId || req.path === '/auth/login' || req.path === '/auth/register') {
     next();
   } else {

@@ -9,21 +9,33 @@
         </div>
         <div class="hidden sm:block sm:ml-6">
           <div class="flex space-x-4">
-            <a href="/dashboard" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-            <a href="/people" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">People</a>
-            <a href="/cases" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Cases</a>
-            <a href="/hearings" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Hearings</a>
-            <% if (user.role.name === 'Admin') { %>
-              <a href="/admin" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Admin</a>
+            <a href="/dashboard" class="px-3 py-2 rounded-md text-sm font-medium <%= page === '/dashboard' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Dashboard</a>
+            <% if (user.role.name === 'Police') { %>
+              <a href="/people" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/people') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">People</a>
+              <a href="/bookings" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/bookings') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Bookings</a>
+              <a href="/warrants" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/warrants') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Warrants</a>
+            <% } %>
+            <% if (user.role.name === 'Prosecutor') { %>
+              <a href="/cases" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/cases') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Cases</a>
+            <% } %>
+            <% if (user.role.name === 'Court') { %>
+              <a href="/cases" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/cases') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Cases</a>
+              <a href="/hearings" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/hearings') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Hearings</a>
             <% } %>
             <% if (user.role.name === 'Corrections') { %>
-              <a href="/corrections" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Corrections</a>
+              <a href="/corrections" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/corrections') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Inmates</a>
             <% } %>
-            <% if (user.role.name === 'Police') { %>
-              <a href="/warrants" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Warrants</a>
-            <% } %>
-            <% if (user.role.name === 'Admin' || user.role.name === 'SuperAdmin') { %>
-              <a href="/reports" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Reports</a>
+            <% if (user.role.name === 'Admin') { %>
+              <div class="relative">
+                <button class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Admin</button>
+                <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 hidden">
+                  <a href="/admin/regions" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Regions</a>
+                  <a href="/admin/districts" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Districts</a>
+                  <a href="/admin/cities" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cities</a>
+                  <a href="/admin/police-stations" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Police Stations</a>
+                  <a href="/admin/courts" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Courts</a>
+                </div>
+              </div>
             <% } %>
             <a href="/notifications" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Notifications</a>
           </div>
