@@ -24,7 +24,8 @@ router.get('/case/:id', async (req, res) => {
   createPdf(doc, `Case Summary: ${caseRecord.caseNumber}`);
   await addBarcode(doc, caseRecord.caseNumber);
 
-  doc.fontSize(18).text('Defendant Details', { underline: true });
+  doc.font('Courier');
+  doc.fontSize(12).text('Defendant Details', { underline: true });
   doc.fontSize(12).text(`Name: ${caseRecord.booking.person.name}`);
   doc.text(`Date of Birth: ${caseRecord.booking.person.dob.toDateString()}`);
 
@@ -77,17 +78,25 @@ router.get('/wrapsheet/:personId', async (req, res) => {
 
   createPdf(doc, 'Criminal Wrap Sheet', person.name);
 
-  person.bookings.forEach(async (booking, index) => {
-    doc.fontSize(14).text(`Booking Date: ${booking.bookingDate.toLocaleString()}`);
-    doc.text(`Charges: ${booking.charges}`);
-    if (booking.case) {
-      doc.text(`Case Number: ${booking.case.caseNumber}`);
-      await addBarcode(doc, booking.case.caseNumber);
-      booking.case.hearings.forEach(hearing => {
-        doc.text(`- Hearing on ${hearing.hearingDate.toDateString()}: Verdict - ${hearing.verdict || 'N/A'}`);
-      });
-    }
-    doc.moveDown();
+  doc.font('Courier');
+  const table = {
+    headers: ['Booking Date', 'Charges', 'Case Number', 'Verdict'],
+    rows: [],
+  };
+
+  for (const booking of person.bookings) {
+    const row = [
+      booking.bookingDate.toLocaleString(),
+      booking.charges,
+      booking.case ? booking.case.caseNumber : 'N/A',
+      booking.case ? (booking.case.hearings[0]?.verdict || 'N/A') : 'N/A',
+    ];
+    table.rows.push(row);
+  }
+
+  doc.table(table, {
+    prepareHeader: () => doc.font('Courier-Bold'),
+    prepareRow: (row, i) => doc.font('Courier').fontSize(12),
   });
 
   addFooter(doc);
