@@ -79,13 +79,13 @@ app.get('/dashboard', async (req, res) => {
   let people = [];
   if (user.role.name === 'Police') {
     bookings = await prisma.booking.findMany({
-      where: { ...where, person: { deletedAt: null } },
+      where,
       include: {
         person: true,
       },
     });
     cases = await prisma.case.findMany({
-      where: { ...where, deletedAt: null },
+      where,
       include: {
         booking: {
           include: {
@@ -94,10 +94,10 @@ app.get('/dashboard', async (req, res) => {
         },
       },
     });
-    people = await prisma.person.findMany({ where: { ...where, deletedAt: null } });
+    people = await prisma.person.findMany({ where });
   } else if (user.role.name === 'Prosecutor') {
     cases = await prisma.case.findMany({
-      where: { ...where, status: 'Prosecutor Review', deletedAt: null },
+      where: { ...where, status: 'Prosecutor Review' },
       include: {
         booking: {
           include: {
@@ -108,7 +108,7 @@ app.get('/dashboard', async (req, res) => {
     });
   } else if (user.role.name === 'Court') {
     cases = await prisma.case.findMany({
-      where: { ...where, status: 'Accepted', deletedAt: null },
+      where: { ...where, status: 'Accepted' },
       include: {
         booking: {
           include: {
@@ -122,12 +122,10 @@ app.get('/dashboard', async (req, res) => {
     people = await prisma.person.findMany({
       where: {
         ...where,
-        deletedAt: null,
         bookings: {
           some: {
             case: {
               status: 'Convicted',
-              deletedAt: null,
             },
           },
         },
