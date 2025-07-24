@@ -40,8 +40,8 @@ router.post('/', checkRole(['Police']), async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-  const caseRecord = await prisma.case.findUnique({
-    where: { id: parseInt(req.params.id) },
+  const caseRecord = await prisma.case.findFirst({
+    where: { id: parseInt(req.params.id), deletedAt: null },
     include: {
       booking: {
         include: {
@@ -92,6 +92,14 @@ router.get('/:id', async (req, res) => {
     include: { role: true },
   });
   res.render('cases/show', { caseRecord, user });
+});
+
+router.post('/:id/delete', checkRole(['Police']), async (req, res) => {
+  await prisma.case.update({
+    where: { id: parseInt(req.params.id) },
+    data: { deletedAt: new Date() },
+  });
+  res.redirect('/dashboard');
 });
 
 router.post('/:id/submit', checkRole(['Police']), async (req, res) => {

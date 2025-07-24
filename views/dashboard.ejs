@@ -79,6 +79,40 @@
             <% }) %>
           </ul>
         </div>
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Bookings by Status</h3>
+          <canvas id="bookingStatusChart" width="400" height="200"></canvas>
+        </div>
+        <script>
+          const bookingStatusData = <%- JSON.stringify(bookings.reduce((acc, booking) => {
+            acc[booking.status] = (acc[booking.status] || 0) + 1;
+            return acc;
+          }, {})) %>;
+
+          const bookingCtx = document.getElementById('bookingStatusChart').getContext('2d');
+          new Chart(bookingCtx, {
+            type: 'pie',
+            data: {
+              labels: Object.keys(bookingStatusData),
+              datasets: [{
+                label: 'Bookings by Status',
+                data: Object.values(bookingStatusData),
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.7)',
+                  'rgba(54, 162, 235, 0.7)',
+                  'rgba(255, 206, 86, 0.7)',
+                  'rgba(75, 192, 192, 0.7)',
+                  'rgba(153, 102, 255, 0.7)',
+                  'rgba(255, 159, 64, 0.7)'
+                ],
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+            }
+          });
+        </script>
       <% } %>
 
       <% if (user.role.name === 'Prosecutor') { %>
@@ -110,6 +144,40 @@
             <% }) %>
           </ul>
         </div>
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Cases by Status</h3>
+          <canvas id="caseStatusChart" width="400" height="200"></canvas>
+        </div>
+        <script>
+          const caseStatusData = <%- JSON.stringify(cases.reduce((acc, caseRecord) => {
+            acc[caseRecord.status] = (acc[caseRecord.status] || 0) + 1;
+            return acc;
+          }, {})) %>;
+
+          const caseCtx = document.getElementById('caseStatusChart').getContext('2d');
+          new Chart(caseCtx, {
+            type: 'pie',
+            data: {
+              labels: Object.keys(caseStatusData),
+              datasets: [{
+                label: 'Cases by Status',
+                data: Object.values(caseStatusData),
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.7)',
+                  'rgba(54, 162, 235, 0.7)',
+                  'rgba(255, 206, 86, 0.7)',
+                  'rgba(75, 192, 192, 0.7)',
+                  'rgba(153, 102, 255, 0.7)',
+                  'rgba(255, 159, 64, 0.7)'
+                ],
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+            }
+          });
+        </script>
       <% } %>
 
       <% if (user.role.name === 'Court') { %>
@@ -141,6 +209,40 @@
             <% }) %>
           </ul>
         </div>
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Cases by Status</h3>
+          <canvas id="courtCaseStatusChart" width="400" height="200"></canvas>
+        </div>
+        <script>
+          const courtCaseStatusData = <%- JSON.stringify(cases.reduce((acc, caseRecord) => {
+            acc[caseRecord.status] = (acc[caseRecord.status] || 0) + 1;
+            return acc;
+          }, {})) %>;
+
+          const courtCaseCtx = document.getElementById('courtCaseStatusChart').getContext('2d');
+          new Chart(courtCaseCtx, {
+            type: 'pie',
+            data: {
+              labels: Object.keys(courtCaseStatusData),
+              datasets: [{
+                label: 'Cases by Status',
+                data: Object.values(courtCaseStatusData),
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.7)',
+                  'rgba(54, 162, 235, 0.7)',
+                  'rgba(255, 206, 86, 0.7)',
+                  'rgba(75, 192, 192, 0.7)',
+                  'rgba(153, 102, 255, 0.7)',
+                  'rgba(255, 159, 64, 0.7)'
+                ],
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+            }
+          });
+        </script>
       <% } %>
 
       <% if (user.role.name === 'Corrections') { %>
