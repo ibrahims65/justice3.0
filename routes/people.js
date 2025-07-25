@@ -326,6 +326,7 @@ router.post(
             req.flash('success_msg', 'Booking created successfully');
             res.redirect('/dashboard');
         } catch (error) {
+            logger.error(error);
             const policeStations = await prisma.policeStation.findMany();
             const user = await prisma.user.findUnique({
                 where: { id: req.session.userId },
