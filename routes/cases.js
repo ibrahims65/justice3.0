@@ -41,7 +41,7 @@ router.post('/', checkRole(['Police']), async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   const caseRecord = await prisma.case.findFirst({
-    where: { id: parseInt(req.params.id), deletedAt: null },
+    where: { id: parseInt(req.params.id) },
     include: {
       booking: {
         include: {
