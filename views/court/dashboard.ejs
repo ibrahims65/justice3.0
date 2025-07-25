@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Court Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <%- include('../partials/navbar', { user: user, page: page }) %>
+
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <%- include('../partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
+    <div class="px-4 py-6 sm:px-0">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, <%= user.username %>!</h2>
+      <p class="text-gray-600 mb-8">Your role is: <%= user.role.name %></p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800">Scheduled Hearings</h3>
+          <p class="text-3xl font-bold text-blue-500"><%= hearings.length %></p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800">Cases to Assign</h3>
+          <p class="text-3xl font-bold text-blue-500"><%= casesToAssign.length %></p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800">Warrants to Approve</h3>
+          <p class="text-3xl font-bold text-blue-500"><%= warrantsToApprove.length %></p>
+        </div>
+      </div>
+
+      <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-medium text-gray-800 mb-4">Scheduled Hearings</h3>
+        <% if (hearings.length > 0) { %>
+          <table class="w-full text-left">
+            <thead>
+              <tr>
+                <th class="py-2">Case Number</th>
+                <th class="py-2">Hearing Date</th>
+                <th class="py-2">Court</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% hearings.forEach(hearing => { %>
+                <tr class="border-b border-gray-200">
+                  <td class="py-2"><a href="/cases/<%= hearing.case.id %>" class="text-blue-500 hover:underline"><%= hearing.case.caseNumber %></a></td>
+                  <td class="py-2"><%= new Date(hearing.hearingDate).toLocaleString() %></td>
+                  <td class="py-2"><%= hearing.court.name %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p>No scheduled hearings.</p>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
