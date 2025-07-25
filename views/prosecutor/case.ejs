@@ -201,7 +201,6 @@
             <div class="bg-gray-50 rounded-lg p-6">
               <h3 class="text-xl font-bold text-gray-800 mb-4">Plea Bargains</h3>
               <form action="/plea-bargains" method="POST" class="mb-4">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <input type="hidden" name="caseId" value="<%= caseRecord.id %>">
                 <textarea name="offer" placeholder="Plea bargain offer" class="w-full border rounded p-2 mb-2"></textarea>
                 <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Propose Plea Bargain</button>
@@ -293,7 +292,6 @@
               <% }) %>
             </ul>
             <form action="/prosecutor/cases/<%= caseRecord.id %>/notes" method="POST" class="mt-4">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <textarea name="content" placeholder="Add a note" class="w-full border rounded p-2 mb-2"></textarea>
               <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Note</button>
             </form>

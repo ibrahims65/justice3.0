@@ -11,7 +11,6 @@
     <div class="bg-white rounded-lg shadow-md p-8">
       <h2 class="text-2xl font-bold text-gray-800 mb-8">Add New Witness</h2>
       <form action="/witnesses" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <input type="hidden" name="caseId" value="<%= caseId %>">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
