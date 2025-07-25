@@ -85,6 +85,16 @@ router.get('/:id', async (req, res) => {
           medications: true,
         },
       },
+      comments: {
+        include: {
+          user: true,
+        },
+      },
+      documents: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
   const user = await prisma.user.findUnique({
@@ -92,7 +102,8 @@ router.get('/:id', async (req, res) => {
     include: { role: true },
   });
   if (user.role.name === 'Prosecutor') {
-    res.render('prosecutor/case', { caseRecord, user });
+    const prosecutors = await prisma.user.findMany({ where: { role: { name: 'Prosecutor' } } });
+    res.render('prosecutor/case', { caseRecord, user, prosecutors });
   } else if (user.role.name === 'Court') {
     res.render('court/case', { caseRecord, user });
   } else {
@@ -269,6 +280,63 @@ router.post('/:id/evaluation', checkRole(['Prosecutor']), async (req, res) => {
   } catch (error) {
     res.redirect(`/cases/${caseId}`);
   }
+});
+
+router.post('/:id/assign', checkRole(['Prosecutor']), async (req, res) => {
+  const caseId = parseInt(req.params.id);
+  const { assigneeId } = req.body;
+  try {
+    await prisma.case.update({
+      where: { id: caseId },
+      data: {
+        assigneeId: parseInt(assigneeId),
+      },
+    });
+    res.redirect(`/cases/${caseId}`);
+  } catch (error) {
+    res.redirect(`/cases/${caseId}`);
+  }
+});
+
+router.post('/:id/comments', checkRole(['Prosecutor', 'Court']), async (req, res) => {
+  const caseId = parseInt(req.params.id);
+  const { content } = req.body;
+  const userId = req.session.userId;
+
+  try {
+    await prisma.comment.create({
+      data: {
+        content,
+        caseId: caseId,
+        userId: userId,
+      },
+    });
+    res.redirect(`/cases/${caseId}`);
+  } catch (error) {
+    res.redirect(`/cases/${caseId}`);
+  }
+});
+
+const upload = require('../middleware/upload');
+
+router.post('/:id/documents', checkRole(['Prosecutor', 'Court']), upload.single('document'), async (req, res) => {
+    const caseId = parseInt(req.params.id);
+    const { originalname, path } = req.file;
+    const userId = req.session.userId;
+
+    try {
+        await prisma.document.create({
+            data: {
+                name: originalname,
+                url: `/${path}`,
+                caseId: caseId,
+                userId: userId,
+            },
+        });
+        res.redirect(`/cases/${caseId}`);
+    } catch (error) {
+        res.redirect(`/cases/${caseId}`);
+    }
 });
 
 module.exports = router;

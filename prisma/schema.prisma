@@ -18,7 +18,10 @@ model User {
   roleId          Int
   actions         ActionHistory[]
   prosecutorNotes ProsecutorNote[]
-  notifications Notification[]
+  notifications   Notification[]
+  assignedCases   Case[]           @relation("AssignedCases")
+  comments        Comment[]
+  documents       Document[]
 }
 
 model Role {
@@ -101,6 +104,31 @@ model Case {
   lawyers         Lawyer[]
   medicalRecords  MedicalRecord[]
   deletedAt DateTime?
+  assigneeId      Int?
+  assignee        User?    @relation("AssignedCases", fields: [assigneeId], references: [id])
+  comments        Comment[]
+  documents       Document[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  caseId    Int
+  case      Case     @relation(fields: [caseId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Document {
+  id        Int      @id @default(autoincrement())
+  name      String
+  url       String
+  caseId    Int
+  case      Case     @relation(fields: [caseId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Region {

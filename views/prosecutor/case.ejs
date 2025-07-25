@@ -68,6 +68,8 @@
             <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" onclick="openTab(event, 'hearings')">Hearings</button>
             <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" onclick="openTab(event, 'plea-bargains')">Plea Bargains</button>
             <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" onclick="openTab(event, 'prosecutor-evaluation')">Evaluation</button>
+            <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" onclick="openTab(event, 'comments')">Comments</button>
+            <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" onclick="openTab(event, 'documents')">Documents</button>
           </nav>
         </div>
       </div>
@@ -83,6 +85,24 @@
                     <p><%= item.description %> (v<%= item.version %>)</p>
                     <a href="<%= item.fileUrl %>" class="text-blue-500 hover:underline">View File</a>
                     <p class="text-sm text-gray-600">Tags: <%= item.tags %></p>
+                  </li>
+                <% }) %>
+              </ul>
+            </div>
+          </div>
+          <div id="documents" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Documents</h3>
+              <form action="/cases/<%= caseRecord.id %>/documents" method="POST" enctype="multipart/form-data" class="mb-4">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="file" name="document" class="w-full border rounded p-2 mb-2">
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Upload Document</button>
+              </form>
+              <ul>
+                <% caseRecord.documents.forEach(document => { %>
+                  <li class="border-b border-gray-200 py-2">
+                    <a href="<%= document.url %>" class="text-blue-500 hover:underline"><%= document.name %></a>
+                    <p class="text-sm text-gray-600">Uploaded by <%= document.user.username %> on <%= document.createdAt.toLocaleString() %></p>
                   </li>
                 <% }) %>
               </ul>
@@ -216,10 +236,40 @@
               </form>
             </div>
           </div>
+          <div id="comments" class="tab-content" style="display:none;">
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Comments</h3>
+              <form action="/cases/<%= caseRecord.id %>/comments" method="POST" class="mb-4">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <textarea name="content" placeholder="Add a comment" class="w-full border rounded p-2 mb-2"></textarea>
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Comment</button>
+              </form>
+              <ul>
+                <% caseRecord.comments.forEach(comment => { %>
+                  <li class="border-b border-gray-200 py-2">
+                    <p class="text-sm text-gray-600"><%= comment.createdAt.toLocaleString() %> by <%= comment.user.username %></p>
+                    <p><%= comment.content %></p>
+                  </li>
+                <% }) %>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div>
           <div class="bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Assign Case</h3>
+            <form action="/cases/<%= caseRecord.id %>/assign" method="POST">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <select name="assigneeId" class="w-full border rounded p-2 mb-2">
+                <% prosecutors.forEach(prosecutor => { %>
+                  <option value="<%= prosecutor.id %>" <%= caseRecord.assigneeId === prosecutor.id ? 'selected' : '' %>><%= prosecutor.username %></option>
+                <% }) %>
+              </select>
+              <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Assign</button>
+            </form>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-6 mt-8">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Actions</h3>
             <% if (caseRecord.status === 'Prosecutor Review') { %>
               <form action="/cases/<%= caseRecord.id %>/submit-to-court" method="POST" class="mb-2">
