@@ -7,12 +7,10 @@ const { checkRole } = require('../middleware/auth');
 router.get('/', checkRole(['Corrections']), async (req, res) => {
   const { search, facility } = req.query;
   let where = {
-    deletedAt: null,
     bookings: {
       some: {
         case: {
           status: 'Convicted',
-          deletedAt: null,
         },
       },
     },
@@ -56,8 +54,6 @@ router.get('/inmates/:personId', checkRole(['Corrections']), async (req, res) =>
             },
           },
           medicalRecords: { include: { medications: true } },
-          disciplinaryActions: true,
-          visitationLogs: true,
         },
       },
       nextOfKin: true,
