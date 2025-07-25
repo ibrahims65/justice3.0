@@ -68,3 +68,31 @@
     </tbody>
   </table>
 </div>
+
+<div class="mt-8 bg-white rounded-lg shadow-md p-6">
+  <h3 class="text-lg font-medium text-gray-800 mb-4">Pending Remand Requests</h3>
+  <table class="w-full">
+    <thead>
+      <tr>
+        <th class="text-left">Person</th>
+        <th class="text-left">Booking ID</th>
+        <th class="text-left">Reason</th>
+        <th class="text-left">Requested Days</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% remandRequests.forEach(request => { %>
+        <tr>
+          <td><a href="/people/<%= request.booking.person.id %>" class="text-blue-500 hover:underline"><%= request.booking.person.name %></a></td>
+          <td><%= request.bookingId %></td>
+          <td><%= request.reason %></td>
+          <td><%= request.requestedDays %></td>
+          <td>
+            <a href="/remand" class="text-blue-500 hover:underline">View Requests</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

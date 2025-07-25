@@ -51,6 +51,9 @@
             <% } else if (user.role.name === 'Police') { %>
               <a href="/cases/new/<%= booking.id %>" class="text-blue-500 hover:underline">Create Case</a>
             <% } %>
+            <% if (user.role.name === 'Police') { %>
+              <a href="/people/<%= booking.id %>/remand/new" class="btn-primary ml-4">Request Remand</a>
+            <% } %>
           </li>
         <% }) %>
       </ul>
