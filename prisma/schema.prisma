@@ -18,32 +18,19 @@ model User {
   roleId          Int
   actions         ActionHistory[]
   prosecutorNotes ProsecutorNote[]
-  notifications   Notification[]
-  assignedCases   Case[]           @relation("AssignedCases")
-  comments        Comment[]
-  documents       Document[]
-  efiles          Efile[]
-  reportedIncidents Incident[]
+  notifications Notification[]
 }
 
 model Role {
-  id          Int           @id @default(autoincrement())
-  name        String        @unique
-  users       User[]
-  permissions Permission[]
-}
-
-model Permission {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  roles     Role[]
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
 }
 
 model Person {
   id        Int       @id @default(autoincrement())
   name      String
   dob       DateTime
-  gender    String?
   photoUrl  String?
   address   String?
   phone     String?
@@ -52,7 +39,6 @@ model Person {
   nextOfKin NextOfKin[]
   deletedAt DateTime?
   rebookedAt DateTime?
-  createdAt DateTime  @default(now())
 }
 
 model Booking {
@@ -78,9 +64,6 @@ model Booking {
   custodyExpiresAt    DateTime?
   remandRequests      RemandRequest[]
   releaseRecord       ReleaseRecord?
-  activities          Activity[]
-  incidents           Incident[]
-  visitors            Visitor[]
 }
 
 model Case {
@@ -109,32 +92,6 @@ model Case {
   lawyers         Lawyer[]
   medicalRecords  MedicalRecord[]
   deletedAt DateTime?
-  assigneeId      Int?
-  assignee        User?    @relation("AssignedCases", fields: [assigneeId], references: [id])
-  comments        Comment[]
-  documents       Document[]
-  efiles          Efile[]
-}
-
-model Comment {
-  id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
-  caseId    Int
-  case      Case     @relation(fields: [caseId], references: [id])
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-}
-
-model Document {
-  id        Int      @id @default(autoincrement())
-  name      String
-  url       String
-  caseId    Int
-  case      Case     @relation(fields: [caseId], references: [id])
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
 }
 
 model Region {
@@ -166,24 +123,10 @@ model PoliceStation {
 }
 
 model Court {
-  id         Int         @id @default(autoincrement())
-  name       String      @unique
-  cityId     Int
-  hearings   Hearing[]
-  courtrooms Courtroom[]
-}
-
-model Courtroom {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-  courtId Int
-  court   Court    @relation(fields: [courtId], references: [id])
-}
-
-model HearingType {
-    id      Int      @id @default(autoincrement())
-    name    String   @unique
-    hearings Hearing[]
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  cityId   Int
+  hearings Hearing[]
 }
 
 model Evidence {
@@ -211,54 +154,12 @@ model Witness {
 
 model Hearing {
   id          Int      @id @default(autoincrement())
-  court         Court       @relation(fields: [courtId], references: [id])
-  courtId       Int
-  hearingDate   DateTime
-  verdict       String?
-  case          Case        @relation(fields: [caseId], references: [id])
-  caseId        Int
-  hearingTypeId Int
-  hearingType   HearingType @relation(fields: [hearingTypeId], references: [id])
-}
-
-model Activity {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  startTime   DateTime
-  endTime     DateTime
-  bookingId   Int
-  booking     Booking  @relation(fields: [bookingId], references: [id])
-}
-
-model Incident {
-  id          Int      @id @default(autoincrement())
-  description String
-  date        DateTime
-  bookingId   Int
-  booking     Booking  @relation(fields: [bookingId], references: [id])
-  reportedById Int
-  reportedBy  User     @relation(fields: [reportedById], references: [id])
-}
-
-model Visitor {
-  id        Int      @id @default(autoincrement())
-  name      String
-  address   String?
-  phone     String?
-  email     String?  @unique
-  bookings  Booking[]
-}
-
-model Efile {
-  id        Int      @id @default(autoincrement())
-  name      String
-  url       String
-  caseId    Int
-  case      Case     @relation(fields: [caseId], references: [id])
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+  court       Court    @relation(fields: [courtId], references: [id])
+  courtId     Int
+  hearingDate DateTime
+  verdict     String?
+  case        Case     @relation(fields: [caseId], references: [id])
+  caseId      Int
 }
 
 model ActionHistory {
