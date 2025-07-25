@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pending Remand Requests</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <div class="container mx-auto p-8">
+    <h1 class="text-2xl font-bold mb-4">Pending Remand Requests</h1>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="text-left">Person</th>
+            <th class="text-left">Booking ID</th>
+            <th class="text-left">Requested By</th>
+            <th class="text-left">Reason</th>
+            <th class="text-left">Requested Days</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% requests.forEach(request => { %>
+            <tr>
+              <td><%= request.booking.person.name %></td>
+              <td><%= request.bookingId %></td>
+              <td><%= request.requestedBy %></td>
+              <td><%= request.reason %></td>
+              <td><%= request.requestedDays %></td>
+              <td class="flex space-x-2">
+                <form action="/remand/<%= request.id %>/approve" method="POST">
+                  <button type="submit" class="bg-green-500 text-white p-2 rounded">Approve</button>
+                </form>
+                <form action="/remand/<%= request.id %>/reject" method="POST">
+                  <button type="submit" class="bg-red-500 text-white p-2 rounded">Reject</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

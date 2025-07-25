@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Disciplinary Action</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <div class="container mx-auto p-8">
+    <h1 class="text-2xl font-bold mb-4">New Disciplinary Action for Booking #<%= bookingId %></h1>
+    <form action="/corrections/disciplinary/<%= bookingId %>" method="POST">
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="mb-4">
+          <label for="date" class="block text-gray-700">Date</label>
+          <input type="date" name="date" id="date" class="w-full border rounded p-2" required>
+        </div>
+        <div class="mb-4">
+          <label for="infraction" class="block text-gray-700">Infraction</label>
+          <input type="text" name="infraction" id="infraction" class="w-full border rounded p-2" required>
+        </div>
+        <div class="mb-4">
+          <label for="sanction" class="block text-gray-700">Sanction</label>
+          <input type="text" name="sanction" id="sanction" class="w-full border rounded p-2" required>
+        </div>
+        <div class="mb-4">
+          <label for="notes" class="block text-gray-700">Notes</label>
+          <textarea name="notes" id="notes" class="w-full border rounded p-2"></textarea>
+        </div>
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded">Add Action</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

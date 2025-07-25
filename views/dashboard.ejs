@@ -18,6 +18,8 @@
 
       <form action="/dashboard" method="GET" class="mb-4 flex space-x-2">
         <input type="text" name="search" placeholder="Search..." class="border rounded p-2 flex-grow">
+        <input type="date" name="startDate" class="border rounded p-2">
+        <input type="date" name="endDate" class="border rounded p-2">
         <% if (user.role.name === 'Police') { %>
           <select name="status" class="border rounded p-2">
             <option value="">All Statuses</option>
@@ -70,6 +72,36 @@
         </div>
         <div class="mt-8">
           <a href="/people/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Register New Person</a>
+        </div>
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Expiring Custody</h3>
+          <ul>
+            <% bookings.filter(b => b.custodyExpiresAt && new Date(b.custodyExpiresAt) > new Date()).sort((a, b) => new Date(a.custodyExpiresAt) - new Date(b.custodyExpiresAt)).forEach(booking => { %>
+              <li class="border-b border-gray-200 py-2">
+                <a href="/people/<%= booking.personId %>" class="text-blue-500 hover:underline">Booking #<%= booking.id %></a> -
+                <span class="text-red-500 font-bold" id="dashboard-countdown-<%= booking.id %>"></span>
+                <script>
+                  const dashboard_countdown_<%= booking.id %> = () => {
+                    const countDownDate = new Date("<%= booking.custodyExpiresAt %>").getTime();
+                    const now = new Date().getTime();
+                    const distance = countDownDate - now;
+
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    document.getElementById("dashboard-countdown-<%= booking.id %>").innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+
+                    if (distance < 0) {
+                      clearInterval(dashboard_x_<%= booking.id %>);
+                      document.getElementById("dashboard-countdown-<%= booking.id %>").innerHTML = "EXPIRED";
+                    }
+                  };
+                  const dashboard_x_<%= booking.id %> = setInterval(dashboard_countdown_<%= booking.id %>, 1000);
+                </script>
+              </li>
+            <% }) %>
+          </ul>
         </div>
         <div class="mt-8 bg-white rounded-lg shadow-md p-6">
           <h3 class="text-lg font-medium text-gray-800 mb-4">Your Bookings</h3>
