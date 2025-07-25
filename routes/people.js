@@ -7,6 +7,35 @@ const upload = require('../middleware/upload');
 const { customAlphabet } = require('nanoid');
 const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
 
+router.get('/', checkRole(['Police']), async (req, res) => {
+  const { name, id, gender, age, registrationDate } = req.query;
+  let where = {};
+  if (name) {
+    where.name = { contains: name, mode: 'insensitive' };
+  }
+  if (id) {
+    where.id = parseInt(id);
+  }
+  if (gender) {
+    where.gender = gender;
+  }
+  if (age) {
+    const today = new Date();
+    const birthDate = new Date(today.getFullYear() - age, today.getMonth(), today.getDate());
+    where.dob = { lte: birthDate };
+  }
+  if (registrationDate) {
+    where.createdAt = { gte: new Date(registrationDate) };
+  }
+
+  const people = await prisma.person.findMany({ where });
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
+  });
+  res.render('people/index', { people, user, page: '/people', breadcrumbs: [{ name: 'People', url: '/people' }] });
+});
+
 router.get('/new', checkRole(['Police']), (req, res) => {
   res.render('people/new');
 });
@@ -108,7 +137,7 @@ router.post('/:id/bookings', checkRole(['Police']), async (req, res) => {
         userId: req.session.userId,
       },
     });
-    res.redirect(`/cases/${newCase.id}`);
+    res.redirect('/dashboard');
   } catch (error) {
     res.redirect(`/people/${personId}`);
   }
