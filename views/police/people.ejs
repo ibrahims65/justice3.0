@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>People</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <%- include('../partials/navbar', { user: user, page: page }) %>
+
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <%- include('../partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
+    <div class="px-4 py-6 sm:px-0">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">People</h2>
+        <a href="/police/dashboard" class="text-blue-500 hover:underline">Back to Dashboard</a>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <table class="w-full text-left">
+          <thead>
+            <tr>
+              <th class="py-2">Name</th>
+              <th class="py-2">Date of Birth</th>
+              <th class="py-2">Gender</th>
+              <th class="py-2">Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% people.forEach(person => { %>
+              <tr class="border-b border-gray-200">
+                <td class="py-2">
+                  <a href="/police/people/<%= person.id %>" class="text-blue-500 hover:underline"><%= person.name %></a>
+                </td>
+                <td class="py-2"><%= new Date(person.dateOfBirth).toLocaleDateString() %></td>
+                <td class="py-2"><%= person.gender %></td>
+                <td class="py-2"><%= person.address %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
