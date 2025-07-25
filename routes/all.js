@@ -27,7 +27,6 @@ const releaseRouter = require('./release');
 const bookingsRouter = require('./bookings');
 const policeRouter = require('./police');
 const searchRouter = require('./search');
-
 router.use('/auth', authRouter);
 router.use('/people', peopleRouter);
 router.use('/bookings', bookingsRouter);
@@ -54,5 +53,7 @@ router.use('/print', printRouter);
 router.use('/notifications', notificationsRouter);
 router.use('/remand', remandRouter);
 router.use('/release', releaseRouter);
+router.use('/court', courtRouter);
+router.use('/efile', efileRouter);
 
 module.exports = router;

@@ -23,4 +23,24 @@ router.post('/cases/:caseId/notes', checkRole(['Prosecutor', 'Court']), async (r
   }
 });
 
+router.get('/my-cases', checkRole(['Prosecutor']), async (req, res) => {
+    const user = await prisma.user.findUnique({
+        where: { id: req.session.userId },
+        include: { role: true },
+    });
+    const cases = await prisma.case.findMany({
+        where: {
+            assigneeId: req.session.userId,
+        },
+        include: {
+            booking: {
+                include: {
+                    person: true,
+                },
+            },
+        },
+    });
+    res.render('prosecutor/my-cases', { user, cases });
+});
+
 module.exports = router;

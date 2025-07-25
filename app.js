@@ -4,8 +4,11 @@ const { checkRole } = require('./middleware/auth');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const logger = require('./logger');
+const flash = require('connect-flash');
 
 const app = express();
+
+app.use(flash());
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
@@ -19,6 +22,9 @@ app.use(
 );
 
 app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
   res.locals.page = req.path;
   const breadcrumbs = req.path.split('/').filter(Boolean).map((part, index, arr) => {
     const url = '/' + arr.slice(0, index + 1).join('/');
@@ -167,6 +173,10 @@ app.get('/court', checkRole(['Court']), (req, res) => {
 
 app.get('/corrections', checkRole(['Corrections']), (req, res) => {
   res.send('Corrections Dashboard');
+});
+
+app.use((req, res) => {
+  res.redirect('/dashboard');
 });
 
 app.listen(3000, () => {

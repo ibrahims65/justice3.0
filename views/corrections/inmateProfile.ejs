@@ -5,78 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inmate Profile - <%= person.name %></title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    .sidebar-link {
-      @apply block py-2 px-4 text-gray-700 hover:bg-gray-200 hover:text-gray-900 rounded;
-    }
-    .sidebar-link.active {
-      @apply bg-blue-500 text-white;
-    }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-  </style>
 </head>
 <body class="bg-gray-100">
-  <div class="flex">
-    <!-- Sidebar -->
-    <div class="w-64 bg-white h-screen p-4">
-      <h2 class="text-xl font-bold mb-4">Inmate Profile</h2>
-      <nav>
-        <a href="#" class="sidebar-link active" data-tab="personal-info">Personal Information</a>
-        <a href="#" class="sidebar-link" data-tab="medical">Medical</a>
-        <a href="#" class="sidebar-link" data-tab="legal">Legal</a>
-        <a href="#" class="sidebar-link" data-tab="rehabilitation">Rehabilitation</a>
-        <a href="#" class="sidebar-link" data-tab="timeline">Timeline</a>
-        <a href="#" class="sidebar-link" data-tab="disciplinary">Disciplinary Actions</a>
-        <a href="#" class="sidebar-link" data-tab="visitation">Visitation Logs</a>
-      </nav>
-    </div>
-
-    <!-- Main Content -->
-    <div class="flex-1 p-8">
-      <div id="personal-info" class="tab-content active">
+  <%- include('../partials/navbar', { user: user, page: '/corrections' }) %>
+  <div class="container mx-auto p-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="md:col-span-1">
         <div class="bg-white p-6 rounded-lg shadow-md">
-          <div class="flex items-center">
-            <img src="<%= person.photoUrl %>" alt="Inmate Photo" class="w-32 h-32 rounded-full mr-8">
-            <div>
-              <h1 class="text-3xl font-bold"><%= person.name %></h1>
-              <p class="text-gray-600"><%= person.email %></p>
-              <p class="text-gray-600"><%= person.phone %></p>
-            </div>
+          <div class="flex items-center flex-col">
+            <img src="<%= person.photoUrl %>" alt="Inmate Photo" class="w-32 h-32 rounded-full mb-4">
+            <h1 class="text-2xl font-bold"><%= person.name %></h1>
+            <p class="text-gray-600"><%= person.email %></p>
+            <p class="text-gray-600"><%= person.phone %></p>
           </div>
-          <div class="mt-8 grid grid-cols-2 gap-4">
-            <div>
-              <p class="font-bold">Date of Birth</p>
-              <p><%= new Date(person.dob).toLocaleDateString() %></p>
-            </div>
-            <div>
-              <p class="font-bold">Address</p>
-              <p><%= person.address %></p>
-            </div>
-            <% person.bookings.forEach(booking => { %>
-              <% if (booking.case.status === 'Convicted') { %>
-                <div>
-                  <p class="font-bold">Sentence</p>
-                  <p><%= booking.rehabilitationPrograms %></p>
-                </div>
-                <div>
-                  <p class="font-bold">Release Date</p>
-                  <p><%= booking.releaseDate ? new Date(booking.releaseDate).toLocaleDateString() : 'N/A' %></p>
-                </div>
-              <% } %>
-            <% }) %>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md mt-8">
+          <h2 class="text-xl font-bold mb-4">Personal Information</h2>
+          <div>
+            <p class="font-bold">Date of Birth</p>
+            <p><%= new Date(person.dob).toLocaleDateString() %></p>
+          </div>
+          <div class="mt-4">
+            <p class="font-bold">Address</p>
+            <p><%= person.address %></p>
           </div>
         </div>
       </div>
-
-      <div id="medical" class="tab-content">
+      <div class="md:col-span-2">
         <% person.bookings.forEach(booking => { %>
-          <div class="bg-white p-6 rounded-lg shadow-md mb-4">
+          <div class="bg-white p-6 rounded-lg shadow-md mb-8">
             <h2 class="text-2xl font-bold mb-4">Booking #<%= booking.id %></h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p class="font-bold">Sentence</p>
+                <p><%= booking.rehabilitationPrograms %></p>
+              </div>
+              <div>
+                <p class="font-bold">Release Date</p>
+                <p><%= booking.releaseDate ? new Date(booking.releaseDate).toLocaleDateString() : 'N/A' %></p>
+              </div>
+            </div>
+            <div class="mt-8">
+                <h3 class="text-xl font-bold mb-4">Rehabilitation</h3>
+                <form action="/corrections/inmates/<%= booking.id %>" method="POST">
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="mb-4">
+                      <label for="incarcerationStartDate" class="block text-gray-700">Incarceration Start Date</label>
+                      <input type="date" name="incarcerationStartDate" id="incarcerationStartDate" value="<%= booking.incarcerationStartDate ? booking.incarcerationStartDate.toISOString().split('T')[0] : '' %>" class="w-full border rounded p-2">
+                    </div>
+                    <div class="mb-4">
+                      <label for="facilityName" class="block text-gray-700">Facility Name</label>
+                      <input type="text" name="facilityName" id="facilityName" value="<%= booking.facilityName || '' %>" class="w-full border rounded p-2">
+                    </div>
+                    <div class="mb-4">
+                      <label for="rehabilitationPrograms" class="block text-gray-700">Rehabilitation Programs</label>
+                      <input type="text" name="rehabilitationPrograms" id="rehabilitationPrograms" value="<%= booking.rehabilitationPrograms || '' %>" class="w-full border rounded p-2">
+                    </div>
+                    <div class="mb-4">
+                      <label for="releaseDate" class="block text-gray-700">Release Date</label>
+                      <input type="date" name="releaseDate" id="releaseDate" value="<%= booking.releaseDate ? booking.releaseDate.toISOString().split('T')[0] : '' %>" class="w-full border rounded p-2">
+                    </div>
+                    <div class="mb-4">
+                      <label for="paroleEligibility" class="block text-gray-700">Parole Eligibility</label>
+                      <input type="date" name="paroleEligibility" id="paroleEligibility" value="<%= booking.paroleEligibility ? booking.paroleEligibility.toISOString().split('T')[0] : '' %>" class="w-full border rounded p-2">
+                    </div>
+                  </div>
+                  <button type="submit" class="bg-blue-500 text-white p-2 rounded mt-4">Update</button>
+                </form>
+            </div>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h3 class="text-xl font-bold mb-4">Medical Records</h3>
             <a href="/medical-records/new/<%= booking.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Medical Record</a>
             <% booking.medicalRecords.forEach(record => { %>
               <div class="border-t border-gray-200 pt-4 mt-4">
@@ -84,7 +83,7 @@
                 <p><strong>Allergies:</strong> <%= record.allergies %></p>
                 <p><strong>Notes:</strong> <%= record.notes %></p>
                 <a href="/medical-records/<%= record.id %>/medications/new" class="text-blue-500 hover:underline mt-2 inline-block">Add Medication</a>
-                <h3 class="font-bold mt-4">Medications</h3>
+                <h4 class="font-bold mt-4">Medications</h4>
                 <ul>
                   <% record.medications.forEach(med => { %>
                     <li class="border-t border-gray-200 py-2">
@@ -97,13 +96,8 @@
               </div>
             <% }) %>
           </div>
-        <% }) %>
-      </div>
-
-      <div id="legal" class="tab-content">
-        <% person.bookings.forEach(booking => { %>
-          <div class="bg-white p-6 rounded-lg shadow-md mb-4">
-            <h2 class="text-2xl font-bold mb-4">Booking #<%= booking.id %></h2>
+          <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h3 class="text-xl font-bold mb-4">Legal Representation</h3>
             <a href="/lawyers/new/<%= booking.case.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Lawyer</a>
             <% booking.case.lawyers.forEach(lawyer => { %>
               <div class="border-t border-gray-200 pt-4 mt-4">
@@ -111,7 +105,7 @@
                 <p><strong>Firm:</strong> <%= lawyer.firm %></p>
                 <p><strong>License:</strong> <%= lawyer.license %></p>
                 <a href="/lawyers/<%= lawyer.id %>/visits/new" class="text-blue-500 hover:underline mt-2 inline-block">Add Visit</a>
-                <h3 class="font-bold mt-4">Visits</h3>
+                <h4 class="font-bold mt-4">Visits</h4>
                 <ul>
                   <% lawyer.visits.forEach(visit => { %>
                     <li class="border-t border-gray-200 py-2">
@@ -123,48 +117,33 @@
               </div>
             <% }) %>
           </div>
-        <% }) %>
-      </div>
-
-      <div id="rehabilitation" class="tab-content">
-        <% person.bookings.forEach(booking => { %>
-          <div class="bg-white p-6 rounded-lg shadow-md mb-4">
-            <h2 class="text-2xl font-bold mb-4">Booking #<%= booking.id %></h2>
-            <form action="/corrections/inmates/<%= booking.id %>" method="POST">
-              <div class="grid grid-cols-2 gap-4">
-                <div class="mb-4">
-                  <label for="incarcerationStartDate" class="block text-gray-700">Incarceration Start Date</label>
-                  <input type="date" name="incarcerationStartDate" id="incarcerationStartDate" value="<%= booking.incarcerationStartDate ? booking.incarcerationStartDate.toISOString().split('T')[0] : '' %>" class="w-full border rounded p-2">
-                </div>
-                <div class="mb-4">
-                  <label for="facilityName" class="block text-gray-700">Facility Name</label>
-                  <input type="text" name="facilityName" id="facilityName" value="<%= booking.facilityName || '' %>" class="w-full border rounded p-2">
-                </div>
-                <div class="mb-4">
-                  <label for="rehabilitationPrograms" class="block text-gray-700">Rehabilitation Programs</label>
-                  <input type="text" name="rehabilitationPrograms" id="rehabilitationPrograms" value="<%= booking.rehabilitationPrograms || '' %>" class="w-full border rounded p-2">
-                </div>
-                <div class="mb-4">
-                  <label for="releaseDate" class="block text-gray-700">Release Date</label>
-                  <input type="date" name="releaseDate" id="releaseDate" value="<%= booking.releaseDate ? booking.releaseDate.toISOString().split('T')[0] : '' %>" class="w-full border rounded p-2">
-                </div>
-                <div class="mb-4">
-                  <label for="paroleEligibility" class="block text-gray-700">Parole Eligibility</label>
-                  <input type="date" name="paroleEligibility" id="paroleEligibility" value="<%= booking.paroleEligibility ? booking.paroleEligibility.toISOString().split('T')[0] : '' %>" class="w-full border rounded p-2">
-                </div>
+          <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h3 class="text-xl font-bold mb-4">Disciplinary Actions</h3>
+            <a href="/corrections/disciplinary/new/<%= booking.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Disciplinary Action</a>
+            <% booking.disciplinaryActions.forEach(action => { %>
+              <div class="border-t border-gray-200 pt-4 mt-4">
+                <p><strong>Date:</strong> <%= new Date(action.date).toLocaleString() %></p>
+                <p><strong>Infraction:</strong> <%= action.infraction %></p>
+                <p><strong>Sanction:</strong> <%= action.sanction %></p>
+                <p><strong>Notes:</strong> <%= action.notes %></p>
               </div>
-              <button type="submit" class="bg-blue-500 text-white p-2 rounded mt-4">Update</button>
-            </form>
+            <% }) %>
           </div>
-        <% }) %>
-      </div>
-
-      <div id="timeline" class="tab-content">
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <h2 class="text-2xl font-bold mb-4">Case Timeline</h2>
-          <div class="relative">
-            <div class="border-l-2 border-blue-500 absolute h-full left-4"></div>
-            <% person.bookings.forEach(booking => { %>
+          <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h3 class="text-xl font-bold mb-4">Visitation Logs</h3>
+            <a href="/corrections/visitation/new/<%= booking.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Visitation Log</a>
+            <% booking.visitationLogs.forEach(log => { %>
+              <div class="border-t border-gray-200 pt-4 mt-4">
+                <p><strong>Date:</strong> <%= new Date(log.date).toLocaleString() %></p>
+                <p><strong>Visitor Name:</strong> <%= log.visitorName %></p>
+                <p><strong>Notes:</strong> <%= log.notes %></p>
+              </div>
+            <% }) %>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold mb-4">Case Timeline</h2>
+            <div class="relative">
+              <div class="border-l-2 border-blue-500 absolute h-full left-4"></div>
               <div class="mb-8 flex items-center w-full">
                 <div class="bg-blue-500 rounded-full h-8 w-8 flex items-center justify-center text-white mr-4 z-10">B</div>
                 <div class="bg-gray-200 rounded-lg p-4 flex-1">
@@ -192,67 +171,11 @@
                   </div>
                 </div>
               <% } %>
-            <% }) %>
-          </div>
-        </div>
-      </div>
-
-      <div id="disciplinary" class="tab-content">
-        <% person.bookings.forEach(booking => { %>
-          <div class="bg-white p-6 rounded-lg shadow-md mb-4">
-            <h2 class="text-2xl font-bold mb-4">Disciplinary Actions for Booking #<%= booking.id %></h2>
-            <a href="/corrections/disciplinary/new/<%= booking.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Disciplinary Action</a>
-            <% booking.disciplinaryActions.forEach(action => { %>
-              <div class="border-t border-gray-200 pt-4 mt-4">
-                <p><strong>Date:</strong> <%= new Date(action.date).toLocaleString() %></p>
-                <p><strong>Infraction:</strong> <%= action.infraction %></p>
-                <p><strong>Sanction:</strong> <%= action.sanction %></p>
-                <p><strong>Notes:</strong> <%= action.notes %></p>
-              </div>
-            <% }) %>
-          </div>
-        <% }) %>
-      </div>
-
-      <div id="visitation" class="tab-content">
-        <% person.bookings.forEach(booking => { %>
-          <div class="bg-white p-6 rounded-lg shadow-md mb-4">
-            <h2 class="text-2xl font-bold mb-4">Visitation Logs for Booking #<%= booking.id %></h2>
-            <a href="/corrections/visitation/new/<%= booking.id %>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Add Visitation Log</a>
-            <% booking.visitationLogs.forEach(log => { %>
-              <div class="border-t border-gray-200 pt-4 mt-4">
-                <p><strong>Date:</strong> <%= new Date(log.date).toLocaleString() %></p>
-                <p><strong>Visitor Name:</strong> <%= log.visitorName %></p>
-                <p><strong>Notes:</strong> <%= log.notes %></p>
-              </div>
-            <% }) %>
+            </div>
           </div>
         <% }) %>
       </div>
     </div>
   </div>
-
-  <script>
-    const sidebarLinks = document.querySelectorAll('.sidebar-link');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    sidebarLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const tab = e.target.dataset.tab;
-
-        sidebarLinks.forEach(l => l.classList.remove('active'));
-        e.target.classList.add('active');
-
-        tabContents.forEach(content => {
-          if (content.id === tab) {
-            content.classList.add('active');
-          } else {
-            content.classList.remove('active');
-          }
-        });
-      });
-    });
-  </script>
 </body>
 </html>
