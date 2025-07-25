@@ -58,6 +58,7 @@ router.post('/new-with-booking', checkRole(['Police']), upload.single('photo'), 
   } catch (error) {
     res.redirect('/people/new-with-booking');
   }
+
 });
 
 router.get('/new', checkRole(['Police']), (req, res) => {
@@ -161,7 +162,7 @@ router.post('/:id/bookings', checkRole(['Police']), async (req, res) => {
         userId: req.session.userId,
       },
     });
-    res.redirect(`/cases/${newCase.id}`);
+    res.redirect('/dashboard');
   } catch (error) {
     res.redirect(`/people/${personId}`);
   }
