@@ -24,6 +24,7 @@ const printRouter = require('./print');
 const { router: notificationsRouter } = require('./notifications');
 const remandRouter = require('./remand');
 const releaseRouter = require('./release');
+const courtRouter = require('./court');
 
 router.use('/auth', authRouter);
 router.use('/people', peopleRouter);
@@ -48,5 +49,6 @@ router.use('/print', printRouter);
 router.use('/notifications', notificationsRouter);
 router.use('/remand', remandRouter);
 router.use('/release', releaseRouter);
+router.use('/court', courtRouter);
 
 module.exports = router;
