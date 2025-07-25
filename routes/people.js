@@ -50,8 +50,6 @@ router.get('/:id', async (req, res) => {
               },
             },
           },
-          remandRequests: true,
-          releaseRecord: true,
         },
       },
       nextOfKin: true,
