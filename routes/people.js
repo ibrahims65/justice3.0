@@ -3,6 +3,7 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
+const { hasPermission } = require('../middleware/permission');
 const upload = require('../middleware/upload');
 const { customAlphabet } = require('nanoid');
 const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
@@ -41,7 +42,7 @@ router.get('/', checkRole(['Police']), async (req, res) => {
   res.render('people/index', { people, user, page: '/people', breadcrumbs: [{ name: 'People', url: '/people' }] });
 });
 
-router.get('/new', checkRole(['Police']), (req, res) => {
+router.get('/new', checkRole(['Police']), hasPermission('create:person'), (req, res) => {
   res.render('people/new');
 });
 

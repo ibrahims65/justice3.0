@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "migrate": "npx cross-env NODE_OPTIONS='-r dotenv/config' prisma migrate dev",
-    "build:css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css"
+    "build:css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css",
+    "seed": "node prisma/seed.js"
   },
   "repository": {
     "type": "git",
