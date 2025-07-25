@@ -45,6 +45,10 @@ app.get('/dashboard', async (req, res) => {
     include: { role: true },
   });
 
+  if (user.role.name === 'SuperAdmin') {
+    return res.redirect('/admin');
+  }
+
   const { search, status, facility, startDate, endDate, page } = req.query;
   const pageNumber = parseInt(page) || 1;
   const pageSize = 10;

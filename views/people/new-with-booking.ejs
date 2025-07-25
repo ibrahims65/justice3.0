@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Person & Booking</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow-md p-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-8">New Person & Booking</h2>
+      <form action="/people/new-with-booking" method="POST" enctype="multipart/form-data">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+            <input type="text" name="name" id="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+          </div>
+          <div>
+            <label for="dob" class="block text-gray-700 text-sm font-bold mb-2">Date of Birth</label>
+            <input type="date" name="dob" id="dob" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+          </div>
+          <div>
+            <label for="address" class="block text-gray-700 text-sm font-bold mb-2">Address</label>
+            <input type="text" name="address" id="address" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label for="phone" class="block text-gray-700 text-sm font-bold mb-2">Phone</label>
+            <input type="text" name="phone" id="phone" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+            <input type="email" name="email" id="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label for="photo" class="block text-gray-700 text-sm font-bold mb-2">Person Photo</label>
+            <input type="file" name="photo" id="photo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+        </div>
+        <hr class="my-8">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Booking Details</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="charges" class="block text-gray-700 text-sm font-bold mb-2">Charges</label>
+            <textarea name="charges" id="charges" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+          </div>
+          <div>
+            <label for="policeStationId" class="block text-gray-700 text-sm font-bold mb-2">Police Station</label>
+            <select name="policeStationId" id="policeStationId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+              <% policeStations.forEach(station => { %>
+                <option value="<%= station.id %>"><%= station.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div>
+            <label for="arrestingOfficerName" class="block text-gray-700 text-sm font-bold mb-2">Arresting Officer Name</label>
+            <input type="text" name="arrestingOfficerName" id="arrestingOfficerName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label for="arrestingOfficerRank" class="block text-gray-700 text-sm font-bold mb-2">Arresting Officer Rank</label>
+            <input type="text" name="arrestingOfficerRank" id="arrestingOfficerRank" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+        </div>
+        <div class="mt-8 flex justify-end">
+          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Create Person & Booking
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
