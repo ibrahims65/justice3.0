@@ -22,6 +22,7 @@ model User {
   assignedCases   Case[]           @relation("AssignedCases")
   comments        Comment[]
   documents       Document[]
+  efiles          Efile[]
 }
 
 model Role {
@@ -108,6 +109,7 @@ model Case {
   assignee        User?    @relation("AssignedCases", fields: [assigneeId], references: [id])
   comments        Comment[]
   documents       Document[]
+  efiles          Efile[]
 }
 
 model Comment {
@@ -160,10 +162,24 @@ model PoliceStation {
 }
 
 model Court {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  cityId   Int
-  hearings Hearing[]
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  cityId     Int
+  hearings   Hearing[]
+  courtrooms Courtroom[]
+}
+
+model Courtroom {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  courtId Int
+  court   Court    @relation(fields: [courtId], references: [id])
+}
+
+model HearingType {
+    id      Int      @id @default(autoincrement())
+    name    String   @unique
+    hearings Hearing[]
 }
 
 model Evidence {
@@ -191,12 +207,25 @@ model Witness {
 
 model Hearing {
   id          Int      @id @default(autoincrement())
-  court       Court    @relation(fields: [courtId], references: [id])
-  courtId     Int
-  hearingDate DateTime
-  verdict     String?
-  case        Case     @relation(fields: [caseId], references: [id])
-  caseId      Int
+  court         Court       @relation(fields: [courtId], references: [id])
+  courtId       Int
+  hearingDate   DateTime
+  verdict       String?
+  case          Case        @relation(fields: [caseId], references: [id])
+  caseId        Int
+  hearingTypeId Int
+  hearingType   HearingType @relation(fields: [hearingTypeId], references: [id])
+}
+
+model Efile {
+  id        Int      @id @default(autoincrement())
+  name      String
+  url       String
+  caseId    Int
+  case      Case     @relation(fields: [caseId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model ActionHistory {

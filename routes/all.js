@@ -25,6 +25,7 @@ const { router: notificationsRouter } = require('./notifications');
 const remandRouter = require('./remand');
 const releaseRouter = require('./release');
 const courtRouter = require('./court');
+const efileRouter = require('./efile');
 
 router.use('/auth', authRouter);
 router.use('/people', peopleRouter);
@@ -50,5 +51,6 @@ router.use('/notifications', notificationsRouter);
 router.use('/remand', remandRouter);
 router.use('/release', releaseRouter);
 router.use('/court', courtRouter);
+router.use('/efile', efileRouter);
 
 module.exports = router;
