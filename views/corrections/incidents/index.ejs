@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incident Reports</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <%- include('../../partials/navbar', { user: user, page: '/corrections/incidents' }) %>
+  <div class="container mx-auto p-8">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold">Incident Reports</h1>
+      <a href="/corrections/incidents/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">New Incident Report</a>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="text-left">Inmate</th>
+            <th class="text-left">Date</th>
+            <th class="text-left">Reported By</th>
+            <th class="text-left">Description</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% incidents.forEach(incident => { %>
+            <tr>
+              <td><%= incident.booking.person.name %></td>
+              <td><%= new Date(incident.date).toLocaleString() %></td>
+              <td><%= incident.reportedBy.username %></td>
+              <td><%= incident.description %></td>
+              <td>
+                <a href="/corrections/incidents/<%= incident.id %>/edit" class="text-blue-500 hover:underline">Edit</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

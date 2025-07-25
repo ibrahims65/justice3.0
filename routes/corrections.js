@@ -228,4 +228,136 @@ router.get('/reports', checkRole(['Corrections']), async (req, res) => {
     });
 });
 
+// Activities
+router.get('/activities', checkRole(['Corrections']), async (req, res) => {
+    const activities = await prisma.activity.findMany({
+        include: {
+            booking: {
+                include: {
+                    person: true,
+                },
+            },
+        },
+    });
+    res.render('corrections/activities/index', { activities, user: req.user });
+});
+
+router.get('/activities/new', checkRole(['Corrections']), async (req, res) => {
+    const bookings = await prisma.booking.findMany({
+        where: {
+            case: {
+                status: 'Convicted',
+            },
+        },
+        include: {
+            person: true,
+        },
+    });
+    res.render('corrections/activities/new', { bookings, user: req.user });
+});
+
+router.post('/activities', checkRole(['Corrections']), async (req, res) => {
+    const { name, description, startTime, endTime, bookingId } = req.body;
+    await prisma.activity.create({
+        data: {
+            name,
+            description,
+            startTime: new Date(startTime),
+            endTime: new Date(endTime),
+            bookingId: parseInt(bookingId),
+        },
+    });
+    res.redirect('/corrections/activities');
+});
+
+// Incidents
+router.get('/incidents', checkRole(['Corrections']), async (req, res) => {
+    const incidents = await prisma.incident.findMany({
+        include: {
+            booking: {
+                include: {
+                    person: true,
+                },
+            },
+            reportedBy: true,
+        },
+    });
+    res.render('corrections/incidents/index', { incidents, user: req.user });
+});
+
+router.get('/incidents/new', checkRole(['Corrections']), async (req, res) => {
+    const bookings = await prisma.booking.findMany({
+        where: {
+            case: {
+                status: 'Convicted',
+            },
+        },
+        include: {
+            person: true,
+        },
+    });
+    res.render('corrections/incidents/new', { bookings, user: req.user });
+});
+
+router.post('/incidents', checkRole(['Corrections']), async (req, res) => {
+    const { bookingId, date, description } = req.body;
+    const reportedById = req.session.userId;
+    await prisma.incident.create({
+        data: {
+            bookingId: parseInt(bookingId),
+            date: new Date(date),
+            description,
+            reportedById,
+        },
+    });
+    res.redirect('/corrections/incidents');
+});
+
+// Visitors
+router.get('/visitors', checkRole(['Corrections']), async (req, res) => {
+    const visitors = await prisma.visitor.findMany();
+    res.render('corrections/visitors/index', { visitors, user: req.user });
+});
+
+router.get('/visitors/new', checkRole(['Corrections']), (req, res) => {
+    res.render('corrections/visitors/new', { user: req.user });
+});
+
+router.post('/visitors', checkRole(['Corrections']), async (req, res) => {
+    const { name, address, phone, email } = req.body;
+    await prisma.visitor.create({
+        data: {
+            name,
+            address,
+            phone,
+            email,
+        },
+    });
+    res.redirect('/corrections/visitors');
+});
+
+router.get('/visitors/:id/edit', checkRole(['Corrections']), async (req, res) => {
+    const visitor = await prisma.visitor.findUnique({ where: { id: parseInt(req.params.id) } });
+    res.render('corrections/visitors/edit', { visitor, user: req.user });
+});
+
+router.post('/visitors/:id', checkRole(['Corrections']), async (req, res) => {
+    const { name, address, phone, email } = req.body;
+    await prisma.visitor.update({
+        where: { id: parseInt(req.params.id) },
+        data: {
+            name,
+            address,
+            phone,
+            email,
+        },
+    });
+    res.redirect('/corrections/visitors');
+});
+
+router.post('/visitors/:id/delete', checkRole(['Corrections']), async (req, res) => {
+    await prisma.visitor.delete({ where: { id: parseInt(req.params.id) } });
+    res.redirect('/corrections/visitors');
+});
+
 module.exports = router;
