@@ -8,6 +8,7 @@
   <div class="container mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4">Add Lawyer Visit</h1>
     <form action="/lawyers/<%= lawyerId %>/visits" method="POST">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <div class="mb-4">
         <label for="notes" class="block text-gray-700">Notes</label>
         <textarea name="notes" id="notes" class="w-full border rounded p-2"></textarea>
