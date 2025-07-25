@@ -28,6 +28,12 @@
             <p><strong>Gender:</strong> <%= person.gender %></p>
             <p><strong>Address:</strong> <%= person.address %></p>
             <p><strong>Contact:</strong> <%= person.contact %></p>
+            <div class="mt-4">
+              <a href="/people/<%= person.id %>/bookings/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create Booking</a>
+              <% person.bookings.forEach(booking => { %>
+                <a href="/people/<%= booking.id %>/remand/new" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Request Remand for Booking #<%= booking.id %></a>
+              <% }) %>
+            </div>
           </div>
         </div>
       </div>
