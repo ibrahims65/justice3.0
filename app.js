@@ -144,7 +144,17 @@ app.get('/dashboard', async (req, res) => {
     });
   }
 
-  res.render('dashboard', { user, cases, bookings, people });
+  if (user.role.name === 'Police') {
+    res.redirect('/police/dashboard');
+  } else if (user.role.name === 'Prosecutor') {
+    res.redirect('/prosecutor/dashboard');
+  } else if (user.role.name === 'Court') {
+    res.redirect('/court/dashboard');
+  } else if (user.role.name === 'Corrections') {
+    res.redirect('/corrections/dashboard');
+  } else {
+    res.status(403).send("Unknown role");
+  }
 });
 
 

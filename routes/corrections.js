@@ -130,4 +130,36 @@ router.post('/inmates/:bookingId', checkRole(['Corrections']), async (req, res) 
   }
 });
 
+router.get('/dashboard', checkRole(['Corrections']), async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
+  });
+
+  const inmates = await prisma.person.findMany({
+    where: {
+      bookings: {
+        some: {
+          status: 'In-Custody',
+        },
+      },
+    },
+    include: {
+      bookings: true,
+    },
+  });
+
+  // These are not yet implemented in the schema
+  const transferRequests = [];
+  const remandOutcomes = [];
+
+  res.render('corrections/dashboard', {
+    user,
+    inmates,
+    transferRequests,
+    remandOutcomes,
+    page: '/corrections/dashboard',
+  });
+});
+
 module.exports = router;

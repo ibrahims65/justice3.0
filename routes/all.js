@@ -25,9 +25,11 @@ const { router: notificationsRouter } = require('./notifications');
 const remandRouter = require('./remand');
 const releaseRouter = require('./release');
 const policeRouter = require('./police');
+const courtRouter = require('./court');
 
 router.use('/auth', authRouter);
 router.use('/police', policeRouter);
+router.use('/court', courtRouter);
 router.use('/people', peopleRouter);
 router.use('/cases', casesRouter);
 router.use('/evidence', evidenceRouter);
