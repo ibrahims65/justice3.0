@@ -47,11 +47,25 @@ router.get('/dashboard', checkRole(['Police']), async (req, res) => {
     take: 5,
   });
 
+  const remandRequests = await prisma.remandRequest.findMany({
+    where: {
+      status: 'pending',
+    },
+    include: {
+      booking: {
+        include: {
+          person: true,
+        },
+      },
+    },
+  });
+
   res.render('police/dashboard', {
     user,
     bookings,
     cases,
     warrants,
+    remandRequests,
     page: '/police/dashboard',
   });
 });
