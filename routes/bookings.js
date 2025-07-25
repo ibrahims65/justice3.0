@@ -5,12 +5,16 @@ const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
 router.get('/', checkRole(['Police']), async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
+  });
   const bookings = await prisma.booking.findMany({
     include: {
       person: true,
     },
   });
-  res.render('bookings/index', { bookings });
+  res.render('bookings/index', { user, bookings, page: '/bookings' });
 });
 
 module.exports = router;
