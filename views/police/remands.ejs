@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remand Requests</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <%- include('../partials/navbar', { user: user, page: page }) %>
+
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <%- include('../partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
+    <div class="px-4 py-6 sm:px-0">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">Remand Requests</h2>
+        <a href="/police/dashboard" class="text-blue-500 hover:underline">Back to Dashboard</a>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <table class="w-full text-left">
+          <thead>
+            <tr>
+              <th class="py-2">Request ID</th>
+              <th class="py-2">Person</th>
+              <th class="py-2">Request Date</th>
+              <th class="py-2">Status</th>
+              <th class="py-2">Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% remandRequests.forEach(remand => { %>
+              <tr class="border-b border-gray-200">
+                <td class="py-2"><%= remand.id %></td>
+                <td class="py-2">
+                  <a href="/police/people/<%= remand.booking.person.id %>" class="text-blue-500 hover:underline"><%= remand.booking.person.name %></a>
+                </td>
+                <td class="py-2"><%= new Date(remand.requestDate).toLocaleDateString() %></td>
+                <td class="py-2"><%= remand.status %></td>
+                <td class="py-2"><%= remand.reason %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
