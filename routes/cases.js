@@ -91,12 +91,7 @@ router.get('/:id', async (req, res) => {
     where: { id: req.session.userId },
     include: { role: true },
   });
-
-  if (user.role.name === 'Police') {
-    res.render('police/case', { caseRecord, user });
-  } else {
-    res.render('cases/show', { caseRecord, user });
-  }
+  res.render('cases/show', { caseRecord, user });
 });
 
 router.post('/:id/delete', checkRole(['Police']), async (req, res) => {

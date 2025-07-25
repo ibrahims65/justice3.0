@@ -5,15 +5,11 @@ const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
 router.get('/', checkRole(['Police']), async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.userId },
-    include: { role: true },
-  });
   const warrants = await prisma.warrant.findMany({
     where: { status: 'Issued' },
     include: { case: { include: { booking: { include: { person: true } } } } },
   });
-  res.render('warrants/index', { user, warrants, page: '/warrants' });
+  res.render('warrants/index', { warrants });
 });
 
 router.post('/', checkRole(['Court']), async (req, res) => {

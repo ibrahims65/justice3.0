@@ -18,21 +18,13 @@ app.use(
   })
 );
 
-app.use(async (req, res, next) => {
+app.use((req, res, next) => {
   res.locals.page = req.path;
   const breadcrumbs = req.path.split('/').filter(Boolean).map((part, index, arr) => {
     const url = '/' + arr.slice(0, index + 1).join('/');
     return { name: part.charAt(0).toUpperCase() + part.slice(1), url };
   });
   res.locals.breadcrumbs = breadcrumbs;
-
-  if (req.session.userId) {
-    res.locals.user = await prisma.user.findUnique({
-      where: { id: req.session.userId },
-      include: { role: true },
-    });
-  }
-
   if (req.session.userId || req.path === '/auth/login' || req.path === '/auth/register') {
     next();
   } else {
@@ -52,12 +44,6 @@ app.get('/dashboard', async (req, res) => {
     where: { id: req.session.userId },
     include: { role: true },
   });
-
-  if (user.role.name === 'SuperAdmin') {
-    return res.redirect('/admin');
-  } else if (user.role.name === 'Police') {
-    return res.redirect('/police/dashboard');
-  }
 
   const { search, status, facility, startDate, endDate, page } = req.query;
   const pageNumber = parseInt(page) || 1;

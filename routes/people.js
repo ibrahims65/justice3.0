@@ -7,59 +7,6 @@ const upload = require('../middleware/upload');
 const { customAlphabet } = require('nanoid');
 const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
 
-router.get('/new-with-booking', checkRole(['Police']), async (req, res) => {
-  const policeStations = await prisma.policeStation.findMany();
-  res.render('people/new-with-booking', { policeStations });
-});
-
-router.post('/new-with-booking', checkRole(['Police']), upload.single('photo'), async (req, res) => {
-  const { name, dob, address, phone, email, charges, policeStationId, arrestingOfficerName, arrestingOfficerRank } = req.body;
-  try {
-    const newPerson = await prisma.person.create({
-      data: {
-        name,
-        dob: new Date(dob),
-        address,
-        phone,
-        email,
-        photoUrl: req.file ? `/uploads/${req.file.filename}` : null,
-      },
-    });
-
-    const newBooking = await prisma.booking.create({
-      data: {
-        personId: newPerson.id,
-        status: 'New Booking',
-        charges,
-        policeStationId: parseInt(policeStationId),
-        arrestingOfficerName,
-        arrestingOfficerRank,
-        custodyExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      },
-    });
-
-    const newCase = await prisma.case.create({
-      data: {
-        caseNumber: `CASE-${nanoid()}`,
-        status: 'New Arrest',
-        bookingId: newBooking.id,
-      },
-    });
-
-    await prisma.actionHistory.create({
-      data: {
-        action: 'Case Created',
-        caseId: newCase.id,
-        userId: req.session.userId,
-      },
-    });
-
-    res.redirect(`/cases/${newCase.id}`);
-  } catch (error) {
-    res.redirect('/people/new-with-booking');
-  }
-});
-
 router.get('/new', checkRole(['Police']), (req, res) => {
   res.render('people/new');
 });
@@ -81,15 +28,6 @@ router.post('/', checkRole(['Police']), upload.single('photo'), async (req, res)
       } catch (error) {
         res.redirect('/people/new');
       }
-});
-
-router.get('/', checkRole(['Police']), async (req, res) => {
-  const people = await prisma.person.findMany({
-    orderBy: {
-      name: 'asc',
-    },
-  });
-  res.render('people/index', { people, user: req.user, page: '/people' });
 });
 
 router.get('/:id', async (req, res) => {
