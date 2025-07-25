@@ -101,11 +101,10 @@ router.get('/:id', async (req, res) => {
     where: { id: req.session.userId },
     include: { role: true },
   });
-  if (user.role.name === 'Prosecutor') {
-    const prosecutors = await prisma.user.findMany({ where: { role: { name: 'Prosecutor' } } });
-    res.render('prosecutor/case', { caseRecord, user, prosecutors });
-  } else if (user.role.name === 'Court') {
-    res.render('court/case', { caseRecord, user });
+
+  if (user.role.name === 'Police') {
+    res.render('police/case', { caseRecord, user });
+
   } else {
     res.render('cases/show', { caseRecord, user });
   }

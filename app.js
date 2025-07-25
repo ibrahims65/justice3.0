@@ -51,6 +51,12 @@ app.get('/dashboard', async (req, res) => {
     include: { role: true },
   });
 
+  if (user.role.name === 'SuperAdmin') {
+    return res.redirect('/admin');
+  } else if (user.role.name === 'Police') {
+    return res.redirect('/police/dashboard');
+  }
+
   const { search, status, facility, startDate, endDate, page } = req.query;
   const pageNumber = parseInt(page) || 1;
   const pageSize = 10;

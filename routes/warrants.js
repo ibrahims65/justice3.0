@@ -9,7 +9,7 @@ router.get('/', checkRole(['Police']), async (req, res) => {
     where: { status: 'Issued' },
     include: { case: { include: { booking: { include: { person: true } } } } },
   });
-  res.render('warrants/index', { warrants });
+  res.render('warrants/index', { warrants, user: req.user, page: '/warrants' });
 });
 
 router.post('/', checkRole(['Court']), async (req, res) => {
