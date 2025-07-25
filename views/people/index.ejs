@@ -77,6 +77,22 @@
             <% }) %>
           </tbody>
         </table>
+        <div class="mt-4 flex justify-between">
+            <div>
+                <% if (currentPage > 1) { %>
+                <a href="/people?page=<%= currentPage - 1 %>" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l">
+                    Prev
+                </a>
+                <% } %>
+            </div>
+            <div>
+                <% if (currentPage < totalPages) { %>
+                <a href="/people?page=<%= currentPage + 1 %>" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
+                    Next
+                </a>
+                <% } %>
+            </div>
+        </div>
       </div>
     </div>
   </div>
@@ -86,8 +102,18 @@
     dropdowns.forEach(dropdown => {
       const button = dropdown.querySelector('button');
       const menu = dropdown.querySelector('.hidden');
-      button.addEventListener('click', () => {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
         menu.classList.toggle('hidden');
+      });
+    });
+
+    window.addEventListener('click', () => {
+      dropdowns.forEach(dropdown => {
+        const menu = dropdown.querySelector('.hidden');
+        if (!menu.classList.contains('hidden')) {
+          menu.classList.add('hidden');
+        }
       });
     });
 
