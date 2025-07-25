@@ -26,6 +26,7 @@
             <td class="border p-2"><%= warrant.expiresAt.toLocaleString() %></td>
             <td class="border p-2">
               <form action="/warrants/<%= warrant.id %>/execute" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <button type="submit" class="bg-green-500 text-white p-1 rounded">Mark as Executed</button>
               </form>
             </td>

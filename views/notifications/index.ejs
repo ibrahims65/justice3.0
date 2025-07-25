@@ -14,6 +14,7 @@
           <p class="text-sm text-gray-600"><%= notification.createdAt.toLocaleString() %></p>
           <% if (!notification.isRead) { %>
             <form action="/notifications/<%= notification.id %>/read" method="POST" class="mt-2">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <button type="submit" class="text-blue-500 hover:underline">Mark as Read</button>
             </form>
           <% } %>

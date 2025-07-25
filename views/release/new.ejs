@@ -10,6 +10,7 @@
   <div class="container mx-auto p-8">
     <h1 class="text-2xl font-bold mb-4">New Release for Booking #<%= bookingId %></h1>
     <form action="/release" method="POST">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <input type="hidden" name="bookingId" value="<%= bookingId %>">
       <div class="bg-white p-6 rounded-lg shadow-md">
         <div class="mb-4">

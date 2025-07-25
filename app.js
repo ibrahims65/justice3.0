@@ -1,11 +1,15 @@
 const express = require('express');
 const session = require('express-session');
+const helmet = require('helmet');
+const csurf = require('csurf');
 const { checkRole } = require('./middleware/auth');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const logger = require('./logger');
 
 const app = express();
+
+app.use(helmet());
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
@@ -18,7 +22,11 @@ app.use(
   })
 );
 
+const csrfProtection = csurf();
+app.use(csrfProtection);
+
 app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
   res.locals.page = req.path;
   const breadcrumbs = req.path.split('/').filter(Boolean).map((part, index, arr) => {
     const url = '/' + arr.slice(0, index + 1).join('/');
@@ -161,6 +169,11 @@ app.get('/court', checkRole(['Court']), (req, res) => {
 
 app.get('/corrections', checkRole(['Corrections']), (req, res) => {
   res.send('Corrections Dashboard');
+});
+
+app.use((err, req, res, next) => {
+  logger.error(err.stack);
+  res.status(500).render('error', { err });
 });
 
 app.use((req, res) => {

@@ -11,6 +11,7 @@
   <div class="container mx-auto p-8">
     <h1 class="text-2xl font-bold mb-4">Bulk Update Inmates</h1>
     <form action="/corrections/bulk-update" method="POST">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <table class="min-w-full bg-white">
         <thead>
           <tr>
