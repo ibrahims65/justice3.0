@@ -23,6 +23,7 @@ model User {
   comments        Comment[]
   documents       Document[]
   efiles          Efile[]
+  reportedIncidents Incident[]
 }
 
 model Role {
@@ -77,6 +78,9 @@ model Booking {
   custodyExpiresAt    DateTime?
   remandRequests      RemandRequest[]
   releaseRecord       ReleaseRecord?
+  activities          Activity[]
+  incidents           Incident[]
+  visitors            Visitor[]
 }
 
 model Case {
@@ -215,6 +219,35 @@ model Hearing {
   caseId        Int
   hearingTypeId Int
   hearingType   HearingType @relation(fields: [hearingTypeId], references: [id])
+}
+
+model Activity {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  bookingId   Int
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+}
+
+model Incident {
+  id          Int      @id @default(autoincrement())
+  description String
+  date        DateTime
+  bookingId   Int
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+  reportedById Int
+  reportedBy  User     @relation(fields: [reportedById], references: [id])
+}
+
+model Visitor {
+  id        Int      @id @default(autoincrement())
+  name      String
+  address   String?
+  phone     String?
+  email     String?  @unique
+  bookings  Booking[]
 }
 
 model Efile {
