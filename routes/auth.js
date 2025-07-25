@@ -66,6 +66,7 @@ router.post('/login', async (req, res) => {
   if (user && (await bcrypt.compare(password, user.password))) {
     req.session.userId = user.id;
     req.session.role = user.role.name;
+    console.log("Logged in role:", user.role.name);
     res.redirect('/dashboard');
   } else {
     res.redirect('/auth/login');

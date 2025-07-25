@@ -23,4 +23,53 @@ router.post('/cases/:caseId/notes', checkRole(['Prosecutor', 'Court']), async (r
   }
 });
 
+router.get('/dashboard', checkRole(['Prosecutor']), async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
+  });
+
+  const cases = await prisma.case.findMany({
+    where: { prosecutorId: user.id },
+    include: {
+      booking: {
+        include: {
+          person: true,
+        },
+      },
+    },
+  });
+
+  const remandRequests = await prisma.remandRequest.findMany({
+    where: { status: 'pending' },
+    include: {
+      booking: {
+        include: {
+          person: true,
+          case: true,
+        },
+      },
+    },
+  });
+
+  const upcomingHearings = await prisma.hearing.findMany({
+    where: {
+      case: {
+        prosecutorId: user.id,
+      },
+      hearingDate: {
+        gte: new Date(),
+      },
+    },
+  });
+
+  res.render('prosecutor/dashboard', {
+    user,
+    cases,
+    remandRequests,
+    upcomingHearings,
+    page: '/prosecutor/dashboard',
+  });
+});
+
 module.exports = router;

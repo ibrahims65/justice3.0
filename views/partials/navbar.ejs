@@ -19,7 +19,9 @@
               <a href="/police/search" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/police/search') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Search</a>
             <% } %>
             <% if (user.role.name === 'Prosecutor') { %>
+              <a href="/prosecutor/dashboard" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/prosecutor/dashboard') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Dashboard</a>
               <a href="/cases" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/cases') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Cases</a>
+              <a href="/remand" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/remand') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Remand Requests</a>
             <% } %>
             <% if (user.role.name === 'Court') { %>
               <a href="/cases" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/cases') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Cases</a>
