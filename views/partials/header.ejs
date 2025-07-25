@@ -11,5 +11,6 @@
 <body class="bg-gray-100">
   <%- include('navbar', { user: user, page: page }) %>
   <div class="container mx-auto p-8">
+    <%- include('breadcrumbs', { breadcrumbs: breadcrumbs }) %>
     <h1 class="text-2xl font-bold mb-4"><%= title %></h1>
     <div class="bg-white p-6 rounded-lg shadow-md">

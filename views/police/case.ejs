@@ -1,0 +1,182 @@
+<%- include('../partials/header', { title: 'Case Details', user: user, page: '/cases' }) %>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+  <div class="md:col-span-2">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h2 class="text-3xl font-bold text-gray-800"><%= caseRecord.caseNumber %></h2>
+          <p class="text-lg text-gray-600">
+            <span class="badge
+              <% if (caseRecord.status === 'Accepted' || caseRecord.status === 'Convicted') { %> badge-success <% } %>
+              <% if (caseRecord.status === 'Rejected' || caseRecord.status === 'Denied') { %> badge-danger <% } %>
+              <% if (caseRecord.status === 'Information Requested' || caseRecord.status === 'Sent Back to Prosecutor') { %> badge-warning <% } %>
+            ">
+              <%= caseRecord.status %>
+            </span>
+          </p>
+        </div>
+        <div class="text-right">
+          <p class="text-gray-600">Booking Date: <%= caseRecord.booking.bookingDate.toLocaleString() %></p>
+          <a href="/cases/<%= caseRecord.id %>/edit" class="text-blue-500 hover:underline mr-4">Edit Case Details</a>
+          <a href="/print/case/<%= caseRecord.id %>" class="btn-primary">Print Case Summary</a>
+        </div>
+      </div>
+
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-xl font-bold text-gray-800 mb-4">Person Details</h3>
+          <div class="flex items-center">
+            <% if (caseRecord.booking.person.photoUrl) { %>
+              <img src="<%= caseRecord.booking.person.photoUrl %>" alt="Person Photo" class="w-24 h-24 rounded-full mr-8">
+            <% } %>
+            <div>
+              <p><strong>Name:</strong> <%= caseRecord.booking.person.name %></p>
+              <p><strong>Date of Birth:</strong> <%= caseRecord.booking.person.dob.toDateString() %></p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-gray-800 mb-4">Booking Summary</h3>
+          <p><strong>Arresting Officer:</strong> <%= caseRecord.booking.arrestingOfficerName %> (<%= caseRecord.booking.arrestingOfficerRank %>)</p>
+        </div>
+      </div>
+      <div class="mt-8">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Case Details</h3>
+        <p><strong>Crime Scene Details:</strong> <%= caseRecord.crimeSceneDetails %></p>
+        <p><strong>Interrogation Logs:</strong> <%= caseRecord.interrogationLogs %></p>
+        <p><strong>Preliminary Findings:</strong> <%= caseRecord.preliminaryFindings %></p>
+      </div>
+    </div>
+
+    <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Evidence</h3>
+      <a href="/evidence/new/<%= caseRecord.id %>" class="btn-primary mb-4 inline-block">Add Evidence</a>
+      <ul>
+        <% caseRecord.evidence.sort((a, b) => b.version - a.version).forEach(item => { %>
+          <li class="border-b border-gray-200 py-2">
+            <p><%= item.description %> (v<%= item.version %>)</p>
+            <a href="<%= item.fileUrl %>" class="text-blue-500 hover:underline">View File</a>
+            <p class="text-sm text-gray-600">Tags: <%= item.tags %></p>
+            <form action="/evidence/<%= item.id %>/new-version" method="POST" enctype="multipart/form-data" class="mt-2">
+              <input type="file" name="file" required>
+              <button type="submit" class="bg-yellow-500 text-white p-1 rounded">Upload New Version</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+
+    <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Witnesses</h3>
+      <a href="/witnesses/new/<%= caseRecord.id %>" class="btn-primary mb-4 inline-block">Add Witness</a>
+      <ul>
+        <% caseRecord.witnesses.forEach(witness => { %>
+          <li class="border-b border-gray-200 py-2">
+            <p><strong><%= witness.name %>:</strong> <%= witness.statement %></p>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+
+    <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Victims</h3>
+      <a href="/victims/new/<%= caseRecord.id %>" class="btn-primary mb-4 inline-block">Add Victim</a>
+      <ul>
+        <% caseRecord.victims.forEach(victim => { %>
+          <li class="border-b border-gray-200 py-2">
+            <p><strong><%= victim.name %></strong></p>
+            <p><%= victim.statement %></p>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+
+    <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Investigations</h3>
+      <a href="/investigations/new/<%= caseRecord.id %>" class="btn-primary mb-4 inline-block">Add Investigation</a>
+      <ul>
+        <% caseRecord.investigations.forEach(investigation => { %>
+          <li class="border-b border-gray-200 py-2">
+            <p><strong>Investigator:</strong> <%= investigation.investigatorName %> (<%= investigation.investigatorBadgeNumber %>)</p>
+            <p><strong>Rank:</strong> <%= investigation.investigatorRank %></p>
+            <p><strong>Details:</strong> <%= investigation.details %></p>
+            <h4 class="font-bold mt-4">Media</h4>
+            <ul>
+              <% investigation.media.forEach(media => { %>
+                <li class="border-t border-gray-200 py-2">
+                  <a href="<%= media.url %>" class="text-blue-500 hover:underline" target="_blank"><%= media.type %></a>
+                </li>
+              <% }) %>
+            </ul>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  </div>
+
+  <div class="md:col-span-1">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Actions</h3>
+      <% if ((caseRecord.status === 'New Arrest' || caseRecord.status === 'Information Requested') && user.role.name === 'Police') { %>
+        <form action="/cases/<%= caseRecord.id %>/submit" method="POST" class="mb-4">
+          <button type="submit" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Submit to Prosecutor</button>
+        </form>
+      <% } %>
+      <% if (caseRecord.status === 'Rejected' && user.role.name === 'Police') { %>
+        <form action="/cases/<%= caseRecord.id %>/submit" method="POST" class="mb-4">
+          <button type="submit" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Resubmit to Prosecutor</button>
+        </form>
+      <% } %>
+    </div>
+
+    <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Search Warrants</h3>
+      <form action="/search-warrants" method="POST" class="mb-4">
+        <input type="hidden" name="caseId" value="<%= caseRecord.id %>">
+        <input type="text" name="requestedBy" placeholder="Requesting Officer" class="w-full border rounded p-2 mb-2">
+        <textarea name="reason" placeholder="Reason for Warrant" class="w-full border rounded p-2 mb-2"></textarea>
+        <input type="text" name="targetType" placeholder="Target Type (e.g., Property, Vehicle)" class="w-full border rounded p-2 mb-2">
+        <input type="text" name="targetDetails" placeholder="Target Details (e.g., Address, License Plate)" class="w-full border rounded p-2 mb-2">
+        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Request Search Warrant</button>
+      </form>
+      <ul>
+        <% caseRecord.searchWarrants.forEach(warrant => { %>
+          <li class="border-b border-gray-200 py-2">
+            <p><strong>Status:</strong> <%= warrant.status %></p>
+            <p><strong>Location:</strong> <%= warrant.location %></p>
+            <p><strong>Scope:</strong> <%= warrant.scope %></p>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+
+    <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+      <button onclick="toggleActionHistory()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">View Case History</button>
+      <div id="action-history" style="display:none;" class="mt-4">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Action History</h3>
+        <ul>
+          <% caseRecord.actions.forEach(action => { %>
+            <li class="border-b border-gray-200 py-2">
+              <p class="text-sm text-gray-600"><%= action.timestamp.toLocaleString() %></p>
+              <p><%= action.action %> by <%= action.user.username %></p>
+              <% if (action.notes) { %>
+                <p class="text-sm text-gray-500 mt-1">Notes: <%= action.notes %></p>
+              <% } %>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleActionHistory() {
+    const history = document.getElementById('action-history');
+    if (history.style.display === 'none') {
+      history.style.display = 'block';
+    } else {
+      history.style.display = 'none';
+    }
+  }
+</script>

@@ -1,0 +1,54 @@
+<%- include('../partials/header', { title: 'Search', user: user, page: '/search' }) %>
+<form action="/search" method="GET" class="mb-8">
+  <div class="flex">
+    <input type="text" name="query" placeholder="Search for people, cases, or warrants..." class="w-full border rounded-l-lg p-2" value="<%= query || '' %>">
+    <button type="submit" class="bg-blue-500 text-white p-2 rounded-r-lg">Search</button>
+  </div>
+</form>
+
+<% if (query) { %>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div>
+      <h2 class="text-xl font-bold mb-4">People</h2>
+      <% if (people.length > 0) { %>
+        <ul>
+          <% people.forEach(person => { %>
+            <li class="border-b border-gray-200 py-2">
+              <a href="/people/<%= person.id %>" class="text-blue-500 hover:underline"><%= person.name %></a>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p>No people found.</p>
+      <% } %>
+    </div>
+    <div>
+      <h2 class="text-xl font-bold mb-4">Cases</h2>
+      <% if (cases.length > 0) { %>
+        <ul>
+          <% cases.forEach(caseItem => { %>
+            <li class="border-b border-gray-200 py-2">
+              <a href="/cases/<%= caseItem.id %>" class="text-blue-500 hover:underline"><%= caseItem.caseNumber %></a>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p>No cases found.</p>
+      <% } %>
+    </div>
+    <div>
+      <h2 class="text-xl font-bold mb-4">Warrants</h2>
+      <% if (warrants.length > 0) { %>
+        <ul>
+          <% warrants.forEach(warrant => { %>
+            <li class="border-b border-gray-200 py-2">
+              <a href="/warrants" class="text-blue-500 hover:underline"><%= warrant.details %></a>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p>No warrants found.</p>
+      <% } %>
+    </div>
+  </div>
+<% } %>

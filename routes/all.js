@@ -25,10 +25,14 @@ const { router: notificationsRouter } = require('./notifications');
 const remandRouter = require('./remand');
 const releaseRouter = require('./release');
 const bookingsRouter = require('./bookings');
+const policeRouter = require('./police');
+const searchRouter = require('./search');
 
 router.use('/auth', authRouter);
 router.use('/people', peopleRouter);
 router.use('/bookings', bookingsRouter);
+router.use('/police', policeRouter);
+router.use('/search', searchRouter);
 router.use('/cases', casesRouter);
 router.use('/evidence', evidenceRouter);
 router.use('/witnesses', witnessesRouter);
