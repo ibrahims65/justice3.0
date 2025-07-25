@@ -5,6 +5,10 @@ const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
 router.get('/', checkRole(['Police']), async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
+  });
   const { query } = req.query;
   let people = [];
   let cases = [];
@@ -40,11 +44,11 @@ router.get('/', checkRole(['Police']), async (req, res) => {
   }
 
   res.render('search/index', {
+    user,
     query,
     people,
     cases,
     warrants,
-    user: req.user,
     page: '/search',
   });
 });

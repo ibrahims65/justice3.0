@@ -33,6 +33,17 @@ router.get('/dashboard', checkRole(['Police']), async (req, res) => {
     where: {
       status: 'Issued',
     },
+    include: {
+      case: {
+        include: {
+          booking: {
+            include: {
+              person: true,
+            },
+          },
+        },
+      },
+    },
     take: 5,
   });
 
