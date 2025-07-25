@@ -25,10 +25,10 @@
             <% if (user.role.name === 'Corrections') { %>
               <a href="/corrections" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/corrections') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Inmates</a>
             <% } %>
-            <% if (user.role.name === 'SuperAdmin') { %>
-              <div class="relative" x-data="{ open: false }">
-                <button @click="open = !open" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Admin</button>
-                <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20">
+            <% if (user.role.name === 'Admin') { %>
+              <div class="relative">
+                <button class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Admin</button>
+                <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 hidden">
                   <a href="/admin/regions" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Regions</a>
                   <a href="/admin/districts" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Districts</a>
                   <a href="/admin/cities" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cities</a>
