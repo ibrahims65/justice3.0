@@ -5,7 +5,9 @@ const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
 router.get('/', checkRole(['Corrections']), async (req, res) => {
-  const { search, facility } = req.query;
+  const { search, facility, page } = req.query;
+  const pageNumber = parseInt(page) || 1;
+  const pageSize = 10;
   let where = {
     bookings: {
       some: {
@@ -36,6 +38,8 @@ router.get('/', checkRole(['Corrections']), async (req, res) => {
         },
       },
     },
+    skip: (pageNumber - 1) * pageSize,
+    take: pageSize,
   });
 
   res.render('corrections/index', { people });
