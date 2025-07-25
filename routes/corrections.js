@@ -4,21 +4,105 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
+router.get('/', checkRole(['Corrections']), async (req, res) => {
+  const { search, facility } = req.query;
+  let where = {
+    deletedAt: null,
+    bookings: {
+      some: {
+        case: {
+          status: 'Convicted',
+          deletedAt: null,
+        },
+      },
+    },
+  };
+
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: 'insensitive' } },
+      { bookings: { some: { case: { caseNumber: { contains: search, mode: 'insensitive' } } } } },
+    ];
+  }
+
+  if (facility) {
+    where.bookings.some.facilityName = { contains: facility, mode: 'insensitive' };
+  }
+
+  const people = await prisma.person.findMany({
+    where,
+    include: {
+      bookings: {
+        include: {
+          case: true,
+        },
+      },
+    },
+  });
+
+  res.render('corrections/index', { people });
+});
+
 router.get('/inmates/:personId', checkRole(['Corrections']), async (req, res) => {
   const person = await prisma.person.findUnique({
     where: { id: parseInt(req.params.personId) },
     include: {
       bookings: {
         include: {
-          case: true,
-          lawyers: { include: { visits: true } },
+          case: {
+            include: {
+              hearings: true,
+              lawyers: { include: { visits: true } },
+            },
+          },
           medicalRecords: { include: { medications: true } },
+          disciplinaryActions: true,
+          visitationLogs: true,
         },
       },
       nextOfKin: true,
     },
   });
   res.render('corrections/inmateProfile', { person });
+});
+
+router.get('/disciplinary/new/:bookingId', checkRole(['Corrections']), (req, res) => {
+  res.render('corrections/disciplinary/new', { bookingId: req.params.bookingId });
+});
+
+router.post('/disciplinary/:bookingId', checkRole(['Corrections']), async (req, res) => {
+  const { date, infraction, sanction, notes } = req.body;
+  const bookingId = parseInt(req.params.bookingId);
+  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+  await prisma.disciplinaryAction.create({
+    data: {
+      bookingId,
+      date: new Date(date),
+      infraction,
+      sanction,
+      notes,
+    },
+  });
+  res.redirect(`/corrections/inmates/${booking.personId}`);
+});
+
+router.get('/visitation/new/:bookingId', checkRole(['Corrections']), (req, res) => {
+  res.render('corrections/visitation/new', { bookingId: req.params.bookingId });
+});
+
+router.post('/visitation/:bookingId', checkRole(['Corrections']), async (req, res) => {
+  const { date, visitorName, notes } = req.body;
+  const bookingId = parseInt(req.params.bookingId);
+  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+  await prisma.visitationLog.create({
+    data: {
+      bookingId,
+      date: new Date(date),
+      visitorName,
+      notes,
+    },
+  });
+  res.redirect(`/corrections/inmates/${booking.personId}`);
 });
 
 router.post('/inmates/:bookingId', checkRole(['Corrections']), async (req, res) => {

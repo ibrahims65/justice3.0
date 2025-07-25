@@ -50,6 +50,8 @@ router.get('/:id', async (req, res) => {
               },
             },
           },
+          remandRequests: true,
+          releaseRecord: true,
         },
       },
       nextOfKin: true,
@@ -87,6 +89,7 @@ router.post('/:id/bookings', checkRole(['Police']), async (req, res) => {
         policeStationId: parseInt(policeStationId),
         arrestingOfficerName,
         arrestingOfficerRank,
+        custodyExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
     });
     await prisma.person.update({
@@ -111,6 +114,14 @@ router.post('/:id/bookings', checkRole(['Police']), async (req, res) => {
   } catch (error) {
     res.redirect(`/people/${personId}`);
   }
+});
+
+router.get('/:id/remand/new', checkRole(['Police']), (req, res) => {
+  res.render('remand/new', { bookingId: req.params.id });
+});
+
+router.get('/:id/release/new', checkRole(['Police']), (req, res) => {
+  res.render('release/new', { bookingId: req.params.id });
 });
 
 module.exports = router;

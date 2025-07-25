@@ -1,9 +1,9 @@
 const express = require('express');
 const session = require('express-session');
-const authRouter = require('./routes/auth');
 const { checkRole } = require('./middleware/auth');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const logger = require('./logger');
 
 const app = express();
 
@@ -32,69 +32,11 @@ app.use((req, res, next) => {
   }
 });
 
-app.use('/auth', authRouter);
-
-const peopleRouter = require('./routes/people');
-app.use('/people', peopleRouter);
-
-const casesRouter = require('./routes/cases');
-app.use('/cases', casesRouter);
-
-const evidenceRouter = require('./routes/evidence');
-app.use('/evidence', evidenceRouter);
-
-const witnessesRouter = require('./routes/witnesses');
-app.use('/witnesses', witnessesRouter);
-
-const hearingsRouter = require('./routes/hearings');
-app.use('/hearings', hearingsRouter);
-
-const victimsRouter = require('./routes/victims');
-app.use('/victims', victimsRouter);
-
-const adminRouter = require('./routes/admin');
-app.use('/admin', adminRouter);
-
-const prosecutorRouter = require('./routes/prosecutor');
-app.use('/prosecutor', prosecutorRouter);
-
-const lawyersRouter = require('./routes/lawyers');
-app.use('/lawyers', lawyersRouter);
-
-const pleaBargainsRouter = require('./routes/pleaBargains');
-app.use('/plea-bargains', pleaBargainsRouter);
-
-const investigationsRouter = require('./routes/investigations');
-app.use('/investigations', investigationsRouter);
-
-const bailDecisionsRouter = require('./routes/bailDecisions');
-app.use('/bail-decisions', bailDecisionsRouter);
-
-const medicalRecordsRouter = require('./routes/medicalRecords');
-app.use('/medical-records', medicalRecordsRouter);
-
-const nextOfKinRouter = require('./routes/nextOfKin');
-app.use('/next-of-kin', nextOfKinRouter);
-
-const correctionsRouter = require('./routes/corrections');
-app.use('/corrections', correctionsRouter);
-
-const warrantsRouter = require('./routes/warrants');
-app.use('/warrants', warrantsRouter);
-
-const searchWarrantsRouter = require('./routes/searchWarrants');
-app.use('/search-warrants', searchWarrantsRouter);
-
-const reportsRouter = require('./routes/reports');
-app.use('/reports', reportsRouter);
-
-const printRouter = require('./routes/print');
-app.use('/print', printRouter);
-
-const { router: notificationsRouter } = require('./routes/notifications');
-app.use('/notifications', notificationsRouter);
+const allRoutes = require('./routes/all');
+app.use(allRoutes);
 
 app.get('/dashboard', async (req, res) => {
+  logger.info(`User ${req.session.userId} visited the dashboard`);
   if (!req.session.userId) {
     return res.redirect('/auth/login');
   }
@@ -103,7 +45,7 @@ app.get('/dashboard', async (req, res) => {
     include: { role: true },
   });
 
-  const { search, status, facility } = req.query;
+  const { search, status, facility, startDate, endDate } = req.query;
   let where = {};
 
   if (search) {
@@ -111,6 +53,13 @@ app.get('/dashboard', async (req, res) => {
       { name: { contains: search, mode: 'insensitive' } },
       { caseNumber: { contains: search, mode: 'insensitive' } },
     ];
+  }
+
+  if (startDate && endDate) {
+    where.bookingDate = {
+      gte: new Date(startDate),
+      lte: new Date(endDate),
+    };
   }
 
   if (status) {
