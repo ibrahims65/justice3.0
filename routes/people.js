@@ -32,7 +32,7 @@ router.post('/', checkRole(['Police']), upload.single('photo'), async (req, res)
 
 router.get('/:id', async (req, res) => {
   const person = await prisma.person.findFirst({
-    where: { id: parseInt(req.params.id), deletedAt: null },
+    where: { id: parseInt(req.params.id) },
     include: {
       bookings: {
         include: {
