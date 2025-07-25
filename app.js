@@ -147,9 +147,6 @@ app.get('/dashboard', async (req, res) => {
   res.render('dashboard', { user, cases, bookings, people });
 });
 
-app.get('/police', checkRole(['Police']), (req, res) => {
-  res.send('Police Dashboard');
-});
 
 app.get('/prosecutor', checkRole(['Prosecutor']), (req, res) => {
   res.send('Prosecutor Dashboard');
