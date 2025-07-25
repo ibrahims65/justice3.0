@@ -47,7 +47,7 @@ router.get('/dashboard', checkRole(['Police']), async (req, res) => {
     take: 5,
   });
 
-  const remandRequests = await prisma.RemandRequest.findMany({
+  const remandRequests = await prisma.remandRequest.findMany({
     where: {
       status: 'pending',
     },
