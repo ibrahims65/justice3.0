@@ -134,4 +134,98 @@ router.post('/inmates/:bookingId', checkRole(['Corrections']), async (req, res) 
   }
 });
 
+router.get('/bulk-update', checkRole(['Corrections']), async (req, res) => {
+    const user = await prisma.user.findUnique({
+        where: { id: req.session.userId },
+        include: { role: true },
+    });
+    const people = await prisma.person.findMany({
+        where: {
+            bookings: {
+                some: {
+                    case: {
+                        status: 'Convicted',
+                    },
+                },
+            },
+        },
+        include: {
+            bookings: {
+                include: {
+                    case: true,
+                },
+            },
+        },
+    });
+    res.render('corrections/bulk-update', { user, people });
+});
+
+router.post('/bulk-update', checkRole(['Corrections']), async (req, res) => {
+    const { personIds, status, facility } = req.body;
+    const personIdInts = personIds.map(id => parseInt(id));
+
+    await prisma.booking.updateMany({
+        where: {
+            personId: {
+                in: personIdInts,
+            },
+        },
+        data: {
+            status: status,
+            facilityName: facility,
+        },
+    });
+
+    res.redirect('/corrections');
+});
+
+router.get('/reports', checkRole(['Corrections']), async (req, res) => {
+    const user = await prisma.user.findUnique({
+        where: { id: req.session.userId },
+        include: { role: true },
+    });
+
+    const populationByFacility = await prisma.booking.groupBy({
+        by: ['facilityName'],
+        _count: {
+            facilityName: true,
+        },
+        where: {
+            case: {
+                status: 'Convicted',
+            },
+        },
+    });
+
+    const disciplinaryActionsByInfraction = await prisma.disciplinaryAction.groupBy({
+        by: ['infraction'],
+        _count: {
+            infraction: true,
+        },
+    });
+
+    const visitationLogs = await prisma.visitationLog.findMany({
+        include: {
+            booking: {
+                include: {
+                    person: true,
+                },
+            },
+        },
+    });
+
+    res.render('corrections/reports', {
+        user,
+        populationByFacility: populationByFacility.reduce((acc, curr) => {
+            acc[curr.facilityName] = curr._count.facilityName;
+            return acc;
+        }, {}),
+        disciplinaryActionsByInfraction: disciplinaryActionsByInfraction.reduce((acc, curr) => {
+            acc[curr.infraction] = curr._count.infraction;
+            return acc;
+        }, {}),
+        visitationLogs,
+    });
+});
+
 module.exports = router;
