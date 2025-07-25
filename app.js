@@ -45,7 +45,9 @@ app.get('/dashboard', async (req, res) => {
     include: { role: true },
   });
 
-  const { search, status, facility, startDate, endDate } = req.query;
+  const { search, status, facility, startDate, endDate, page } = req.query;
+  const pageNumber = parseInt(page) || 1;
+  const pageSize = 10;
   let where = {};
 
   if (search) {
@@ -83,6 +85,8 @@ app.get('/dashboard', async (req, res) => {
       include: {
         person: true,
       },
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize,
     });
     cases = await prisma.case.findMany({
       where,
