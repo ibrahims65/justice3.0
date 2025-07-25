@@ -1,21 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Case Details</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    .tab-button.active {
-      border-bottom: 2px solid #4f46e5;
-    }
-  </style>
-</head>
-<body class="bg-gray-100">
-  <%- include('../partials/navbar', { user: user }) %>
-  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="bg-white rounded-lg shadow-md p-8">
-      <div class="flex justify-between items-start">
+<%- include('../partials/header', { title: 'Case Details', user: user, page: '/cases' }) %>
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+  <div class="bg-white rounded-lg shadow-md p-8">
+    <div class="flex justify-between items-start">
         <div>
           <h2 class="text-3xl font-bold text-gray-800"><%= caseRecord.caseNumber %></h2>
           <p class="text-lg text-gray-600">

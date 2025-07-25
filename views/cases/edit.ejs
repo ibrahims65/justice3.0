@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Case</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-  <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="bg-white rounded-lg shadow-md p-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-8">Edit Case <%= caseRecord.caseNumber %></h2>
-      <form action="/cases/<%= caseRecord.id %>" method="POST">
+<%- include('../partials/header', { title: 'Edit Case', user: user, page: '/cases' }) %>
+<div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+  <div class="bg-white rounded-lg shadow-md p-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-8">Edit Case <%= caseRecord.caseNumber %></h2>
+    <form action="/cases/<%= caseRecord.id %>" method="POST">
         <%- include('_form.ejs', { caseRecord: caseRecord }) %>
         <div class="mt-8 flex justify-end">
           <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
