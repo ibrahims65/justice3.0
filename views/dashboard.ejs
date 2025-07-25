@@ -6,7 +6,6 @@
     <p class="text-gray-600 mb-8">Your role is: <%= user.role.name %></p>
 
     <form action="/dashboard" method="GET" class="mb-4 flex space-x-2">
-
         <input type="text" name="search" placeholder="Search..." class="border rounded p-2 flex-grow">
         <input type="date" name="startDate" class="border rounded p-2">
         <input type="date" name="endDate" class="border rounded p-2">
@@ -46,22 +45,18 @@
         <% } %>
       <% }) %>
       <% if (user.role.name === 'Police') { %>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div class="lg:col-span-2">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-medium text-gray-800">Active Bookings</h3>
-                <p class="text-3xl font-bold text-blue-500"><%= bookings.filter(b => b.status === 'New Booking').length %></p>
-              </div>
-              <div class="bg-white rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-medium text-gray-800">People Registered</h3>
-                <p class="text-3xl font-bold text-blue-500"><%= people.length %></p>
-              </div>
-            </div>
-            <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-              <h3 class="text-lg font-medium text-gray-800 mb-4">Bookings by Day</h3>
-              <canvas id="bookingsByDayChart"></canvas>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-medium text-gray-800">Active Bookings</h3>
+            <p class="text-3xl font-bold text-blue-500"><%= bookings.filter(b => b.status === 'New Booking').length %></p>
+          </div>
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-medium text-gray-800">Total Bookings</h3>
+            <p class="text-3xl font-bold text-blue-500"><%= bookings.length %></p>
+          </div>
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-medium text-gray-800">People Registered</h3>
+            <p class="text-3xl font-bold text-blue-500"><%= people.length %></p>
           </div>
         </div>
         <div class="mt-8">
@@ -80,73 +75,70 @@
                     const now = new Date().getTime();
                     const distance = countDownDate - now;
 
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    document.getElementById("dashboard-countdown-<%= booking.id %>").innerHTML = `${hours}h ${minutes}m ${seconds}s`;
 
-                        document.getElementById("dashboard-countdown-<%= booking.id %>").innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+                    if (distance < 0) {
+                      clearInterval(dashboard_x_<%= booking.id %>);
+                      document.getElementById("dashboard-countdown-<%= booking.id %>").innerHTML = "EXPIRED";
+                    }
+                  };
+                  const dashboard_x_<%= booking.id %> = setInterval(dashboard_countdown_<%= booking.id %>, 1000);
+                </script>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Your Bookings</h3>
+          <ul id="bookings-list">
+            <% bookings.slice(0, 10).forEach(booking => { %>
+              <li class="border-b border-gray-200 py-2"><a href="/people/<%= booking.personId %>" class="text-blue-500 hover:underline">Booking #<%= booking.id %></a> - <%= booking.status %></li>
+            <% }) %>
+          </ul>
+          <% if (bookings.length > 10) { %>
+            <button id="load-more" class="bg-blue-500 text-white p-2 rounded mt-4">Load More</button>
+          <% } %>
+          <script>
+            let page = 2;
+            const loadMoreButton = document.getElementById('load-more');
+            const bookingsList = document.getElementById('bookings-list');
 
-                        if (distance < 0) {
-                          clearInterval(dashboard_x_<%= booking.id %>);
-                          document.getElementById("dashboard-countdown-<%= booking.id %>").innerHTML = "EXPIRED";
-                        }
-                      };
-                      const dashboard_x_<%= booking.id %> = setInterval(dashboard_countdown_<%= booking.id %>, 1000);
-                    </script>
-                  </li>
-                <% }) %>
-              </ul>
-            </div>
-            <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-              <h3 class="text-lg font-medium text-gray-800 mb-4">Cases by Status</h3>
-              <canvas id="caseStatusChart"></canvas>
-            </div>
+            if (loadMoreButton) {
+              loadMoreButton.addEventListener('click', async () => {
+                const response = await fetch(`/dashboard?page=${page}`);
+                const newBookings = await response.text();
+                const newBookingsHtml = new DOMParser().parseFromString(newBookings, 'text/html');
+                const newBookingsList = newBookingsHtml.getElementById('bookings-list');
+                bookingsList.innerHTML += newBookingsList.innerHTML;
+                page++;
+              });
+            }
+          </script>
+        </div>
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Bookings by Status</h3>
+          <div style="max-height: 400px; overflow-y: auto;">
+            <canvas id="bookingStatusChart" height="300"></canvas>
           </div>
         </div>
-
         <script>
-          const bookingsByDay = <%- JSON.stringify(bookings.reduce((acc, booking) => {
-            const day = new Date(booking.bookingDate).toLocaleDateString();
-            acc[day] = (acc[day] || 0) + 1;
+          const bookingStatusData = <%- JSON.stringify(bookings.reduce((acc, booking) => {
+            acc[booking.status] = (acc[booking.status] || 0) + 1;
             return acc;
           }, {})) %>;
 
-          const bookingsByDayCtx = document.getElementById('bookingsByDayChart').getContext('2d');
-          new Chart(bookingsByDayCtx, {
-            type: 'line',
+          const bookingCtx = document.getElementById('bookingStatusChart').getContext('2d');
+          new Chart(bookingCtx, {
+            type: 'pie',
             data: {
-              labels: Object.keys(bookingsByDay),
+              labels: Object.keys(bookingStatusData),
               datasets: [{
-                label: 'Bookings',
-                data: Object.values(bookingsByDay),
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-              }]
-            },
-            options: {
-              scales: {
-                y: {
-                  beginAtZero: true
-                }
-              }
-            }
-          });
-
-          const caseStatusData = <%- JSON.stringify(cases.reduce((acc, caseRecord) => {
-            acc[caseRecord.status] = (acc[caseRecord.status] || 0) + 1;
-            return acc;
-          }, {})) %>;
-
-          const caseCtx = document.getElementById('caseStatusChart').getContext('2d');
-          new Chart(caseCtx, {
-            type: 'doughnut',
-            data: {
-              labels: Object.keys(caseStatusData),
-              datasets: [{
-                label: 'Cases by Status',
-                data: Object.values(caseStatusData),
+                label: 'Bookings by Status',
+                data: Object.values(bookingStatusData),
                 backgroundColor: [
                   'rgba(255, 99, 132, 0.7)',
                   'rgba(54, 162, 235, 0.7)',

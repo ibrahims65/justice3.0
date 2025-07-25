@@ -43,21 +43,6 @@
           <% }) %>
         </tbody>
       </table>
-      <button id="load-more" class="bg-blue-500 text-white p-2 rounded mt-4">Load More</button>
-      <script>
-        let page = 2;
-        const loadMoreButton = document.getElementById('load-more');
-        const peopleTableBody = document.querySelector('table tbody');
-
-        loadMoreButton.addEventListener('click', async () => {
-          const response = await fetch(`/corrections?page=${page}`);
-          const newPeople = await response.text();
-          const newPeopleHtml = new DOMParser().parseFromString(newPeople, 'text/html');
-          const newPeopleTableBody = newPeopleHtml.querySelector('table tbody');
-          peopleTableBody.innerHTML += newPeopleTableBody.innerHTML;
-          page++;
-        });
-      </script>
     </div>
   </div>
 </body>
