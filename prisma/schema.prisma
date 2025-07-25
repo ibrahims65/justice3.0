@@ -38,6 +38,7 @@ model Person {
   bookings  Booking[]
   nextOfKin NextOfKin[]
   deletedAt DateTime?
+  rebookedAt DateTime?
 }
 
 model Booking {
@@ -59,6 +60,7 @@ model Booking {
   arrestingOfficerRank String?
   disciplinaryActions DisciplinaryAction[]
   visitationLogs      VisitationLog[]
+  releasedAt          DateTime?
 }
 
 model Case {

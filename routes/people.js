@@ -89,6 +89,10 @@ router.post('/:id/bookings', checkRole(['Police']), async (req, res) => {
         arrestingOfficerRank,
       },
     });
+    await prisma.person.update({
+      where: { id: personId },
+      data: { rebookedAt: new Date() },
+    });
     const newCase = await prisma.case.create({
       data: {
         caseNumber: `CASE-${nanoid()}`,

@@ -117,6 +117,7 @@ router.post('/inmates/:bookingId', checkRole(['Corrections']), async (req, res) 
         rehabilitationPrograms,
         releaseDate: releaseDate ? new Date(releaseDate) : null,
         paroleEligibility: paroleEligibility ? new Date(paroleEligibility) : null,
+        releasedAt: releaseDate ? new Date(releaseDate) : null,
       },
     });
     await prisma.actionHistory.create({

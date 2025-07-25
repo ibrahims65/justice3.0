@@ -1,92 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Reports</title>
-  <link rel="stylesheet" href="/css/input.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporting Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-  <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">Reports</h1>
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <h2 class="text-xl font-bold mb-2">Case Volume</h2>
-        <div class="flex space-x-2">
-          <input type="date" id="case-volume-start-date" class="border rounded p-2">
-          <input type="date" id="case-volume-end-date" class="border rounded p-2">
-          <button onclick="generateCaseVolumeReport()" class="bg-blue-500 text-white p-2 rounded">Generate</button>
+<body class="bg-gray-100">
+  <%- include('../partials/navbar', { user: user, page: page }) %>
+
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <%- include('../partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
+    <div class="px-4 py-6 sm:px-0">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Reporting Dashboard</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800">Total Cases</h3>
+          <p class="text-3xl font-bold text-blue-500"><%= totalCases %></p>
         </div>
-        <canvas id="case-volume-chart"></canvas>
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800">Total Convictions</h3>
+          <p class="text-3xl font-bold text-green-500"><%= totalConvictions %></p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800">Average Case Turnaround Time</h3>
+          <p class="text-3xl font-bold text-yellow-500"><%= averageTurnaroundTime %> days</p>
+        </div>
       </div>
-      <div>
-        <h2 class="text-xl font-bold mb-2">Conviction Rates</h2>
-        <div class="flex space-x-2">
-          <input type="date" id="conviction-rates-start-date" class="border rounded p-2">
-          <input type="date" id="conviction-rates-end-date" class="border rounded p-2">
-          <button onclick="generateConvictionRatesReport()" class="bg-blue-500 text-white p-2 rounded">Generate</button>
+
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Cases by Status</h3>
+          <canvas id="caseStatusChart" width="400" height="200"></canvas>
         </div>
-        <canvas id="conviction-rates-chart"></canvas>
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-medium text-gray-800 mb-4">Conviction Rates</h3>
+          <canvas id="convictionRateChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+      <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-medium text-gray-800">Recidivism Rate</h3>
+        <p class="text-3xl font-bold text-red-500"><%= recidivismRate.toFixed(2) %>%</p>
       </div>
     </div>
   </div>
 
   <script>
-    let caseVolumeChart;
-    async function generateCaseVolumeReport() {
-      const startDate = document.getElementById('case-volume-start-date').value;
-      const endDate = document.getElementById('case-volume-end-date').value;
-      const response = await fetch('/reports/case-volume', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ startDate, endDate }),
-      });
-      const data = await response.json();
+    const caseStatusData = <%- JSON.stringify(caseStatusCounts) %>;
+    const convictionRateData = <%- JSON.stringify(convictionRate) %>;
 
-      if (caseVolumeChart) {
-        caseVolumeChart.destroy();
+    const caseStatusCtx = document.getElementById('caseStatusChart').getContext('2d');
+    new Chart(caseStatusCtx, {
+      type: 'pie',
+      data: {
+        labels: Object.keys(caseStatusData),
+        datasets: [{
+          label: 'Cases by Status',
+          data: Object.values(caseStatusData),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(153, 102, 255, 0.7)',
+            'rgba(255, 159, 64, 0.7)'
+          ],
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
       }
-      caseVolumeChart = new Chart(document.getElementById('case-volume-chart'), {
-        type: 'bar',
-        data: {
-          labels: ['Case Volume'],
-          datasets: [{
-            label: 'Cases',
-            data: [data.caseVolume],
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1,
-          }],
-        },
-      });
-    }
+    });
 
-    let convictionRatesChart;
-    async function generateConvictionRatesReport() {
-      const startDate = document.getElementById('conviction-rates-start-date').value;
-      const endDate = document.getElementById('conviction-rates-end-date').value;
-      const response = await fetch('/reports/conviction-rates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ startDate, endDate }),
-      });
-      const data = await response.json();
-
-      if (convictionRatesChart) {
-        convictionRatesChart.destroy();
+    const convictionRateCtx = document.getElementById('convictionRateChart').getContext('2d');
+    new Chart(convictionRateCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Convicted', 'Not Convicted'],
+        datasets: [{
+          label: 'Conviction Rate',
+          data: [convictionRateData, 100 - convictionRateData],
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(255, 99, 132, 0.7)',
+          ],
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
       }
-      convictionRatesChart = new Chart(document.getElementById('conviction-rates-chart'), {
-        type: 'pie',
-        data: {
-          labels: ['Convicted', 'Not Convicted'],
-          datasets: [{
-            data: [data.convictionRate, 100 - data.convictionRate],
-            backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
-            borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
-            borderWidth: 1,
-          }],
-        },
-      });
-    }
+    });
   </script>
 </body>
 </html>
