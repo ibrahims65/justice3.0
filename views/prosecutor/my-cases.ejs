@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cases</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <%- include('../partials/navbar', { user: user, page: '/prosecutor/my-cases' }) %>
+  <div class="container mx-auto p-8">
+    <h1 class="text-2xl font-bold mb-4">My Cases</h1>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="text-left">Case Number</th>
+            <th class="text-left">Status</th>
+            <th class="text-left">Person</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% cases.forEach(caseRecord => { %>
+            <tr>
+              <td><%= caseRecord.caseNumber %></td>
+              <td><%= caseRecord.status %></td>
+              <td><%= caseRecord.booking.person.name %></td>
+              <td>
+                <a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline">View</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
