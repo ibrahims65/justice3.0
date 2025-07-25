@@ -52,8 +52,8 @@ app.get('/dashboard', async (req, res) => {
 
   if (search) {
     where.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
-      { caseNumber: { contains: search, mode: 'insensitive' } },
+      { person: { name: { contains: search, mode: 'insensitive' } } },
+      { case: { caseNumber: { contains: search, mode: 'insensitive' } } },
     ];
   }
 

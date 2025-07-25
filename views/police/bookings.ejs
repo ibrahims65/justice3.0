@@ -14,40 +14,44 @@
     <div class="px-4 py-6 sm:px-0">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold text-gray-800">Bookings</h2>
-        <a href="/police/dashboard" class="text-blue-500 hover:underline">Back to Dashboard</a>
+        <a href="/people/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create Booking</a>
       </div>
 
       <div class="bg-white rounded-lg shadow-md p-6">
-        <table class="w-full text-left">
-          <thead>
-            <tr>
-              <th class="py-2">Booking ID</th>
-              <th class="py-2">Person</th>
-              <th class="py-2">Booking Date</th>
-              <th class="py-2">Status</th>
-              <th class="py-2">Remand Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% bookings.forEach(booking => { %>
-              <tr class="border-b border-gray-200">
-                <td class="py-2"><%= booking.id %></td>
-                <td class="py-2">
-                  <a href="/police/people/<%= booking.person.id %>" class="text-blue-500 hover:underline"><%= booking.person.name %></a>
-                </td>
-                <td class="py-2"><%= new Date(booking.bookingDate).toLocaleDateString() %></td>
-                <td class="py-2"><%= booking.status %></td>
-                <td class="py-2">
-                  <% if (booking.remandRequests.length > 0) { %>
-                    <%= booking.remandRequests[booking.remandRequests.length - 1].status %>
-                  <% } else { %>
-                    N/A
-                  <% } %>
-                </td>
+        <% if (bookings.length > 0) { %>
+          <table class="w-full text-left">
+            <thead>
+              <tr>
+                <th class="py-2">Booking ID</th>
+                <th class="py-2">Person</th>
+                <th class="py-2">Booking Date</th>
+                <th class="py-2">Status</th>
+                <th class="py-2">Remand Status</th>
               </tr>
-            <% }) %>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <% bookings.forEach(booking => { %>
+                <tr class="border-b border-gray-200">
+                  <td class="py-2"><%= booking.id %></td>
+                  <td class="py-2">
+                    <a href="/police/people/<%= booking.person.id %>" class="text-blue-500 hover:underline"><%= booking.person.name %></a>
+                  </td>
+                  <td class="py-2"><%= new Date(booking.bookingDate).toLocaleDateString() %></td>
+                  <td class="py-2"><%= booking.status %></td>
+                  <td class="py-2">
+                    <% if (booking.remandRequests.length > 0) { %>
+                      <%= booking.remandRequests[booking.remandRequests.length - 1].status %>
+                    <% } else { %>
+                      N/A
+                    <% } %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p>No bookings found.</p>
+        <% } %>
       </div>
     </div>
   </div>
