@@ -28,7 +28,12 @@ router.get('/', checkRole(['Police']), async (req, res) => {
     where.createdAt = { gte: new Date(registrationDate) };
   }
 
-  const people = await prisma.person.findMany({ where });
+  const people = await prisma.person.findMany({
+    where,
+    include: {
+      bookings: true,
+    },
+  });
   const user = await prisma.user.findUnique({
     where: { id: req.session.userId },
     include: { role: true },

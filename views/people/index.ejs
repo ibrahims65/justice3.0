@@ -56,7 +56,9 @@
                     <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden">
                       <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                         <a href="/people/<%= person.id %>/bookings/new" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Add Charge</a>
-                        <a href="/cases/new/<%= person.bookings[0]?.id %>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Start Case</a>
+                        <% if (person.bookings && person.bookings.length > 0) { %>
+                          <a href="/cases/new/<%= person.bookings[0].id %>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Start Case</a>
+                        <% } %>
                         <a href="/people/<%= person.id %>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">View Profile</a>
                       </div>
                     </div>
