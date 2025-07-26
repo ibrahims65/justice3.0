@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Case Details</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="/css/custom.css" rel="stylesheet">
   <style>
     .tab-button.active {
       border-bottom: 2px solid #4f46e5;
@@ -468,6 +469,33 @@
             </ul>
             </div>
           </div>
+          <hr class="section-divider" />
+
+          <div class="prosecutor-actions">
+            <h3 class="section-title">Prosecutor Actions</h3>
+            <p class="section-description">These actions apply to the current case and will be recorded in the system.</p>
+
+            <div class="action-buttons">
+              <% if (caseRecord.status === 'Prosecutor Review' && user.role.name === 'Prosecutor') { %>
+                <form action="/cases/<%= caseRecord.id %>/accept" method="POST" class="inline">
+                  <button type="submit" class="action-button">Accept Case</button>
+                </form>
+                <form action="/cases/<%= caseRecord.id %>/reject" method="POST" class="inline">
+                  <button type="submit" class="action-button">Reject Case</button>
+                </form>
+                <form action="/cases/<%= caseRecord.id %>/request-info" method="POST" class="inline">
+                  <button type="submit" class="action-button">Request More Info</button>
+                </form>
+              <% } %>
+              <form action="/cases/<%= caseRecord.id %>/evaluation" method="POST" class="inline">
+                <button type="submit" class="action-button">Update Evaluation</button>
+              </form>
+              <form action="/prosecutor/cases/<%= caseRecord.id %>/notes" method="POST" class="inline">
+                <button type="submit" class="action-button">Add Prosecutor Note</button>
+              </form>
+            </div>
+          </div>
+
           <div class="mt-8 bg-gray-50 rounded-lg p-6">
             <button onclick="toggleActionHistory()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">View Case History</button>
             <div id="action-history" style="display:none;" class="mt-4">
