@@ -9,7 +9,7 @@ router.get('/new/:caseId', checkRole(['Police']), (req, res) => {
   res.render('evidence/new', { caseId: req.params.caseId });
 });
 
-router.post('/', checkRole(['Police']), upload.single('file'), async (req, res) => {
+router.post('/', checkRole(['Police']), upload.single('media'), async (req, res) => {
   const { description, tags, caseId } = req.body;
   try {
     await prisma.evidence.create({

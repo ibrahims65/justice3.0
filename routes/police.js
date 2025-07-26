@@ -206,4 +206,25 @@ router.get('/remands', checkRole(['Police']), async (req, res) => {
   });
 });
 
+router.get('/booking/:id', checkRole(['Police']), async (req, res) => {
+  const booking = await prisma.booking.findUnique({
+    where: { id: parseInt(req.params.id) },
+    include: {
+      person: true,
+      case: true,
+      remandRequests: true,
+    },
+  });
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
+  });
+
+  res.render('police/booking-detail', {
+    user,
+    booking,
+    page: '/police/bookings',
+  });
+});
+
 module.exports = router;

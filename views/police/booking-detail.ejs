@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <%- include('../partials/navbar', { user: user, page: page }) %>
+
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow-md p-8">
+      <div class="flex justify-between items-start">
+        <div>
+          <h2 class="text-3xl font-bold text-gray-800">Booking #<%= booking.id %></h2>
+          <p class="text-lg text-gray-600">
+            <span class="badge
+              <% if (booking.status === 'Accepted' || booking.status === 'Convicted') { %> badge-success <% } %>
+              <% if (booking.status === 'Rejected' || booking.status === 'Denied') { %> badge-danger <% } %>
+              <% if (booking.status === 'Information Requested' || booking.status === 'Sent Back to Prosecutor') { %> badge-warning <% } %>
+            ">
+              <%= booking.status %>
+            </span>
+          </p>
+        </div>
+        <div class="text-right">
+          <p class="text-gray-600">Booking Date: <%= booking.bookingDate.toLocaleString() %></p>
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Person Details</h3>
+        <p><strong>Name:</strong> <a href="/police/people/<%= booking.person.id %>" class="text-blue-500 hover:underline"><%= booking.person.name %></a></p>
+        <p><strong>Date of Birth:</strong> <%= booking.person.dob.toDateString() %></p>
+      </div>
+
+      <div class="mt-8">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Booking Details</h3>
+        <p><strong>Arresting Officer:</strong> <%= booking.arrestingOfficerName %> (<%= booking.arrestingOfficerRank %>)</p>
+        <p><strong>Charges:</strong> <%= booking.charges %></p>
+      </div>
+
+      <% if (booking.case) { %>
+        <div class="mt-8">
+          <h3 class="text-xl font-bold text-gray-800 mb-4">Case Details</h3>
+          <p><strong>Case Number:</strong> <a href="/cases/<%= booking.case.id %>" class="text-blue-500 hover:underline"><%= booking.case.caseNumber %></a></p>
+          <% if (booking.case.status === 'New Arrest' || booking.case.status === 'Information Requested') { %>
+            <form action="/cases/<%= booking.case.id %>/submit" method="POST" class="mt-4">
+              <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Submit to Prosecutor</button>
+            </form>
+          <% } %>
+        </div>
+      <% } %>
+
+    </div>
+  </div>
+</body>
+</html>

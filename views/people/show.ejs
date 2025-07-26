@@ -40,6 +40,7 @@
       <ul>
         <% person.bookings.forEach(booking => { %>
           <li class="border-b border-gray-200 py-4">
+            <p><strong>Booking ID:</strong> <a href="/police/booking/<%= booking.id %>" class="text-blue-500 hover:underline"><%= booking.id %></a></p>
             <p><strong>Booking Date:</strong> <%= booking.bookingDate.toLocaleString() %></p>
             <p><strong>Status:</strong> <%= booking.status %></p>
             <% if (booking.custodyExpiresAt) { %>
