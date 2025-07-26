@@ -7,56 +7,60 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link href="/css/custom.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
 </head>
-<body class="bg-gray-900 text-white" x-data="{ activeTile: null, search: '', caseModal: false, selectedCase: null, people: <%= JSON.stringify(people) %>, cases: [], showCasePanel: false }">
+<body class="bg-gray-900 text-white" x-data="{ activeTile: null, search: '', caseModal: false, selectedCase: null, people: <%= JSON.stringify(people) %>, cases: [], showCasePanel: false, showFilters: false }">
   <%- include('../partials/navbar', { user: user, page: page }) %>
   <div class="watermark"></div>
   <div class="flex h-screen pt-16">
     <div class="w-1/4 bg-gray-800 p-8">
-      <h2 class="text-2xl font-bold mb-8">Filters</h2>
-      <form>
-        <div class="mb-4">
-          <label for="search" class="block text-sm font-medium">Search</label>
-          <input type="text" name="search" id="search" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" x-model="search">
-        </div>
-        <div class="mb-4">
-          <label for="role" class="block text-sm font-medium">Role</label>
-          <select id="role" name="role" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            <option value="">All</option>
-            <option value="Suspect">Suspect</option>
-            <option value="Victim">Victim</option>
-            <option value="Witness">Witness</option>
-            <option value="Officer">Officer</option>
-          </select>
-        </div>
-        <div class="mb-4">
-          <label for="bookingStatus" class="block text-sm font-medium">Booking Status</label>
-          <select id="bookingStatus" name="bookingStatus" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            <option value="">All</option>
-            <option value="In Custody">In Custody</option>
-            <option value="Released">Released</option>
-            <option value="Overdue Hold">Overdue Hold</option>
-          </select>
-        </div>
-        <div class="mb-4">
-          <label for="caseStatus" class="block text-sm font-medium">Case Status</label>
-          <select id="caseStatus" name="caseStatus" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            <option value="">All</option>
-            <option value="Active">Active</option>
-            <option value="Submitted">Submitted</option>
-            <option value="Rejected">Rejected</option>
-          </select>
-        </div>
-        <div class="mb-4">
-          <label for="gender" class="block text-sm font-medium">Gender</label>
-          <select id="gender" name="gender" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            <option value="">All</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-        </div>
-        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Filter</button>
-      </form>
+      <button @click="showFilters = !showFilters" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Filter/Search</button>
+      <div x-show="showFilters" x-collapse>
+        <h2 class="text-2xl font-bold mb-8">Filters</h2>
+        <form>
+          <div class="mb-4">
+            <label for="search" class="block text-sm font-medium">Search</label>
+            <input type="text" name="search" id="search" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" x-model="search">
+          </div>
+          <div class="mb-4">
+            <label for="role" class="block text-sm font-medium">Role</label>
+            <select id="role" name="role" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <option value="">All</option>
+              <option value="Suspect">Suspect</option>
+              <option value="Victim">Victim</option>
+              <option value="Witness">Witness</option>
+              <option value="Officer">Officer</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="bookingStatus" class="block text-sm font-medium">Booking Status</label>
+            <select id="bookingStatus" name="bookingStatus" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <option value="">All</option>
+              <option value="In Custody">In Custody</option>
+              <option value="Released">Released</option>
+              <option value="Overdue Hold">Overdue Hold</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="caseStatus" class="block text-sm font-medium">Case Status</label>
+            <select id="caseStatus" name="caseStatus" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <option value="">All</option>
+              <option value="Active">Active</option>
+              <option value="Submitted">Submitted</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="gender" class="block text-sm font-medium">Gender</label>
+            <select id="gender" name="gender" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <option value="">All</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Filter</button>
+        </form>
+      </div>
     </div>
     <div class="w-1/2 bg-gray-900 p-8">
       <h1 class="text-4xl font-bold mb-8">People Intelligence</h1>
@@ -78,31 +82,17 @@
         </template>
       </div>
     </div>
-    <div class="w-1/4 bg-gray-800 p-8" x-show="activeTile" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" @click.away="activeTile = null">
-      <div class="person-intelligence-modal bg-gray-700 p-8 rounded-lg">
+    <div x-show="activeTile" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+      <div class="relative top-20 mx-auto p-5 border w-1/2 shadow-lg rounded-md bg-gray-800" @click.away="activeTile = null">
         <template x-for="person in people">
           <div x-show="activeTile === person.id">
-            <h2 class="text-2xl font-bold mb-4" x-text="person.name"></h2>
-            <p><strong>ID:</strong> <span x-text="person.id"></span></p>
-            <p><strong>DOB:</strong> <span x-text="new Date(person.dob).toLocaleDateString()"></span></p>
-            <h3 class="text-xl font-bold mt-8 mb-4">Booking History</h3>
-            <ul>
-              <template x-for="booking in person.bookings">
-                <li class="border-b border-gray-600 py-2">
-                  <p><strong>ID:</strong> <span x-text="booking.id"></span></p>
-                  <p><strong>Date:</strong> <span x-text="new Date(booking.bookingDate).toLocaleString()"></span></p>
-                  <p><strong>Status:</strong> <span x-text="booking.status"></span></p>
-                  <template x-if="booking.case">
-                    <button @click="caseModal = true; selectedCase = booking.case" class="text-blue-500 hover:underline">View Case</button>
-                  </template>
-                </li>
-              </template>
-            </ul>
+            <div class="flex items-center">
+              <img :src="person.photoUrl || '/images/default-avatar.png'" alt="Photo" class="w-12 h-12 rounded-full mr-4">
+              <h3 class="text-2xl font-bold" x-text="person.name"></h3>
+            </div>
             <div class="mt-8">
-              <a :href="'/people/' + person.id + '/bookings/new'" class="action-button">Add Booking</a>
-              <a :href="'/print/wrapsheet/' + person.id" class="action-button">View Wrap Sheet</a>
-              <button class="action-button">Flag for Review</button>
-              <button @click="fetchCases(person.id)" class="action-button">View All Cases</button>
+              <button @click="showCasePanel = true; fetchCases(person.id)" class="action-button">View All Cases</button>
+              <button @click="activeTile = null" class="action-button">Close</button>
             </div>
           </div>
         </template>
