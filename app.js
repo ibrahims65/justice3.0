@@ -145,7 +145,7 @@ app.get('/dashboard', async (req, res) => {
   }
 
   if (user.role.name === 'Police') {
-    res.redirect('/police/dashboard');
+    res.redirect('/police/tactical-dashboard');
   } else if (user.role.name === 'Prosecutor') {
     res.redirect('/prosecutor/dashboard');
   } else if (user.role.name === 'Court') {

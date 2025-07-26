@@ -22,6 +22,7 @@
   "homepage": "https://github.com/ibrahims65/justice2.0#readme",
   "dependencies": {
     "@prisma/client": "^6.12.0",
+    "alpinejs": "^3.14.9",
     "bcrypt": "^6.0.0",
     "bwip-js": "^4.7.0",
     "chart.js": "^4.5.0",

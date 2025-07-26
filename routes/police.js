@@ -227,4 +227,70 @@ router.get('/booking/:id', checkRole(['Police']), async (req, res) => {
   });
 });
 
+router.get('/tactical-dashboard', checkRole(['Police']), async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
+  });
+
+  const bookingsToday = await prisma.booking.count({
+    where: {
+      bookingDate: {
+        gte: new Date(new Date().setHours(0, 0, 0, 0)),
+      },
+    },
+  });
+
+  const overdueHolds = await prisma.booking.count({
+    where: {
+      bookingDate: {
+        lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      },
+      status: 'New Arrest',
+    },
+  });
+
+  const pendingSubmissions = await prisma.booking.count({
+    where: {
+      case: {
+        status: 'New Arrest',
+      },
+    },
+  });
+
+  const inCustody = await prisma.booking.count({
+    where: {
+      status: 'In-Custody',
+    },
+  });
+
+  const recentActivity = await prisma.actionHistory.findMany({
+    where: {
+      user: {
+        role: {
+          name: 'Police',
+        },
+      },
+    },
+    orderBy: {
+      timestamp: 'desc',
+    },
+    take: 10,
+    include: {
+      case: true,
+      user: true,
+    },
+  });
+
+  res.render('police/tactical-dashboard', {
+    user,
+    bookingsToday,
+    overdueHolds,
+    pendingSubmissions,
+    inCustody,
+    recentActivity,
+    page: '/police/tactical-dashboard',
+  });
+});
+
 module.exports = router;
