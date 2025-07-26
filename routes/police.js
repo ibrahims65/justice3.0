@@ -117,16 +117,70 @@ router.get('/dashboard', checkRole(['Police']), async (req, res) => {
   });
 });
 
-router.get('/people', checkRole(['Police']), async (req, res) => {
-  const people = await prisma.person.findMany();
+router.get('/people-redesigned', checkRole(['Police']), async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.session.userId },
     include: { role: true },
   });
-  res.render('police/people', {
+
+  const { search, role, bookingStatus, caseStatus, gender, ageRange } = req.query;
+  let where = {};
+
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: 'insensitive' } },
+      { id: { equals: parseInt(search) || 0 } },
+      { bookings: { some: { id: { equals: parseInt(search) || 0 } } } },
+      { bookings: { some: { case: { caseNumber: { contains: search, mode: 'insensitive' } } } } },
+    ];
+  }
+
+  if (role) {
+    // This requires a `roles` field on the `Person` model, which is not yet implemented.
+  }
+
+  if (bookingStatus) {
+    where.bookings = {
+      some: {
+        status: bookingStatus,
+      },
+    };
+  }
+
+  if (caseStatus) {
+    where.bookings = {
+      some: {
+        case: {
+          status: caseStatus,
+        },
+      },
+    };
+  }
+
+  if (gender) {
+    where.gender = gender;
+  }
+
+  if (ageRange) {
+    // This requires calculating the age from the `dob` field.
+  }
+
+  const people = await prisma.person.findMany({
+    where,
+    include: {
+      bookings: {
+        include: {
+          case: true,
+        },
+      },
+    },
+    take: 20,
+  });
+
+  res.render('police/people-redesigned', {
     user,
     people,
-    page: '/police/people',
+    page: '/police/people-redesigned',
   });
 });
 

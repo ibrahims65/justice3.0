@@ -12,7 +12,7 @@
             <a href="/dashboard" class="px-3 py-2 rounded-md text-sm font-medium <%= page === '/dashboard' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Dashboard</a>
             <% if (user.role.name === 'Police') { %>
               <a href="/police/dashboard" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/police/dashboard') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Dashboard</a>
-              <a href="/police/people" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/police/people') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">People</a>
+              <a href="/police/people-redesigned" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/police/people') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">People</a>
               <a href="/police/bookings" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/police/bookings') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Bookings</a>
               <a href="/police/remands" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/police/remands') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Remands</a>
               <a href="/warrants" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/warrants') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Warrants</a>
