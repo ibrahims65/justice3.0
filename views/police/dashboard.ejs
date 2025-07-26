@@ -5,57 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Police Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="/css/custom.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
   <%- include('../partials/navbar', { user: user, page: page }) %>
 
   <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <%- include('../partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
     <div class="px-4 py-6 sm:px-0">
       <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, <%= user.username %>!</h2>
       <p class="text-gray-600 mb-8">Your role is: <%= user.role.name %></p>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <a href="/police/bookings" class="bg-white rounded-lg shadow-md p-6 block hover:bg-gray-50">
-          <h3 class="text-lg font-medium text-gray-800">Total Bookings</h3>
-          <p class="text-3xl font-bold text-blue-500"><%= bookings.length %></p>
-        </a>
-        <a href="/police/people" class="bg-white rounded-lg shadow-md p-6 block hover:bg-gray-50">
-          <h3 class="text-lg font-medium text-gray-800">People Registered</h3>
-          <p class="text-3xl font-bold text-blue-500"><%= people.length %></p>
-        </a>
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800">Active Warrants</h3>
-          <p class="text-3xl font-bold text-blue-500"><%= warrants.length %></p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-medium text-gray-800 mb-4">Quick Actions</h3>
+            <div class="grid grid-cols-1 gap-4">
+              <a href="/people/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">Add New Booking</a>
+              <a href="/police/people" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">Search Person</a>
+              <a href="/police/bookings" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center">View Pending Submissions</a>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-medium text-gray-800 mb-4">Alerts & Flags</h3>
+            <ul>
+              <% idleBookings.forEach(booking => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p class="text-red-500">Booking #<%= booking.id %> has been idle for >24 hours.</p>
+                </li>
+              <% }) %>
+              <% missingSubmission.forEach(booking => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p class="text-red-500">Booking #<%= booking.id %> is missing prosecutor submission.</p>
+                </li>
+              <% }) %>
+              <% pendingRemandRequests.forEach(remand => { %>
+                <li class="border-b border-gray-200 py-2">
+                  <p class="text-red-500">Remand Request #<%= remand.id %> is pending.</p>
+                </li>
+              <% }) %>
+            </ul>
+          </div>
         </div>
       </div>
 
-      <div class="mt-8">
-        <a href="/people/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Register New Person</a>
+      <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-medium text-gray-800 mb-4">Recent Activity Feed</h3>
+        <table class="w-full text-left">
+          <thead>
+            <tr>
+              <th class="py-2">Action</th>
+              <th class="py-2">Case Number</th>
+              <th class="py-2">User</th>
+              <th class="py-2">Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% recentActivity.forEach(activity => { %>
+              <tr class="border-b border-gray-200">
+                <td class="py-2"><%= activity.action %></td>
+                <td class="py-2"><%= activity.case ? activity.case.caseNumber : 'N/A' %></td>
+                <td class="py-2"><%= activity.user.username %></td>
+                <td class="py-2"><%= new Date(activity.timestamp).toLocaleString() %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
       </div>
 
-      <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-medium text-gray-800 mb-4">Recent Bookings</h3>
-        <ul>
-          <% bookings.forEach(booking => { %>
-            <li class="border-b border-gray-200 py-2">
-              <a href="/people/<%= booking.personId %>" class="text-blue-500 hover:underline">Booking #<%= booking.id %></a> - <%= booking.status %>
-            </li>
-          <% }) %>
-        </ul>
-      </div>
-
-      <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-medium text-gray-800 mb-4">Pending Remand Requests</h3>
-        <ul>
-          <% remandRequests.forEach(remand => { %>
-            <li class="border-b border-gray-200 py-2">
-              <a href="/remand/<%= remand.id %>" class="text-blue-500 hover:underline">Remand Request for <%= remand.booking.person.name %></a>
-            </li>
-          <% }) %>
-        </ul>
-      </div>
     </div>
   </div>
 </body>

@@ -61,6 +61,47 @@ router.get('/dashboard', checkRole(['Police']), async (req, res) => {
   });
 
   const people = await prisma.person.findMany();
+
+  const idleBookings = await prisma.booking.findMany({
+    where: {
+      status: 'New Booking',
+      bookingDate: {
+        lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      },
+    },
+  });
+
+  const missingSubmission = await prisma.booking.findMany({
+    where: {
+      status: 'New Booking',
+      case: null,
+    },
+  });
+
+  const pendingRemandRequests = await prisma.remandRequest.findMany({
+    where: {
+      status: 'pending',
+    },
+  });
+
+  const recentActivity = await prisma.actionHistory.findMany({
+    where: {
+      user: {
+        role: {
+          name: 'Police',
+        },
+      },
+    },
+    orderBy: {
+      timestamp: 'desc',
+    },
+    take: 10,
+    include: {
+      case: true,
+      user: true,
+    },
+  });
+
   res.render('police/dashboard', {
     user,
     bookings,
@@ -68,6 +109,10 @@ router.get('/dashboard', checkRole(['Police']), async (req, res) => {
     warrants,
     remandRequests,
     people,
+    idleBookings,
+    missingSubmission,
+    pendingRemandRequests,
+    recentActivity,
     page: '/police/dashboard',
   });
 });
