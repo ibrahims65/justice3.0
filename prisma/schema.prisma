@@ -92,7 +92,6 @@ model Case {
   lawyers         Lawyer[]
   medicalRecords  MedicalRecord[]
   deletedAt DateTime?
-  prosecutorId Int?
 }
 
 model Region {

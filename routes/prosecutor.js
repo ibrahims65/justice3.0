@@ -30,7 +30,13 @@ router.get('/dashboard', checkRole(['Prosecutor']), async (req, res) => {
   });
 
   const cases = await prisma.case.findMany({
-    where: { prosecutorId: user.id },
+    where: {
+      actions: {
+        some: {
+          userId: user.id,
+        },
+      },
+    },
     include: {
       booking: {
         include: {
@@ -55,7 +61,11 @@ router.get('/dashboard', checkRole(['Prosecutor']), async (req, res) => {
   const upcomingHearings = await prisma.hearing.findMany({
     where: {
       case: {
-        prosecutorId: user.id,
+        actions: {
+          some: {
+            userId: user.id,
+          },
+        },
       },
       hearingDate: {
         gte: new Date(),
