@@ -8,9 +8,10 @@
   <link href="/css/custom.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
-<body class="bg-gray-900 text-white" x-data="{ activeTile: null, search: '', caseModal: false, selectedCase: null }">
+<body class="bg-gray-900 text-white" x-data="{ activeTile: null, search: '', caseModal: false, selectedCase: null, people: <%= JSON.stringify(people) %> }">
+  <%- include('../partials/navbar', { user: user, page: page }) %>
   <div class="watermark"></div>
-  <div class="flex h-screen">
+  <div class="flex h-screen pt-16">
     <div class="w-1/4 bg-gray-800 p-8">
       <h2 class="text-2xl font-bold mb-8">Filters</h2>
       <form>
