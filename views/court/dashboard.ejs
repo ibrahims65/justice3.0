@@ -31,6 +31,61 @@
       </div>
 
       <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-medium text-gray-800 mb-4">Cases to Assign</h3>
+        <% if (casesToAssign.length > 0) { %>
+          <table class="w-full text-left">
+            <thead>
+              <tr>
+                <th class="py-2">Case Number</th>
+                <th class="py-2">Status</th>
+                <th class="py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% casesToAssign.forEach(caseRecord => { %>
+                <tr class="border-b border-gray-200">
+                  <td class="py-2"><a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline"><%= caseRecord.caseNumber %></a></td>
+                  <td class="py-2"><%= caseRecord.status %></td>
+                  <td class="py-2"><a href="/cases/<%= caseRecord.id %>/assign" class="text-blue-500 hover:underline">Assign</a></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p>No cases to assign.</p>
+        <% } %>
+      </div>
+
+      <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-medium text-gray-800 mb-4">Warrants to Approve</h3>
+        <% if (warrantsToApprove.length > 0) { %>
+          <table class="w-full text-left">
+            <thead>
+              <tr>
+                <th class="py-2">Case Number</th>
+                <th class="py-2">Status</th>
+                <th class="py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% warrantsToApprove.forEach(warrant => { %>
+                <tr class="border-b border-gray-200">
+                  <td class="py-2"><a href="/cases/<%= warrant.case.id %>" class="text-blue-500 hover:underline"><%= warrant.case.caseNumber %></a></td>
+                  <td class="py-2"><%= warrant.status %></td>
+                  <td class="py-2">
+                    <a href="/warrants/<%= warrant.id %>/approve" class="text-green-500 hover:underline">Approve</a>
+                    <a href="/warrants/<%= warrant.id %>/reject" class="text-red-500 hover:underline ml-4">Reject</a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p>No warrants to approve.</p>
+        <% } %>
+      </div>
+
+      <div class="mt-8 bg-white rounded-lg shadow-md p-6">
         <h3 class="text-lg font-medium text-gray-800 mb-4">Scheduled Hearings</h3>
         <% if (hearings.length > 0) { %>
           <table class="w-full text-left">
