@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>People Intelligence</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="/css/custom.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-900 text-white" x-data="{ personModal: false, selectedPerson: null }">
+  <div class="watermark"></div>
+  <div class="flex h-screen">
+    <div class="w-1/4 bg-gray-800 p-8">
+      <h2 class="text-2xl font-bold mb-8">Filters</h2>
+      <form>
+        <div class="mb-4">
+          <label for="search" class="block text-sm font-medium">Search</label>
+          <input type="text" name="search" id="search" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+        <div class="mb-4">
+          <label for="role" class="block text-sm font-medium">Role</label>
+          <select id="role" name="role" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <option value="">All</option>
+            <option value="Suspect">Suspect</option>
+            <option value="Victim">Victim</option>
+            <option value="Witness">Witness</option>
+            <option value="Officer">Officer</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="bookingStatus" class="block text-sm font-medium">Booking Status</label>
+          <select id="bookingStatus" name="bookingStatus" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <option value="">All</option>
+            <option value="In Custody">In Custody</option>
+            <option value="Released">Released</option>
+            <option value="Overdue Hold">Overdue Hold</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="caseStatus" class="block text-sm font-medium">Case Status</label>
+          <select id="caseStatus" name="caseStatus" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <option value="">All</option>
+            <option value="Active">Active</option>
+            <option value="Submitted">Submitted</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="gender" class="block text-sm font-medium">Gender</label>
+          <select id="gender" name="gender" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <option value="">All</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Filter</button>
+      </form>
+    </div>
+    <div class="w-1/2 bg-gray-900 p-8">
+      <h1 class="text-4xl font-bold mb-8">People Intelligence</h1>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% people.forEach(person => { %>
+          <div class="person-card bg-gray-800 p-4 rounded-lg cursor-pointer" @click="personModal = true; selectedPerson = <%= JSON.stringify(person) %>">
+            <h3 class="text-lg font-bold"><%= person.name %></h3>
+            <p class="text-sm text-gray-400">ID: <%= person.id %></p>
+            <p class="text-sm">Roles: N/A</p>
+            <p class="text-sm">Bookings: <%= person.bookings.length %></p>
+            <p class="text-sm">Last Seen: <%= new Date(person.bookings[0] ? person.bookings[0].bookingDate : person.createdAt).toLocaleString() %></p>
+            <% if (person.bookings.some(b => new Date(b.bookingDate) < new Date(Date.now() - 24 * 60 * 60 * 1000) && b.status === 'New Arrest')) { %>
+              <span class="urgency-flag bg-red-500 text-white text-xs font-bold mr-2 px-2.5 py-0.5 rounded-full">Overdue Hold</span>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+    <div class="w-1/4 bg-gray-800 p-8" x-show="personModal" @click.away="personModal = false">
+      <div class="person-intelligence-modal bg-gray-700 p-8 rounded-lg">
+        <template x-if="selectedPerson">
+          <div>
+            <h2 class="text-2xl font-bold mb-4" x-text="selectedPerson.name"></h2>
+            <p><strong>ID:</strong> <span x-text="selectedPerson.id"></span></p>
+            <p><strong>DOB:</strong> <span x-text="new Date(selectedPerson.dob).toLocaleDateString()"></span></p>
+            <h3 class="text-xl font-bold mt-8 mb-4">Booking History</h3>
+            <ul>
+              <template x-for="booking in selectedPerson.bookings">
+                <li class="border-b border-gray-600 py-2">
+                  <p><strong>ID:</strong> <span x-text="booking.id"></span></p>
+                  <p><strong>Date:</strong> <span x-text="new Date(booking.bookingDate).toLocaleString()"></span></p>
+                  <p><strong>Status:</strong> <span x-text="booking.status"></span></p>
+                </li>
+              </template>
+            </ul>
+            <div class="mt-8">
+              <a :href="'/people/' + selectedPerson.id + '/bookings/new'" class="action-button">Add Booking</a>
+              <a :href="'/print/wrapsheet/' + selectedPerson.id" class="action-button">View Wrap Sheet</a>
+              <button class="action-button">Flag for Review</button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+  <div class="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">
+    <p class="text-center text-gray-400">"Whoever saves one life, it is as if he had saved mankind entirely."</p>
+  </div>
+</body>
+</html>
