@@ -43,3 +43,7 @@
 .action-button:hover {
   background-color: #2c5282;
 }
+
+body {
+  background-image: url('/images/background-texture.png');
+}

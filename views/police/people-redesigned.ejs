@@ -13,55 +13,63 @@
   <%- include('../partials/navbar', { user: user, page: page }) %>
   <div class="watermark"></div>
   <div class="flex h-screen pt-16">
-    <div class="w-1/4 bg-gray-800 p-8">
-      <button @click="showFilters = !showFilters" class="w-fit bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Filter/Search</button>
-      <div x-show="showFilters" x-collapse>
-        <h2 class="text-2xl font-bold mb-8">Filters</h2>
-        <form>
-          <div class="mb-4">
-            <label for="search" class="block text-sm font-medium">Search</label>
-            <input type="text" name="search" id="search" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" x-model="search">
-          </div>
-          <div class="mb-4">
-            <label for="role" class="block text-sm font-medium">Role</label>
-            <select id="role" name="role" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              <option value="">All</option>
-              <option value="Suspect">Suspect</option>
-              <option value="Victim">Victim</option>
-              <option value="Witness">Witness</option>
-              <option value="Officer">Officer</option>
-            </select>
-          </div>
-          <div class="mb-4">
-            <label for="bookingStatus" class="block text-sm font-medium">Booking Status</label>
-            <select id="bookingStatus" name="bookingStatus" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              <option value="">All</option>
-              <option value="In Custody">In Custody</option>
-              <option value="Released">Released</option>
-              <option value="Overdue Hold">Overdue Hold</option>
-            </select>
-          </div>
-          <div class="mb-4">
-            <label for="caseStatus" class="block text-sm font-medium">Case Status</label>
-            <select id="caseStatus" name="caseStatus" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              <option value="">All</option>
-              <option value="Active">Active</option>
-              <option value="Submitted">Submitted</option>
-              <option value="Rejected">Rejected</option>
-            </select>
-          </div>
-          <div class="mb-4">
-            <label for="gender" class="block text-sm font-medium">Gender</label>
-            <select id="gender" name="gender" class="w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              <option value="">All</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-          </div>
-          <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Filter</button>
-        </form>
+    <div class="w-full bg-gray-900 p-8">
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-4xl font-bold">People Intelligence</h1>
+        <button @click="showFilters = !showFilters" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">🔍 Filter/Search</button>
       </div>
-    </div>
+      <div id="filter-panel" class="absolute top-0 left-0 w-full bg-white shadow-lg hidden" x-show="showFilters" @click.away="showFilters = false">
+        <div class="p-8">
+          <h2 class="text-2xl font-bold mb-8 text-black">Filters</h2>
+          <form>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div>
+                <label for="search" class="block text-sm font-medium text-black">Search</label>
+                <input type="text" name="search" id="search" class="w-full bg-gray-200 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" x-model="search">
+              </div>
+              <div>
+                <label for="role" class="block text-sm font-medium text-black">Role</label>
+                <select id="role" name="role" class="w-full bg-gray-200 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option value="">All</option>
+                  <option value="Suspect">Suspect</option>
+                  <option value="Victim">Victim</option>
+                  <option value="Witness">Witness</option>
+                  <option value="Officer">Officer</option>
+                </select>
+              </div>
+              <div>
+                <label for="bookingStatus" class="block text-sm font-medium text-black">Booking Status</label>
+                <select id="bookingStatus" name="bookingStatus" class="w-full bg-gray-200 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option value="">All</option>
+                  <option value="In Custody">In Custody</option>
+                  <option value="Released">Released</option>
+                  <option value="Overdue Hold">Overdue Hold</option>
+                </select>
+              </div>
+              <div>
+                <label for="caseStatus" class="block text-sm font-medium text-black">Case Status</label>
+                <select id="caseStatus" name="caseStatus" class="w-full bg-gray-200 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option value="">All</option>
+                  <option value="Active">Active</option>
+                  <option value="Submitted">Submitted</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+              <div>
+                <label for="gender" class="block text-sm font-medium text-black">Gender</label>
+                <select id="gender" name="gender" class="w-full bg-gray-200 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option value="">All</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+            </div>
+            <div class="mt-8 flex justify-end">
+              <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Filter</button>
+            </div>
+          </form>
+        </div>
+      </div>
     <div class="w-1/2 bg-gray-900 p-8">
       <h1 class="text-4xl font-bold mb-8">People Intelligence</h1>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -78,24 +86,37 @@
             <template x-if="person.bookings.some(b => new Date(b.bookingDate) < new Date(Date.now() - 24 * 60 * 60 * 1000) && b.status === 'New Arrest')">
               <span class="urgency-flag bg-red-500 text-white text-xs font-bold mr-2 px-2.5 py-0.5 rounded-full">Overdue Hold</span>
             </template>
+            <div class="mt-4">
+              <a :href="'/print/wrapsheet/' + person.id" class="action-button">View Wrap Sheet</a>
+              <a :href="'/people/' + person.id + '/bookings/new'" class="action-button">Add Booking</a>
+              <button class="action-button">Flag for Review</button>
+              <button @click="showCasePanel = true; fetchCases(person.id)" class="action-button">Open Case Summary</button>
+            </div>
           </div>
         </template>
       </div>
     </div>
-    <div x-show="activeTile" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-      <div class="relative top-20 mx-auto p-5 border w-1/2 shadow-lg rounded-md bg-gray-800" @click.away="activeTile = null">
-        <template x-for="person in people">
-          <div x-show="activeTile === person.id">
-            <div class="flex items-center">
-              <img :src="person.photoUrl || '/images/default-avatar.png'" alt="Photo" class="w-12 h-12 rounded-full mr-4">
-              <h3 class="text-2xl font-bold" x-text="person.name"></h3>
-            </div>
-            <div class="mt-8">
-              <button @click="showCasePanel = true; fetchCases(person.id)" class="action-button">View All Cases</button>
-              <button @click="activeTile = null" class="action-button">Close</button>
-            </div>
-          </div>
-        </template>
+    <div class="w-1/4 bg-gray-800 p-8">
+      <div class="mb-8">
+        <h3 class="text-xl font-bold mb-4">Active Case Summary</h3>
+        <p><strong>Total Active Cases:</strong> 5</p>
+      </div>
+      <div class="mb-8">
+        <h3 class="text-xl font-bold mb-4">Recent Activity Feed</h3>
+        <ul>
+          <li class="border-b border-gray-600 py-2">New Booking: John Doe</li>
+          <li class="border-b border-gray-600 py-2">Case Submitted: Jane Smith</li>
+        </ul>
+      </div>
+      <div class="mb-8">
+        <h3 class="text-xl font-bold mb-4">Role Breakdown</h3>
+        <canvas id="roleBreakdownChart"></canvas>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold mb-4">Urgency Alerts</h3>
+        <ul>
+          <li class="text-red-500">Booking #1234: Overdue Hold</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -142,6 +163,25 @@
           this.showCasePanel = true;
         });
     }
+
+    const roleBreakdownCtx = document.getElementById('roleBreakdownChart').getContext('2d');
+    new Chart(roleBreakdownCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Suspect', 'Victim', 'Witness', 'Officer'],
+        datasets: [{
+          label: 'Role Breakdown',
+          data: [12, 19, 3, 5],
+          backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(54, 162, 235)',
+            'rgb(255, 205, 86)',
+            'rgb(75, 192, 192)'
+          ],
+          hoverOffset: 4
+        }]
+      }
+    });
   </script>
 
   <div class="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">
