@@ -42,11 +42,11 @@
               </tr>
             </thead>
             <tbody>
-              <% cases.forEach(case => { %>
+              <% cases.forEach(caseRecord => { %>
                 <tr class="border-b border-gray-200">
-                  <td class="py-2"><a href="/cases/<%= case.id %>" class="text-blue-500 hover:underline"><%= case.caseNumber %></a></td>
-                  <td class="py-2"><%= case.booking.person.name %></td>
-                  <td class="py-2"><%= case.status %></td>
+                  <td class="py-2"><a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline"><%= caseRecord.caseNumber %></a></td>
+                  <td class="py-2"><%= caseRecord.booking.person.name %></td>
+                  <td class="py-2"><%= caseRecord.status %></td>
                 </tr>
               <% }) %>
             </tbody>
