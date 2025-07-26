@@ -166,7 +166,12 @@ router.get('/people-redesigned', checkRole(['Police']), async (req, res) => {
   }
 
   const people = await prisma.person.findMany({
-    where,
+    where: {
+      ...where,
+      bookings: {
+        some: {},
+      },
+    },
     include: {
       bookings: {
         include: {
