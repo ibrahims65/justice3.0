@@ -8,7 +8,7 @@
   <link href="/css/custom.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
-<body class="bg-gray-900 text-white" x-data="{ activeTile: null, search: '', caseModal: false, selectedCase: null, people: <%= JSON.stringify(people) %> }">
+<body class="bg-gray-900 text-white" x-data="{ activeTile: null, search: '', caseModal: false, selectedCase: null, people: <%= JSON.stringify(people) %>, cases: [], showCasePanel: false }">
   <%- include('../partials/navbar', { user: user, page: page }) %>
   <div class="watermark"></div>
   <div class="flex h-screen pt-16">
@@ -63,7 +63,10 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <template x-for="person in people.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))">
           <div class="person-card bg-gray-800 p-4 rounded-lg cursor-pointer hover:border-blue-500 border-2 border-transparent" @click="activeTile = person.id === activeTile ? null : person.id">
-            <h3 class="text-lg font-bold" x-text="person.name"></h3>
+            <div class="flex items-center">
+              <img :src="person.photoUrl || '/images/default-avatar.png'" alt="Photo" class="w-10 h-10 rounded-full mr-4">
+              <h3 class="text-lg font-bold" x-text="person.name"></h3>
+            </div>
             <p class="text-sm text-gray-400" x-text="'ID: ' + person.id"></p>
             <p class="text-sm">Roles: N/A</p>
             <p class="text-sm" x-text="'Bookings: ' + person.bookings.length"></p>
@@ -99,13 +102,58 @@
               <a :href="'/people/' + person.id + '/bookings/new'" class="action-button">Add Booking</a>
               <a :href="'/print/wrapsheet/' + person.id" class="action-button">View Wrap Sheet</a>
               <button class="action-button">Flag for Review</button>
-              <a :href="'/cases?personId=' + person.id" class="action-button">View All Cases</a>
+              <button @click="fetchCases(person.id)" class="action-button">View All Cases</button>
             </div>
           </div>
         </template>
       </div>
     </div>
   </div>
+
+  <div class="fixed top-0 right-0 h-full w-1/3 bg-gray-800 p-8 transform transition-transform duration-300 ease-in-out" :class="{ 'translate-x-0': expandedCase, 'translate-x-full': !expandedCase }">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-2xl font-bold">Case Details</h2>
+      <button @click="expandedCase = null" class="text-white">&times;</button>
+    </div>
+    <div class="expanded-case-panel overflow-y-auto">
+      <template x-if="expandedCase">
+        <div>
+          <h4 x-text="expandedCase.caseNumber"></h4>
+          <p><strong>Crime:</strong> N/A</p>
+          <p><strong>Status:</strong> <span x-text="expandedCase.status"></span></p>
+          <p><strong>Booking Date:</strong> <span x-text="new Date(expandedCase.booking.bookingDate).toLocaleString()"></span></p>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <div class="fixed top-0 right-0 h-full w-1/3 bg-gray-800 p-8 transform transition-transform duration-300 ease-in-out" :class="{ 'translate-x-0': showCasePanel, 'translate-x-full': !showCasePanel }">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-2xl font-bold">Cases</h2>
+      <button @click="showCasePanel = false" class="text-white">&times;</button>
+    </div>
+    <div class="case-panel overflow-y-auto">
+      <template x-for="caseRecord in cases" :key="caseRecord.id">
+        <div class="case-card bg-gray-700 p-4 rounded-lg mb-4 cursor-pointer" @click="expandedCase = caseRecord">
+          <p><strong>Booking Date:</strong> <span x-text="new Date(caseRecord.booking.bookingDate).toLocaleString()"></span></p>
+          <p><strong>Crime:</strong> N/A</p>
+          <p><strong>Case #:</strong> <a :href="'/cases/' + caseRecord.id" x-text="caseRecord.caseNumber" class="text-blue-500 hover:underline"></a></p>
+          <p><strong>Status:</strong> <span x-text="caseRecord.status"></span></p>
+        </div>
+      </template>
+    </div>
+  </div>
+  <script>
+    function fetchCases(personId) {
+      fetch(`/people/${personId}/cases`)
+        .then(response => response.json())
+        .then(data => {
+          this.cases = data;
+          this.showCasePanel = true;
+        });
+    }
+  </script>
+
   <div class="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">
     <p class="text-center text-gray-400">"Whoever saves one life, it is as if he had saved mankind entirely."</p>
   </div>

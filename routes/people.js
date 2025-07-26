@@ -122,4 +122,18 @@ router.get('/:id/release/new', checkRole(['Police']), (req, res) => {
   res.render('release/new', { bookingId: req.params.id });
 });
 
+router.get('/:id/cases', async (req, res) => {
+  const cases = await prisma.case.findMany({
+    where: {
+      booking: {
+        personId: parseInt(req.params.id),
+      },
+    },
+    include: {
+      booking: true,
+    },
+  });
+  res.json(cases);
+});
+
 module.exports = router;
