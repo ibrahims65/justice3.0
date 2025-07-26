@@ -60,12 +60,14 @@ router.get('/dashboard', checkRole(['Police']), async (req, res) => {
     },
   });
 
+  const people = await prisma.person.findMany();
   res.render('police/dashboard', {
     user,
     bookings,
     cases,
     warrants,
     remandRequests,
+    people,
     page: '/police/dashboard',
   });
 });
