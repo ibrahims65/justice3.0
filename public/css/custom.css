@@ -4,10 +4,12 @@
 }
 
 .prosecutor-actions {
-  background-color: #f9fafb;
-  padding: 24px;
+  background-color: #fff8f0;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  padding: 24px;
+  margin-top: 32px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .section-title {
