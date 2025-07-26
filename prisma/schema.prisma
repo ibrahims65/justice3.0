@@ -140,6 +140,9 @@ model Evidence {
   dateReceived    DateTime?
   version         Int      @default(1)
   tags            String?
+  evidenceType    String?
+  serialNumber    String?
+  ballisticsInfo  String?
 }
 
 model Witness {
@@ -171,6 +174,14 @@ model ActionHistory {
   userId    Int
   case      Case     @relation(fields: [caseId], references: [id])
   caseId    Int
+}
+
+model Affiliation {
+  id          Int     @id @default(autoincrement())
+  personId    Int
+  person      Person  @relation(fields: [personId], references: [id])
+  organization String
+  type        String // gang, extremist, terrorist
 }
 
 model RemandRequest {
@@ -222,6 +233,8 @@ model Lawyer {
   case        Case          @relation(fields: [caseId], references: [id])
   caseId      Int
   visits      LawyerVisit[]
+  areaOfExpertise String?
+  barNumber   String?
 }
 
 model LawyerVisit {
@@ -305,13 +318,14 @@ model MedicationSchedule {
 }
 
 model NextOfKin {
-  id        Int    @id @default(autoincrement())
-  personId  Int
-  name      String
+  id           Int     @id @default(autoincrement())
+  personId     Int
+  name         String
   relationship String
-  phone     String
-  address   String?
-  person    Person @relation(fields: [personId], references: [id])
+  phone        String
+  address      String?
+  person       Person  @relation(fields: [personId], references: [id])
+  roleInLife   String?
 }
 
 model Notification {
