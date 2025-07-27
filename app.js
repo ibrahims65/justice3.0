@@ -60,4 +60,4 @@ const unifiedRoutes = require('./routes'); // <-- This is your new `routes/index
 
 // 🧭 Route registration
 app.use(allRoutes);
-app.use(unifiedRoutes
+app.use(unifiedRoutes);
