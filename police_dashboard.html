@@ -1,161 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body class="bg-gray-100">
-  <nav class="bg-gray-800">
-  <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-    <div class="relative flex items-center justify-between h-16">
-      <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-        <div class="flex-shrink-0">
-          <a href="/dashboard">
-            <img class="h-8 w-auto" src="/images/logo.svg" alt="Logo">
-          </a>
-        </div>
-        <div class="hidden sm:block sm:ml-6">
-          <div class="flex space-x-4">
-            <a href="/dashboard" class="px-3 py-2 rounded-md text-sm font-medium bg-gray-900 text-white">Dashboard</a>
+<%- include('../partials/header') %>
 
-              <a href="/people" class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">People</a>
-              <a href="/bookings" class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Bookings</a>
-              <a href="/warrants" class="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Warrants</a>
+<div class="p-6">
+  <h1 class="text-2xl font-bold mb-4">Welcome, <%= officer.name %></h1>
 
+  <!-- Recent Bookings -->
+  <section class="mb-6">
+    <h2 class="text-xl font-semibold mb-2">Recent Bookings</h2>
+    <% if (recentBookings.length === 0) { %>
+      <p>No bookings yet.</p>
+    <% } else { %>
+      <ul class="space-y-2">
+        <% recentBookings.forEach(b => { %>
+          <li class="border p-3 rounded">
+            <strong><%= b.person.name %></strong> — <%= b.status %> at <%= b.createdAt.toLocaleString() %>
+            <a href="/booking/<%= b.id %>" class="text-blue-600 ml-2">View</a>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
 
+  <!-- Search -->
+  <section class="mb-6">
+    <h2 class="text-xl font-semibold mb-2">Search Records</h2>
+    <form id="searchForm" class="flex gap-2">
+      <input type="text" name="query" placeholder="Name, ID, Alias" class="border p-2 flex-grow">
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2">Search</button>
+    </form>
+    <div id="searchResults" class="mt-4"></div>
+  </section>
 
-
-
-            <a href="/notifications" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Notifications</a>
-          </div>
-        </div>
+  <!-- Alerts -->
+  <section class="mb-6">
+    <h2 class="text-xl font-semibold mb-2">System Alerts</h2>
+    <% alerts.forEach(alert => { %>
+      <div class="bg-red-100 p-3 rounded mb-2">
+        <strong><%= alert.title %></strong>: <%= alert.message %>
       </div>
-      <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-        <a href="/logout" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Logout</a>
-      </div>
-    </div>
-  </div>
-</nav>
+    <% }) %>
+  </section>
 
+  <!-- Activity Log -->
+  <section>
+    <h2 class="text-xl font-semibold mb-2">Your Activity</h2>
+    <ul class="space-y-1">
+      <% activityLog.forEach(log => { %>
+        <li><%= log.action %> — <%= log.timestamp.toLocaleString() %></li>
+      <% }) %>
+    </ul>
+  </section>
+</div>
 
-  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <nav class="flex" aria-label="Breadcrumb">
-  <ol class="inline-flex items-center space-x-1 md:space-x-3">
-    <li class="inline-flex items-center">
-      <a href="/dashboard" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900">
-        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
-        Dashboard
-      </a>
-    </li>
-
-
-        <li>
-          <div class="flex items-center">
-            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-
-              <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Dashboard</span>
-
-          </div>
-        </li>
-
-
-  </ol>
-</nav>
-
-    <div class="px-4 py-6 sm:px-0">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, policeuser!</h2>
-      <p class="text-gray-600 mb-8">Your role is: Police</p>
-
-      <form action="/dashboard" method="GET" class="mb-4 flex space-x-2">
-        <input type="text" name="search" placeholder="Search..." class="border rounded p-2 flex-grow">
-        <input type="date" name="startDate" class="border rounded p-2">
-        <input type="date" name="endDate" class="border rounded p-2">
-
-          <select name="status" class="border rounded p-2">
-            <option value="">All Statuses</option>
-            <option value="New Booking">New Booking</option>
-            <option value="Information Requested">Information Requested</option>
-          </select>
-
-
-
-
-        <button type="submit" class="bg-blue-500 text-white p-2 rounded">Search</button>
-      </form>
-
-
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Active Bookings</h3>
-            <p class="text-3xl font-bold text-blue-500">0</p>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Total Bookings</h3>
-            <p class="text-3xl font-bold text-blue-500">0</p>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">People Registered</h3>
-            <p class="text-3xl font-bold text-blue-500">0</p>
-          </div>
-        </div>
-        <div class="mt-8">
-          <a href="/people/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Register New Person</a>
-        </div>
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">Expiring Custody</h3>
-          <ul>
-
-          </ul>
-        </div>
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">Your Bookings</h3>
-          <ul>
-
-          </ul>
-        </div>
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">Bookings by Status</h3>
-          <canvas id="bookingStatusChart" width="400" height="200"></canvas>
-        </div>
-        <script>
-          const bookingStatusData = {};
-
-          const bookingCtx = document.getElementById('bookingStatusChart').getContext('2d');
-          new Chart(bookingCtx, {
-            type: 'pie',
-            data: {
-              labels: Object.keys(bookingStatusData),
-              datasets: [{
-                label: 'Bookings by Status',
-                data: Object.values(bookingStatusData),
-                backgroundColor: [
-                  'rgba(255, 99, 132, 0.7)',
-                  'rgba(54, 162, 235, 0.7)',
-                  'rgba(255, 206, 86, 0.7)',
-                  'rgba(75, 192, 192, 0.7)',
-                  'rgba(153, 102, 255, 0.7)',
-                  'rgba(255, 159, 64, 0.7)'
-                ],
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-            }
-          });
-        </script>
-
-
-
-
-
-
-
-    </div>
-  </div>
-</body>
-</html>
+<script src="/js/dashboard.js"></script>
+<%- include('../partials/footer') %>
