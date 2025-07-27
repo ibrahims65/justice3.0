@@ -5,7 +5,10 @@ const prisma = require('../lib/prisma');
 
 // GET login page
 router.get('/login', (req, res) => {
-  res.render('login', { error: null });
+  if (req.session.user) {
+    return res.redirect('/dashboard');
+  }
+  res.render('login', { error_msg: null });
 });
 
 // POST login credentials
@@ -19,13 +22,17 @@ router.post('/login', async (req, res) => {
     });
 
     if (!user) {
-      return res.render('login', { error: 'Invalid username or password.' });
+      return res.render('login', { error_msg: 'Invalid username or password.' });
     }
 
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return res.render('login', { error: 'Invalid username or password.' });
+      return res.render('login', { error_msg: 'Invalid username or password.' });
+    }
+
+    if (!user.role || !user.role.name) {
+      return res.render('login', { error_msg: 'User role is missing.' });
     }
 
     req.session.user = {
@@ -50,14 +57,14 @@ router.post('/login', async (req, res) => {
     }
   } catch (err) {
     console.error('Login error:', err);
-    res.render('login', { error: 'Something went wrong. Please try again.' });
+    res.render('login', { error_msg: 'Something went wrong. Please try again.' });
   }
 });
 
 // Optional logout route
 router.get('/logout', (req, res) => {
   req.session.destroy(() => {
-    res.redirect('/login');
+    res.redirect('/auth/login');
   });
 });
 

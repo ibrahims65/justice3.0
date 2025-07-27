@@ -237,4 +237,24 @@ router.get('/court', checkRole(['Court']), async (req, res) => {
   });
 });
 
+router.get('/', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/auth/login');
+  }
+
+  const role = req.session.user.role;
+  switch (role) {
+    case 'Police':
+      return res.redirect('/police/dashboard');
+    case 'Prosecutor':
+      return res.redirect('/prosecutor/dashboard');
+    case 'Court':
+      return res.redirect('/court/dashboard');
+    case 'Corrections':
+      return res.redirect('/corrections/dashboard');
+    default:
+      res.send(`Welcome, ${req.session.user?.username || 'Guest'}`);
+  }
+});
+
 module.exports = router;
