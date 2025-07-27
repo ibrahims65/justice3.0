@@ -3,42 +3,34 @@
 <div class="p-6">
   <h1 class="text-2xl font-bold mb-4">Welcome, <%= officer.name %></h1>
 
-  <!-- Recent Bookings -->
-  <section class="mb-6">
-    <h2 class="text-xl font-semibold mb-2">Recent Bookings</h2>
-    <% if (recentBookings.length === 0) { %>
-      <p>No bookings yet.</p>
+  <section>
+    <h2>Recent Bookings</h2>
+    <% if (recentBookings && recentBookings.length > 0) { %>
+    <ul>
+      <% recentBookings.forEach(b => { %>
+      <li><%= b.person.name %></li>
+      <% }) %>
+    </ul>
     <% } else { %>
-      <ul class="space-y-2">
-        <% recentBookings.forEach(b => { %>
-          <li class="border p-3 rounded">
-            <strong><%= b.person.name %></strong> — <%= b.status %> at <%= b.createdAt.toLocaleString() %>
-            <a href="/booking/<%= b.id %>" class="text-blue-600 ml-2">View</a>
-          </li>
-        <% }) %>
-      </ul>
+    <p>No recent bookings found.</p>
     <% } %>
   </section>
 
-  <!-- Search -->
-  <section class="mb-6">
-    <h2 class="text-xl font-semibold mb-2">Search Records</h2>
+  <section>
+    <h2>Search Records</h2>
     <form method="POST" action="/police/search">
       <input type="text" name="query" placeholder="Name, ID, Alias" />
       <button type="submit">Search</button>
     </form>
-    <div id="searchResults" class="mt-4">
-      <% if (typeof results !== 'undefined' && results.length > 0) { %>
-      <ul>
-        <% results.forEach(r => { %>
-        <li><%= r.person.name %></li>
-        <% }) %>
-      </ul>
-      <% } else if (typeof results !== 'undefined') { %>
-      <p>No bookings found.</p>
-      <% } %>
-      <pre><%= JSON.stringify(results, null, 2) %></pre>
-    </div>
+    <% if (results && results.length > 0) { %>
+    <ul>
+      <% results.forEach(r => { %>
+      <li><%= r.person.name %></li>
+      <% }) %>
+    </ul>
+    <% } else { %>
+    <p>No search results found.</p>
+    <% } %>
   </section>
 
   <!-- Alerts -->
