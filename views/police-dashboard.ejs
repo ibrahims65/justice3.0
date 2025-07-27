@@ -23,11 +23,21 @@
   <!-- Search -->
   <section class="mb-6">
     <h2 class="text-xl font-semibold mb-2">Search Records</h2>
-    <form id="searchForm" class="flex gap-2">
-      <input type="text" name="query" placeholder="Name, ID, Alias" class="border p-2 flex-grow">
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2">Search</button>
+    <form method="POST" action="/police/search">
+      <input type="text" name="query" placeholder="Name, ID, Alias" />
+      <button type="submit">Search</button>
     </form>
-    <div id="searchResults" class="mt-4"></div>
+    <div id="searchResults" class="mt-4">
+      <% if (typeof results !== 'undefined' && results.length > 0) { %>
+      <ul>
+        <% results.forEach(r => { %>
+        <li><%= r.person.name %></li>
+        <% }) %>
+      </ul>
+      <% } else if (typeof results !== 'undefined') { %>
+      <p>No bookings found.</p>
+      <% } %>
+    </div>
   </section>
 
   <!-- Alerts -->

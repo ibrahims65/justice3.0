@@ -57,6 +57,7 @@ try {
   app.use('/users', usersRouter);
   app.use('/auth', authRouter);
   app.use('/dashboard', dashboardRouter);
+  app.use('/police', require('./routes/police'));
   console.log('✅ Routes registered');
 } catch (err) {
   console.error('❌ Route registration failed:', err);
