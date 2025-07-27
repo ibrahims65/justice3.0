@@ -64,18 +64,26 @@ router.post('/login', async (req, res) => {
   }
 
   if (user && (await bcrypt.compare(password, user.password))) {
-    req.session.user = user;
+    const userSessionData = {
+        id: user.id,
+        username: user.username,
+        role: {
+            id: user.role.id,
+            name: user.role.name,
+        },
+    };
+    req.session.user = userSessionData;
     console.log("Logged in role:", user.role.name);
     if (user.role.name === 'Police') {
-      res.redirect('/dashboard/police');
+        res.redirect('/dashboard/police');
     } else if (user.role.name === 'Prosecutor') {
-      res.redirect('/dashboard/prosecutor');
+        res.redirect('/dashboard/prosecutor');
     } else if (user.role.name === 'Court') {
-      res.redirect('/dashboard/court');
+        res.redirect('/dashboard/court');
     } else if (user.role.name === 'Corrections') {
-      res.redirect('/corrections/dashboard');
+        res.redirect('/corrections/dashboard');
     } else {
-      res.redirect('/dashboard');
+        res.redirect('/dashboard');
     }
   } else {
     res.redirect('/auth/login');
