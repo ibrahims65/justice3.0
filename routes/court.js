@@ -4,7 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
-router.get('/dashboard', checkRole(['Court']), async (req, res) => {
+router.get('/dashboard/court', checkRole(['Court']), async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.session.userId },
     include: { role: true },
@@ -32,12 +32,16 @@ router.get('/dashboard', checkRole(['Court']), async (req, res) => {
     },
   });
 
+  const breadcrumbs = [
+    { name: 'Dashboard', url: '/dashboard/court' }
+  ];
   res.render('court/dashboard', {
     user,
     hearings,
     casesToAssign,
     warrantsToApprove,
     page: '/court/dashboard',
+    breadcrumbs
   });
 });
 

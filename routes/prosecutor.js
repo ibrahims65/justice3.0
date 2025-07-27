@@ -23,7 +23,7 @@ router.post('/cases/:caseId/notes', checkRole(['Prosecutor', 'Court']), async (r
   }
 });
 
-router.get('/dashboard', checkRole(['Prosecutor']), async (req, res) => {
+router.get('/dashboard/prosecutor', checkRole(['Prosecutor']), async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.session.userId },
     include: { role: true },
@@ -73,12 +73,16 @@ router.get('/dashboard', checkRole(['Prosecutor']), async (req, res) => {
     },
   });
 
+  const breadcrumbs = [
+    { name: 'Dashboard', url: '/dashboard/prosecutor' }
+  ];
   res.render('prosecutor/dashboard', {
     user,
     cases,
     remandRequests,
     upcomingHearings,
     page: '/prosecutor/dashboard',
+    breadcrumbs
   });
 });
 
