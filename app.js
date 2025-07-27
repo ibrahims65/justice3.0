@@ -8,10 +8,13 @@ const logger = require('./logger');
 
 const app = express();
 
+// View engine and static assets
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // Added for API support
 app.use(express.static('public'));
 
+// Session config
 app.use(
   session({
     secret: 'secret-key', // use env var in production
@@ -44,58 +47,17 @@ app.use((req, res, next) => {
   }
 });
 
-// Routes
+// 🔌 Route modules
 const allRoutes = require('./routes/all');
-const policeRoutes = require('./routes/police');
+const policeRoutes = require('./routes/police'); // Existing police routes
 const prosecutorRoutes = require('./routes/prosecutor');
 const courtRoutes = require('./routes/court');
 const dashboardRoutes = require('./routes/dashboard');
 const apiRoutes = require('./routes/api');
 
+// 🆕 New central route hub (includes police dashboard)
+const unifiedRoutes = require('./routes'); // <-- This is your new `routes/index.js`
+
+// 🧭 Route registration
 app.use(allRoutes);
-app.use('/police', policeRoutes);
-app.use('/prosecutor', prosecutorRoutes);
-app.use('/court', courtRoutes);
-app.use('/dashboard', dashboardRoutes);
-app.use('/api', apiRoutes);
-
-// Dashboard redirect logic
-app.get('/dashboard', async (req, res) => {
-  logger.info(`User ${req.session.user?.id} visited the dashboard`);
-
-  if (!req.session.user) {
-    return res.redirect('/auth/login');
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.user.id },
-    include: { role: true },
-  });
-
-  const role = user.role.name;
-
-  if (role === 'Police') {
-    res.redirect('/dashboard/police');
-  } else if (role === 'Prosecutor') {
-    res.redirect('/dashboard/prosecutor');
-  } else if (role === 'Court') {
-    res.redirect('/dashboard/court');
-  } else if (role === 'Corrections') {
-    res.redirect('/corrections/dashboard');
-  } else {
-    res.status(403).send('Unknown role');
-  }
-});
-
-// Role-based dashboards
-app.get('/court', checkRole(['Court']), (req, res) => {
-  res.send('Court Dashboard');
-});
-
-app.get('/corrections', checkRole(['Corrections']), (req, res) => {
-  res.send('Corrections Dashboard');
-});
-
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
+app.use(unifiedRoutes
