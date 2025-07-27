@@ -1,3 +1,4 @@
+console.log('🚀 Starting Justice 3.0...');
 const express = require('express');
 const session = require('express-session');
 const flash = require('connect-flash');
