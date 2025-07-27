@@ -21,7 +21,8 @@ exports.renderDashboard = async (req, res) => {
       officer: req.session.user,
       recentBookings,
       alerts: [],
-      activityLog: []
+      activityLog: [],
+      results: []
     });
   } catch (err) {
     console.error('Dashboard render error:', err);

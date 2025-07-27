@@ -1,4 +1,4 @@
-[dotenv@17.2.1] injecting env (0) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.2.1] injecting env (0) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
 🚀 Justice 3.0 booting...
 ✅ View engine configured
 ✅ Middleware configured
