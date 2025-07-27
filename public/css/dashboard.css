@@ -1,0 +1,96 @@
+body {
+    font-family: sans-serif;
+    color: #333;
+    background-color: #f4f7f6;
+}
+
+.command-center {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.column {
+    flex: 1;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.card h3 {
+    margin-top: 0;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.card .count {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #1a202c;
+}
+
+.alert-card {
+    border-left: 5px solid #ef4444;
+}
+
+.assign-card {
+    border-left: 5px solid #3b82f6;
+}
+
+.case-card {
+    transition: box-shadow 0.3s ease;
+}
+
+.case-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.badge-review { background-color: #f59e0b; }
+.badge-active { background-color: #10b981; }
+.badge-remand { background-color: #ef4444; }
+
+.search-bar {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.quick-stats h3, .quick-links h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.quick-stats p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #4a5568;
+}
+
+.quick-links a {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.quick-links a:hover {
+    text-decoration: underline;
+}

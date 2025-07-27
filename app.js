@@ -37,6 +37,8 @@ app.use('/police', policeRoutes);
 app.use('/prosecutor', prosecutorRoutes);
 app.use('/court', courtRoutes);
 app.use('/dashboard', dashboardRoutes);
+const apiRoutes = require('./routes/api');
+app.use('/api', apiRoutes);
 
 app.get('/dashboard', async (req, res) => {
   logger.info(`User ${req.session.userId} visited the dashboard`);

@@ -63,6 +63,27 @@ router.get('/police', checkRole(['Police']), async (req, res) => {
     { name: 'Dashboard', url: '/dashboard/police' }
   ];
 
+  const newAssignments = 5; // dummy data
+  const totalOpenCases = 15; // dummy data
+  const warrantsPending = 2; // dummy data
+  const cases = await prisma.case.findMany({
+    where: {
+      actions: {
+        some: {
+          userId: user.id,
+        },
+      },
+    },
+    include: {
+      booking: {
+        include: {
+          person: true,
+        },
+      },
+    },
+  });
+
+
   res.render('police/dashboard', {
     user,
     bookingsToday,
@@ -71,7 +92,11 @@ router.get('/police', checkRole(['Police']), async (req, res) => {
     inCustody,
     recentActivity,
     page: '/dashboard/police',
-    breadcrumbs
+    breadcrumbs,
+    newAssignments,
+    totalOpenCases,
+    warrantsPending,
+    cases
   });
 });
 
