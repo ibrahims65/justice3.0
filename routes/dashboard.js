@@ -49,7 +49,7 @@ router.get('/police', checkRole(['Police']), async (req, res) => {
   const newAssignments = 5; // dummy data
   const totalOpenCases = 15; // dummy data
   const warrantsPending = 2; // dummy data
-  const { sortBy, filterBy } = req.query;
+  const { sortBy = 'updated', filterBy = null } = req.query;
   let caseWhere = {
     actions: {
       some: {
