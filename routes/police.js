@@ -1,21 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const ensureAuthenticated = require('../middleware/auth');
-const prisma = require('../lib/prisma'); // adjust path if needed
 const { isAuthenticated } = require('../middleware/auth');
+const prisma = require('../lib/prisma');
 
 // GET /police/dashboard
 router.get('/dashboard', isAuthenticated, async (req, res) => {
   try {
     const bookings = await prisma.booking.findMany({
       where: {
-        officerId: req.user.id, // or remove filter if you want all bookings
+        officerId: req.user.id, // adjust or remove filter if needed
       },
       orderBy: {
         date: 'desc',
       },
       take: 10, // limit to recent 10
     });
+
+    console.log('Dashboard accessed by:', req.user);
 
     res.render('police/dashboard', {
       user: req.user,
