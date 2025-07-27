@@ -51,10 +51,12 @@ try {
   const indexRouter = require('./routes/index');
   const usersRouter = require('./routes/users');
   const authRouter = require('./routes/auth');
+  const dashboardRouter = require('./routes/dashboard');
 
   app.use('/', indexRouter);
   app.use('/users', usersRouter);
   app.use('/auth', authRouter);
+  app.use('/dashboard', dashboardRouter);
   console.log('✅ Routes registered');
 } catch (err) {
   console.error('❌ Route registration failed:', err);
