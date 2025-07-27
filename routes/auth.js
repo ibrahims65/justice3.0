@@ -40,58 +40,63 @@ router.get('/login', (req, res) => {
   res.render('login');
 });
 
-router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  let user = await (req.prisma || prisma).user.findUnique({
-    where: { username },
-    include: { role: true },
-  });
+router.post('/login', async (req, res, next) => {
+  console.log('--- New Login Attempt ---');
+  try {
+    const { username, password } = req.body;
+    console.log(`[1/6] Attempting login for email: ${username}`);
 
-  if (!user) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user = await (req.prisma || prisma).user.create({
-      data: {
-        username,
-        password: hashedPassword,
-        role: {
-          connect: {
-            name: 'Police',
-          },
-        },
-      },
-      include: { role: true },
-    });
-  }
+    const user = await prisma.user.findUnique({ where: { username }, include: { role: true } });
 
-  if (user && (await bcrypt.compare(password, user.password))) {
+    if (!user) {
+      console.log('[2/6] User not found in database.');
+      req.flash('error', 'Invalid username or password.');
+      return res.redirect('/auth/login');
+    }
+    console.log('[2/6] User found in database.');
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      console.log('[3/6] Password validation failed.');
+      req.flash('error', 'Invalid username or password.');
+      return res.redirect('/auth/login');
+    }
+    console.log('[3/6] Password validation successful.');
+
+    // Create a plain, serializable object for the session
     const userSessionData = {
-        id: user.id,
-        username: user.username,
-        role: {
-            id: user.role.id,
-            name: user.role.name,
-        },
+      id: user.id,
+      username: user.username,
+      role: user.role.name
     };
+    console.log('[4/6] Created plain user object for session.');
+
     req.session.user = userSessionData;
+
+    console.log('[5/6] Attempting to save session...');
     req.session.save((err) => {
-        if (err) {
-            return next(err);
-        }
-        console.log("Logged in role:", user.role.name);
-        if (user.role.name === 'Police') {
-            res.redirect('/dashboard/police');
-        } else if (user.role.name === 'Prosecutor') {
-            res.redirect('/dashboard/prosecutor');
-        } else if (user.role.name === 'Court') {
-            res.redirect('/dashboard/court');
-        } else if (user.role.name === 'Corrections') {
-            res.redirect('/corrections/dashboard');
-        } else {
-            res.redirect('/dashboard');
-        }
+      if (err) {
+        console.error('[ERROR] Session save failed:', err);
+        return next(err);
+      }
+      console.log(`[6/6] Session saved successfully. Redirecting user with role: ${user.role.name}`);
+
+      // Redirect based on role
+      switch (user.role.name) {
+        case 'Police':
+          return res.redirect('/dashboard/police');
+        case 'Admin':
+          return res.redirect('/admin');
+        // Add other roles as needed
+        default:
+          return res.redirect('/');
+      }
     });
-  } else {
-    res.redirect('/auth/login');
+
+  } catch (error) {
+    console.error('[FATAL] An unexpected error occurred during login:', error);
+    next(error);
   }
 });
 
