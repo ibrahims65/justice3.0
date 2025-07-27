@@ -68,7 +68,7 @@ router.post('/login', async (req, res, next) => {
     const userSessionData = {
       id: user.id,
       username: user.username,
-      role: user.role.name
+      role: user.role
     };
     console.log('[4/6] Created plain user object for session.');
 
