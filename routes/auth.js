@@ -3,6 +3,16 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const prisma = require('../lib/prisma');
 
+const express = require('express');
+const router = express.Router();
+
+// 🧪 Login stub
+router.get('/login', (req, res) => {
+  res.send('Login route is alive');
+});
+
+module.exports = router;
+
 // GET login page
 router.get('/login', (req, res) => {
   res.render('login', { error: null });
