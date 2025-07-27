@@ -2,33 +2,30 @@ const express = require('express');
 const router = express.Router();
 const { isAuthenticated } = require('../middleware/auth');
 const prisma = require('../lib/prisma');
+const policeDashboardController = require('../controllers/police/dashboard.controller');
 
-// GET /police/dashboard
-router.get('/dashboard', isAuthenticated, async (req, res) => {
-  try {
-    const bookings = await prisma.booking.findMany({
-      where: {
-        officerId: req.user.id, // adjust or remove filter if needed
-      },
-      orderBy: {
-        date: 'desc',
-      },
-      take: 10, // limit to recent 10
-    });
+router.get('/dashboard', isAuthenticated, policeDashboardController.renderDashboard);
 
-    console.log('Dashboard accessed by:', req.user);
-
-    res.render('police/dashboard', {
-      user: req.user,
-      bookings,
-    });
-  } catch (err) {
-    console.error('Error loading police dashboard:', err);
-    res.render('police/dashboard', {
-      user: req.user,
-      bookings: [],
-    });
-  }
+router.post('/search', async (req, res) => {
+  const { query } = req.body;
+  const results = await prisma.booking.findMany({
+    where: {
+      OR: [
+        { arrestingOfficerName: { contains: query, mode: 'insensitive' } },
+        { person: { name: { contains: query, mode: 'insensitive' } } },
+      ],
+    },
+    include: {
+      person: true,
+    },
+  });
+  res.render('police-dashboard', {
+    officer: req.session.user,
+    results,
+    recentBookings: [],
+    alerts: [],
+    activityLog: [],
+  });
 });
 
 module.exports = router;
