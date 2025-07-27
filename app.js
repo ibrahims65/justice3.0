@@ -38,7 +38,9 @@ app.use('/prosecutor', prosecutorRoutes);
 app.use('/court', courtRoutes);
 app.use('/dashboard', dashboardRoutes);
 const apiRoutes = require('./routes/api');
+const jurisdictionRoutes = require('./routes/jurisdiction');
 app.use('/api', apiRoutes);
+app.use('/api/jurisdiction', jurisdictionRoutes);
 
 app.get('/dashboard', async (req, res) => {
   logger.info(`User ${req.session.userId} visited the dashboard`);
