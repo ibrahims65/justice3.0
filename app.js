@@ -8,20 +8,16 @@ const logger = require('morgan');
 
 console.log('🚀 Justice 3.0 booting...');
 
+// 🔒 Error guards
 process.on('uncaughtException', (err) => {
   console.error('🧨 Uncaught Exception:', err);
 });
-
-const authRouter = require('./routes/auth');
-app.use('/auth', authRouter);
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('🧨 Unhandled Rejection:', reason);
 });
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-
+// 🔧 Initialize app FIRST
 const app = express();
 
 // 🧱 View engine setup
@@ -52,8 +48,13 @@ try {
 
 // 🛣️ Routes
 try {
+  const indexRouter = require('./routes/index');
+  const usersRouter = require('./routes/users');
+  const authRouter = require('./routes/auth');
+
   app.use('/', indexRouter);
   app.use('/users', usersRouter);
+  app.use('/auth', authRouter);
   console.log('✅ Routes registered');
 } catch (err) {
   console.error('❌ Route registration failed:', err);
