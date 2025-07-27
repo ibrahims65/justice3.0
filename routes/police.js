@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const ensureAuthenticated = require('../middleware/auth');
 const prisma = require('../lib/prisma'); // adjust path if needed
+const { isAuthenticated } = require('../middleware/auth');
 
 // GET /police/dashboard
-router.get('/dashboard', ensureAuthenticated, async (req, res) => {
+router.get('/dashboard', isAuthenticated, async (req, res) => {
   try {
     const bookings = await prisma.booking.findMany({
       where: {
