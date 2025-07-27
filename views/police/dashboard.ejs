@@ -1,155 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tactical Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="/css/custom.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Police Command Center</title>
+    <link href="/css/dashboard.css" rel="stylesheet">
 </head>
-<body class="bg-gray-900 text-white" x-data="{ liveTime: new Date() }" x-init="setInterval(() => liveTime = new Date(), 1000)">
-  <div class="watermark"></div>
-  <div class="flex h-screen">
-    <div class="w-1/4 bg-gray-800 p-8">
-      <h2 class="text-2xl font-bold mb-8">KPIs</h2>
-      <div class="grid grid-cols-1 gap-8">
-        <div class="kpi-card bg-gray-700 p-4 rounded-lg">
-          <h3 class="text-lg font-medium">Bookings Today</h3>
-          <p class="text-3xl font-bold"><%= bookingsToday %></p>
+<body>
+    <%- include('../partials/navbar', { user: user, page: page }) %>
+    <div class="command-center">
+        <div class="column left-column">
+            <div class="card alert-card">
+                <h3>Overdue Holds</h3>
+                <p class="count"><%= overdueHolds %></p>
+                <a href="/police/bookings?status=Overdue">View Overdue Holds</a>
+            </div>
+            <div class="card assign-card">
+                <h3>New Assignments</h3>
+                <p class="count"><%= newAssignments %></p>
+                <a href="/police/cases?status=New">View New Assignments</a>
+            </div>
         </div>
-        <div class="kpi-card bg-gray-700 p-4 rounded-lg <%= overdueHolds > 0 ? 'border-red-500 border-2' : '' %>">
-          <h3 class="text-lg font-medium">Overdue Holds</h3>
-          <p class="text-3xl font-bold"><%= overdueHolds %></p>
+        <div class="column center-column">
+            <h3>My Active Cases</h3>
+            <% cases.forEach(caseRecord => { %>
+                <div class="card case-card">
+                    <h4>Case #<%= caseRecord.caseNumber %></h4>
+                    <p><%= caseRecord.booking.person.name %></p>
+                    <p>Date of Offense: <%= new Date(caseRecord.booking.bookingDate).toLocaleDateString() %></p>
+                    <p><span class="badge badge-<%= caseRecord.status.toLowerCase().replace(' ', '-') %>"><%= caseRecord.status %></span></p>
+                    <a href="/cases/<%= caseRecord.id %>">View Case</a>
+                </div>
+            <% }) %>
         </div>
-        <div class="kpi-card bg-gray-700 p-4 rounded-lg">
-          <h3 class="text-lg font-medium">Pending Submissions</h3>
-          <p class="text-3xl font-bold"><%= pendingSubmissions %></p>
+        <div class="column right-column">
+            <input type="text" class="search-bar" id="live-search" placeholder="Search by Case #, Name, or Badge ID...">
+            <div id="search-results"></div>
+            <div class="card quick-stats">
+                <h3>Quick Stats</h3>
+                <p>Total Open Cases: <%= totalOpenCases %></p>
+                <p>Warrants Pending: <%= warrantsPending %></p>
+            </div>
+            <div class="card quick-links">
+                <h3>Quick Links</h3>
+                <a href="/reports/new">Generate Report</a>
+                <a href="/police/bookings">View All Station Bookings</a>
+            </div>
         </div>
-        <div class="kpi-card bg-gray-700 p-4 rounded-lg">
-          <h3 class="text-lg font-medium">In Custody</h3>
-          <p class="text-3xl font-bold"><%= inCustody %></p>
-        </div>
-      </div>
     </div>
-    <div class="w-1/2 bg-gray-900 p-8">
-      <div class="flex justify-between items-center mb-8">
-        <h1 class="text-4xl font-bold">Tactical Dashboard</h1>
-        <div class="text-2xl" x-text="liveTime.toLocaleTimeString()"></div>
-      </div>
-      <div class="grid grid-cols-1 gap-8">
-        <div class="bg-gray-800 p-4 rounded-lg">
-          <h3 class="text-lg font-medium mb-4">Booking Velocity (24h)</h3>
-          <canvas id="bookingVelocityChart"></canvas>
-        </div>
-        <div class="bg-gray-800 p-4 rounded-lg">
-          <h3 class="text-lg font-medium mb-4">Case Status Breakdown</h3>
-          <canvas id="caseStatusChart"></canvas>
-        </div>
-      </div>
-    </div>
-    <div class="w-1/4 bg-gray-800 p-8">
-      <h2 class="text-2xl font-bold mb-8">Quick Actions</h2>
-      <div class="grid grid-cols-1 gap-4">
-        <a href="/people/new" class="action-button">Add Booking</a>
-        <a href="/police/people" class="action-button">Search Person</a>
-        <a href="/police/bookings" class="action-button">Submit Case</a>
-        <a href="/evidence/new" class="action-button">Add Evidence</a>
-        <a href="/print/wrapsheet" class="action-button">Print Wrap Sheet</a>
-        <a href="/police/remands" class="action-button">Request Remand</a>
-      </div>
-      <div class="quran-verse mt-8">
-        <p>"Justice is the foundation of peace."</p>
-      </div>
-    </div>
-  </div>
-  <div class="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">
-    <h2 class="text-xl font-bold mb-4">Live Activity Feed</h2>
-    <table class="w-full text-left">
-      <thead>
-        <tr>
-          <th class="py-2">Action</th>
-          <th class="py-2">Case ID</th>
-          <th class="py-2">Officer</th>
-          <th class="py-2">Timestamp</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% recentActivity.forEach(activity => { %>
-          <tr>
-            <td><%= activity.action %></td>
-            <td><%= activity.case ? activity.case.caseNumber : 'N/A' %></td>
-            <td><%= activity.user.username %></td>
-            <td><%= activity.timestamp.toLocaleString() %></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
-
-  <style>
-    .watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: -1;
-      opacity: 0.1;
-      width: 50%;
-      height: 50%;
-      background-image: url('/images/logo.svg');
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: contain;
-    }
-    .quran-verse {
-      font-style: italic;
-      text-align: center;
-    }
-  </style>
-
-  <script>
-    const bookingVelocityCtx = document.getElementById('bookingVelocityChart').getContext('2d');
-    new Chart(bookingVelocityCtx, {
-      type: 'line',
-      data: {
-        labels: ['-24h', '-20h', '-16h', '-12h', '-8h', '-4h', 'Now'],
-        datasets: [{
-          label: 'Bookings',
-          data: [5, 10, 15, 12, 20, 18, 25],
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-
-    const caseStatusCtx = document.getElementById('caseStatusChart').getContext('2d');
-    new Chart(caseStatusCtx, {
-      type: 'pie',
-      data: {
-        labels: ['New Arrest', 'Prosecutor Review', 'Submitted to Court', 'Accepted', 'Rejected'],
-        datasets: [{
-          label: 'Case Status',
-          data: [12, 19, 3, 5, 2],
-          backgroundColor: [
-            'rgb(255, 99, 132)',
-            'rgb(54, 162, 235)',
-            'rgb(255, 205, 86)',
-            'rgb(75, 192, 192)',
-            'rgb(153, 102, 255)'
-          ],
-          hoverOffset: 4
-        }]
-      }
-    });
-  </script>
+    <script src="/js/live-search.js"></script>
 </body>
 </html>

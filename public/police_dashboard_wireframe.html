@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Police Dashboard Wireframe</title>
+    <style>
+        body { font-family: sans-serif; color: #333; }
+        .container { display: flex; gap: 20px; padding: 20px; }
+        .column { flex: 1; border: 1px solid #ccc; padding: 20px; }
+        .card { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; }
+        .card h3 { margin-top: 0; }
+        .card .count { font-size: 2em; font-weight: bold; }
+        .alert-card { border-left: 5px solid red; }
+        .assign-card { border-left: 5px solid blue; }
+        .case-card { background-color: #f9f9f9; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; color: white; }
+        .badge-review { background-color: #f59e0b; }
+        .badge-active { background-color: #10b981; }
+        .badge-remand { background-color: #ef4444; }
+        .search-bar { width: 100%; padding: 10px; margin-bottom: 15px; }
+        .quick-stats p { margin: 5px 0; }
+        .quick-links a { display: block; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="column left-column">
+            <h2>Priority Alerts</h2>
+            <div class="card alert-card">
+                <h3>Overdue Holds</h3>
+                <p class="count">3</p>
+                <a href="#">View Overdue Holds</a>
+            </div>
+            <div class="card assign-card">
+                <h3>New Assignments</h3>
+                <p class="count">5</p>
+                <a href="#">View New Assignments</a>
+            </div>
+        </div>
+        <div class="column center-column">
+            <h2>My Active Cases</h2>
+            <div class="card case-card">
+                <h3>Case #PC2025-07-123</h3>
+                <p>John Doe</p>
+                <p>Date of Offense: 2025-07-26</p>
+                <p><span class="badge badge-review">Review</span></p>
+                <button>View Case</button>
+            </div>
+            <div class="card case-card">
+                <h3>Case #PC2025-07-124</h3>
+                <p>Jane Smith</p>
+                <p>Date of Offense: 2025-07-25</p>
+                <p><span class="badge badge-active">Active</span></p>
+                <button>View Case</button>
+            </div>
+            <div class="card case-card">
+                <h3>Case #PC2025-07-125</h3>
+                <p>Peter Jones</p>
+                <p>Date of Offense: 2025-07-24</p>
+                <p><span class="badge badge-remand">Awaiting Remand</span></p>
+                <button>View Case</button>
+            </div>
+        </div>
+        <div class="column right-column">
+            <h2>Tools & Quick Stats</h2>
+            <input type="text" class="search-bar" placeholder="Search by Case #, Name, or Badge ID...">
+            <div class="quick-stats">
+                <h3>Quick Stats</h3>
+                <p>Total Open Cases: 15</p>
+                <p>Warrants Pending: 2</p>
+            </div>
+            <div class="quick-links">
+                <h3>Quick Links</h3>
+                <a href="#">Generate Report</a>
+                <a href="#">View All Station Bookings</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
