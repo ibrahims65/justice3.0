@@ -37,6 +37,7 @@
       <% } else if (typeof results !== 'undefined') { %>
       <p>No bookings found.</p>
       <% } %>
+      <pre><%= JSON.stringify(results, null, 2) %></pre>
     </div>
   </section>
 

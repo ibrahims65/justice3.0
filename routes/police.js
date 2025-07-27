@@ -8,6 +8,7 @@ router.get('/dashboard', isAuthenticated, policeDashboardController.renderDashbo
 
 router.post('/search', async (req, res) => {
   const { query } = req.body;
+  console.log('Search query:', query);
   const results = await prisma.booking.findMany({
     where: {
       OR: [
@@ -19,6 +20,7 @@ router.post('/search', async (req, res) => {
       person: true,
     },
   });
+  console.log(results);
   res.render('police-dashboard', {
     officer: req.session.user,
     results,
