@@ -6,7 +6,7 @@ const { checkRole } = require('../middleware/auth');
 
 router.get('/police', checkRole(['Police']), async (req, res) => {
   const user = await prisma.user.findUnique({
-    where: { id: req.session.userId },
+    where: { id: req.session.user.id },
     include: { role: true },
   });
 
@@ -133,7 +133,7 @@ router.get('/police', checkRole(['Police']), async (req, res) => {
 
 router.get('/prosecutor', checkRole(['Prosecutor']), async (req, res) => {
   const user = await prisma.user.findUnique({
-    where: { id: req.session.userId },
+    where: { id: req.session.user.id },
     include: { role: true },
   });
 
@@ -197,7 +197,7 @@ router.get('/prosecutor', checkRole(['Prosecutor']), async (req, res) => {
 
 router.get('/court', checkRole(['Court']), async (req, res) => {
   const user = await prisma.user.findUnique({
-    where: { id: req.session.userId },
+    where: { id: req.session.user.id },
     include: { role: true },
   });
 
