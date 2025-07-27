@@ -1,359 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <% if (user.role.name === 'Police') { %>
+        <link href="/css/dashboard.css" rel="stylesheet">
+    <% } else { %>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <% } %>
 </head>
-<body class="bg-gray-100">
-  <%- include('partials/navbar', { user: user, page: page }) %>
+<body>
+    <%- include('./partials/navbar', { user: user, page: page }) %>
 
-  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <%- include('partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
-    <div class="px-4 py-6 sm:px-0">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, <%= user.username %>!</h2>
-      <p class="text-gray-600 mb-8">Your role is: <%= user.role.name %></p>
-
-      <form action="/dashboard" method="GET" class="mb-4 flex space-x-2">
-        <input type="text" name="search" placeholder="Search..." class="border rounded p-2 flex-grow">
-        <input type="date" name="startDate" class="border rounded p-2">
-        <input type="date" name="endDate" class="border rounded p-2">
-        <% if (user.role.name === 'Police') { %>
-          <select name="status" class="border rounded p-2">
-            <option value="">All Statuses</option>
-            <option value="New Booking">New Booking</option>
-            <option value="Information Requested">Information Requested</option>
-          </select>
-        <% } %>
-        <% if (user.role.name === 'Prosecutor') { %>
-          <select name="status" class="border rounded p-2">
-            <option value="">All Statuses</option>
-            <option value="Prosecutor Review">Prosecutor Review</option>
-            <option value="Plea Bargain Accepted">Plea Bargain Accepted</option>
-          </select>
-        <% } %>
-        <% if (user.role.name === 'Court') { %>
-          <select name="status" class="border rounded p-2">
-            <option value="">All Statuses</option>
-            <option value="Accepted">Accepted</option>
-            <option value="Granted">Bail Granted</option>
-            <option value="Denied">Bail Denied</option>
-          </select>
-        <% } %>
-        <% if (user.role.name === 'Corrections') { %>
-          <input type="text" name="facility" placeholder="Facility Name" class="border rounded p-2">
-        <% } %>
-        <button type="submit" class="bg-blue-500 text-white p-2 rounded">Search</button>
-      </form>
-
-      <% cases.forEach(caseRecord => { %>
-        <% if (caseRecord.status === 'Information Requested' || caseRecord.status === 'Sent Back to Prosecutor') { %>
-          <div class="bg-red-500 text-white p-4 rounded mb-4">
-            🚨 RETURNED – Additional Information Required: <a href="/cases/<%= caseRecord.id %>" class="text-white underline"><%= caseRecord.caseNumber %></a>
-          </div>
-        <% } %>
-      <% }) %>
-      <% if (user.role.name === 'Police') { %>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Active Bookings</h3>
-            <p class="text-3xl font-bold text-blue-500"><%= bookings.filter(b => b.status === 'New Booking').length %></p>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Total Bookings</h3>
-            <p class="text-3xl font-bold text-blue-500"><%= bookings.length %></p>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">People Registered</h3>
-            <p class="text-3xl font-bold text-blue-500"><%= people.length %></p>
-          </div>
-        </div>
-        <div class="mt-8">
-          <a href="/people/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Register New Person</a>
-        </div>
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">Expiring Custody</h3>
-          <ul>
-            <% bookings.filter(b => b.custodyExpiresAt && new Date(b.custodyExpiresAt) > new Date()).sort((a, b) => new Date(a.custodyExpiresAt) - new Date(b.custodyExpiresAt)).forEach(booking => { %>
-              <li class="border-b border-gray-200 py-2">
-                <a href="/people/<%= booking.personId %>" class="text-blue-500 hover:underline">Booking #<%= booking.id %></a> -
-                <span class="text-red-500 font-bold" id="dashboard-countdown-<%= booking.id %>"></span>
-                <script>
-                  const dashboard_countdown_<%= booking.id %> = () => {
-                    const countDownDate = new Date("<%= booking.custodyExpiresAt %>").getTime();
-                    const now = new Date().getTime();
-                    const distance = countDownDate - now;
-
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    document.getElementById("dashboard-countdown-<%= booking.id %>").innerHTML = `${hours}h ${minutes}m ${seconds}s`;
-
-                    if (distance < 0) {
-                      clearInterval(dashboard_x_<%= booking.id %>);
-                      document.getElementById("dashboard-countdown-<%= booking.id %>").innerHTML = "EXPIRED";
-                    }
-                  };
-                  const dashboard_x_<%= booking.id %> = setInterval(dashboard_countdown_<%= booking.id %>, 1000);
-                </script>
-              </li>
-            <% }) %>
-          </ul>
-        </div>
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">Your Bookings</h3>
-          <ul id="bookings-list">
-            <% bookings.slice(0, 10).forEach(booking => { %>
-              <li class="border-b border-gray-200 py-2"><a href="/people/<%= booking.personId %>" class="text-blue-500 hover:underline">Booking #<%= booking.id %></a> - <%= booking.status %></li>
-            <% }) %>
-          </ul>
-          <% if (bookings.length > 10) { %>
-            <button id="load-more" class="bg-blue-500 text-white p-2 rounded mt-4">Load More</button>
-          <% } %>
-          <script>
-            let page = 2;
-            const loadMoreButton = document.getElementById('load-more');
-            const bookingsList = document.getElementById('bookings-list');
-
-            if (loadMoreButton) {
-              loadMoreButton.addEventListener('click', async () => {
-                const response = await fetch(`/dashboard?page=${page}`);
-                const newBookings = await response.text();
-                const newBookingsHtml = new DOMParser().parseFromString(newBookings, 'text/html');
-                const newBookingsList = newBookingsHtml.getElementById('bookings-list');
-                bookingsList.innerHTML += newBookingsList.innerHTML;
-                page++;
-              });
-            }
-          </script>
-        </div>
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">Bookings by Status</h3>
-          <div style="max-height: 400px; overflow-y: auto;">
-            <canvas id="bookingStatusChart" height="300"></canvas>
-          </div>
-        </div>
-        <script>
-          const bookingStatusData = <%- JSON.stringify(bookings.reduce((acc, booking) => {
-            acc[booking.status] = (acc[booking.status] || 0) + 1;
-            return acc;
-          }, {})) %>;
-
-          const bookingCtx = document.getElementById('bookingStatusChart').getContext('2d');
-          new Chart(bookingCtx, {
-            type: 'pie',
-            data: {
-              labels: Object.keys(bookingStatusData),
-              datasets: [{
-                label: 'Bookings by Status',
-                data: Object.values(bookingStatusData),
-                backgroundColor: [
-                  'rgba(255, 99, 132, 0.7)',
-                  'rgba(54, 162, 235, 0.7)',
-                  'rgba(255, 206, 86, 0.7)',
-                  'rgba(75, 192, 192, 0.7)',
-                  'rgba(153, 102, 255, 0.7)',
-                  'rgba(255, 159, 64, 0.7)'
-                ],
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-            }
-          });
-        </script>
-      <% } %>
-
-      <% if (user.role.name === 'Prosecutor') { %>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Cases for Review</h3>
-            <p class="text-3xl font-bold text-yellow-500"><%= cases.filter(c => c.status === 'Prosecutor Review').length %></p>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Accepted Cases</h3>
-            <p class="text-3xl font-bold text-green-500"><%= cases.filter(c => c.status === 'Accepted').length %></p>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Rejected Cases</h3>
-            <p class="text-3xl font-bold text-red-500"><%= cases.filter(c => c.status === 'Rejected').length %></p>
-          </div>
-        </div>
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">Cases for Review</h3>
-          <ul>
-            <% cases.filter(c => c.status === 'Prosecutor Review').forEach(caseRecord => { %>
-              <li class="border-b border-gray-200 py-2 flex items-center">
-                <img src="<%= caseRecord.booking.person.photoUrl %>" alt="Person Photo" class="w-12 h-12 rounded-full mr-4">
-                <div>
-                  <a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline"><%= caseRecord.caseNumber %></a> - <span class="font-semibold"><%= caseRecord.status %></span>
-                  <p class="text-sm text-gray-600"><%= caseRecord.booking.person.name %></p>
+    <% if (user.role.name === 'Police') { %>
+        <div class="command-center">
+            <div class="column left-column">
+                <div class="card alert-card">
+                    <h3>Overdue Holds</h3>
+                    <p class="count"><%= overdueHolds %></p>
+                    <a href="/police/bookings?status=Overdue">View Overdue Holds</a>
                 </div>
-              </li>
-            <% }) %>
-          </ul>
-        </div>
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">Cases by Status</h3>
-          <canvas id="caseStatusChart" width="400" height="200"></canvas>
-        </div>
-        <script>
-          const caseStatusData = <%- JSON.stringify(cases.reduce((acc, caseRecord) => {
-            acc[caseRecord.status] = (acc[caseRecord.status] || 0) + 1;
-            return acc;
-          }, {})) %>;
-
-          const caseCtx = document.getElementById('caseStatusChart').getContext('2d');
-          new Chart(caseCtx, {
-            type: 'pie',
-            data: {
-              labels: Object.keys(caseStatusData),
-              datasets: [{
-                label: 'Cases by Status',
-                data: Object.values(caseStatusData),
-                backgroundColor: [
-                  'rgba(255, 99, 132, 0.7)',
-                  'rgba(54, 162, 235, 0.7)',
-                  'rgba(255, 206, 86, 0.7)',
-                  'rgba(75, 192, 192, 0.7)',
-                  'rgba(153, 102, 255, 0.7)',
-                  'rgba(255, 159, 64, 0.7)'
-                ],
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-            }
-          });
-        </script>
-      <% } %>
-
-      <% if (user.role.name === 'Court') { %>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Upcoming Hearings</h3>
-            <p class="text-3xl font-bold text-purple-500"><%= cases.reduce((acc, c) => acc + c.hearings.filter(h => !h.verdict).length, 0) %></p>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Cases Awaiting Verdict</h3>
-            <p class="text-3xl font-bold text-purple-500"><%= cases.filter(c => c.status === 'Accepted' && c.hearings.some(h => !h.verdict)).length %></p>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Recent Verdicts</h3>
-            <p class="text-3xl font-bold text-purple-500"><%= cases.reduce((acc, c) => acc + c.hearings.filter(h => h.verdict).length, 0) %></p>
-          </div>
-        </div>
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">Cases for Hearing</h3>
-          <ul>
-            <% cases.filter(c => c.status === 'Accepted').forEach(caseRecord => { %>
-              <li class="border-b border-gray-200 py-2 flex items-center">
-                <img src="<%= caseRecord.booking.person.photoUrl %>" alt="Person Photo" class="w-12 h-12 rounded-full mr-4">
-                <div>
-                  <a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline"><%= caseRecord.caseNumber %></a> - <span class="font-semibold"><%= caseRecord.status %></span>
-                  <p class="text-sm text-gray-600"><%= caseRecord.booking.person.name %></p>
+                <div class="card assign-card">
+                    <h3>New Assignments</h3>
+                    <p class="count"><%= newAssignments %></p>
+                    <a href="/police/cases?status=New">View New Assignments</a>
                 </div>
-              </li>
-            <% }) %>
-          </ul>
+            </div>
+            <div class="column center-column">
+                <h3>My Active Cases</h3>
+                <% cases.forEach(caseRecord => { %>
+                    <div class="card case-card">
+                        <h4>Case #<%= caseRecord.caseNumber %></h4>
+                        <p><%= caseRecord.booking.person.name %></p>
+                        <p>Date of Offense: <%= new Date(caseRecord.booking.bookingDate).toLocaleDateString() %></p>
+                        <p><span class="badge badge-<%= caseRecord.status.toLowerCase().replace(' ', '-') %>"><%= caseRecord.status %></span></p>
+                        <a href="/cases/<%= caseRecord.id %>">View Case</a>
+                    </div>
+                <% }) %>
+            </div>
+            <div class="column right-column">
+                <input type="text" class="search-bar" id="live-search" placeholder="Search by Case #, Name, or Badge ID...">
+                <div id="search-results"></div>
+                <div class="card quick-stats">
+                    <h3>Quick Stats</h3>
+                    <p>Total Open Cases: <%= totalOpenCases %></p>
+                    <p>Warrants Pending: <%= warrantsPending %></p>
+                </div>
+                <div class="card quick-links">
+                    <h3>Quick Links</h3>
+                    <a href="/reports/new">Generate Report</a>
+                    <a href="/police/bookings">View All Station Bookings</a>
+                </div>
+            </div>
         </div>
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">Cases by Status</h3>
-          <canvas id="courtCaseStatusChart" width="400" height="200"></canvas>
+        <script src="/js/live-search.js"></script>
+    <% } else if (user.role.name === 'Prosecutor') { %>
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <%- include('./partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
+            <div class="px-4 py-6 sm:px-0">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, <%= user.username %>!</h2>
+                <p class="text-gray-600 mb-8">Your role is: <%= user.role.name %></p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-medium text-gray-800">Assigned Cases</h3>
+                        <p class="text-3xl font-bold text-blue-500"><%= cases.length %></p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-medium text-gray-800">Remand Requests</h3>
+                        <p class="text-3xl font-bold text-blue-500"><%= remandRequests.length %></p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-medium text-gray-800">Upcoming Hearings</h3>
+                        <p class="text-3xl font-bold text-blue-500"><%= upcomingHearings.length %></p>
+                    </div>
+                </div>
+                <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">Assigned Cases</h3>
+                    <% if (cases.length > 0) { %>
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr>
+                                    <th class="py-2">Case Number</th>
+                                    <th class="py-2">Defendant</th>
+                                    <th class="py-2">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% cases.forEach(caseRecord => { %>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="py-2"><a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline"><%= caseRecord.caseNumber %></a></td>
+                                        <td class="py-2"><%= caseRecord.booking.person.name %></td>
+                                        <td class="py-2"><%= caseRecord.status %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    <% } else { %>
+                        <p>No cases assigned.</p>
+                    <% } %>
+                </div>
+                <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">Remand Requests</h3>
+                    <% if (remandRequests.length > 0) { %>
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr>
+                                    <th class="py-2">Case Number</th>
+                                    <th class="py-2">Defendant</th>
+                                    <th class="py-2">Status</th>
+                                    <th class="py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% remandRequests.forEach(remand => { %>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="py-2"><a href="/cases/<%= remand.booking.case.id %>" class="text-blue-500 hover:underline"><%= remand.booking.case.caseNumber %></a></td>
+                                        <td class="py-2"><%= remand.booking.person.name %></td>
+                                        <td class="py-2"><%= remand.status %></td>
+                                        <td class="py-2">
+                                            <a href="/remand/<%= remand.id %>/approve" class="text-green-500 hover:underline">Approve</a>
+                                            <a href="/remand/<%= remand.id %>/reject" class="text-red-500 hover:underline ml-4">Reject</a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    <% } else { %>
+                        <p>No remand requests to review.</p>
+                    <% } %>
+                </div>
+            </div>
         </div>
-        <script>
-          const courtCaseStatusData = <%- JSON.stringify(cases.reduce((acc, caseRecord) => {
-            acc[caseRecord.status] = (acc[caseRecord.status] || 0) + 1;
-            return acc;
-          }, {})) %>;
-
-          const courtCaseCtx = document.getElementById('courtCaseStatusChart').getContext('2d');
-          new Chart(courtCaseCtx, {
-            type: 'pie',
-            data: {
-              labels: Object.keys(courtCaseStatusData),
-              datasets: [{
-                label: 'Cases by Status',
-                data: Object.values(courtCaseStatusData),
-                backgroundColor: [
-                  'rgba(255, 99, 132, 0.7)',
-                  'rgba(54, 162, 235, 0.7)',
-                  'rgba(255, 206, 86, 0.7)',
-                  'rgba(75, 192, 192, 0.7)',
-                  'rgba(153, 102, 255, 0.7)',
-                  'rgba(255, 159, 64, 0.7)'
-                ],
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-            }
-          });
-        </script>
-      <% } %>
-
-      <% if (user.role.name === 'Corrections') { %>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Total People</h3>
-            <p class="text-3xl font-bold text-indigo-500"><%= people.length %></p>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">People by Status</h3>
-            <canvas id="peopleStatusChart" width="400" height="200"></canvas>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-800">Recent Releases</h3>
-            <p class="text-3xl font-bold text-indigo-500">0</p>
-          </div>
+    <% } else if (user.role.name === 'Court') { %>
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <%- include('./partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
+            <div class="px-4 py-6 sm:px-0">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, <%= user.username %>!</h2>
+                <p class="text-gray-600 mb-8">Your role is: <%= user.role.name %></p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-medium text-gray-800">Scheduled Hearings</h3>
+                        <p class="text-3xl font-bold text-blue-500"><%= hearings.length %></p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-medium text-gray-800">Cases to Assign</h3>
+                        <p class="text-3xl font-bold text-blue-500"><%= casesToAssign.length %></p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-medium text-gray-800">Warrants to Approve</h3>
+                        <p class="text-3xl font-bold text-blue-500"><%= warrantsToApprove.length %></p>
+                    </div>
+                </div>
+                <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">Cases to Assign</h3>
+                    <% if (casesToAssign.length > 0) { %>
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr>
+                                    <th class="py-2">Case Number</th>
+                                    <th class="py-2">Status</th>
+                                    <th class="py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% casesToAssign.forEach(caseRecord => { %>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="py-2"><a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline"><%= caseRecord.caseNumber %></a></td>
+                                        <td class="py-2"><%= caseRecord.status %></td>
+                                        <td class="py-2"><a href="/cases/<%= caseRecord.id %>/assign" class="text-blue-500 hover:underline">Assign</a></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    <% } else { %>
+                        <p>No cases to assign.</p>
+                    <% } %>
+                </div>
+                <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">Warrants to Approve</h3>
+                    <% if (warrantsToApprove.length > 0) { %>
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr>
+                                    <th class="py-2">Case Number</th>
+                                    <th class="py-2">Status</th>
+                                    <th class="py-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% warrantsToApprove.forEach(warrant => { %>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="py-2"><a href="/cases/<%= warrant.case.id %>" class="text-blue-500 hover:underline"><%= warrant.case.caseNumber %></a></td>
+                                        <td class="py-2"><%= warrant.status %></td>
+                                        <td class="py-2">
+                                            <a href="/warrants/<%= warrant.id %>/approve" class="text-green-500 hover:underline">Approve</a>
+                                            <a href="/warrants/<%= warrant.id %>/reject" class="text-red-500 hover:underline ml-4">Reject</a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    <% } else { %>
+                        <p>No warrants to approve.</p>
+                    <% } %>
+                </div>
+                <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">Scheduled Hearings</h3>
+                    <% if (hearings.length > 0) { %>
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr>
+                                    <th class="py-2">Case Number</th>
+                                    <th class="py-2">Hearing Date</th>
+                                    <th class="py-2">Court</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% hearings.forEach(hearing => { %>
+                                    <tr class="border-b border-gray-200">
+                                        <td class="py-2"><a href="/cases/<%= hearing.case.id %>" class="text-blue-500 hover:underline"><%= hearing.case.caseNumber %></a></td>
+                                        <td class="py-2"><%= new Date(hearing.hearingDate).toLocaleString() %></td>
+                                        <td class="py-2"><%= hearing.court.name %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    <% } else { %>
+                        <p>No scheduled hearings.</p>
+                    <% } %>
+                </div>
+            </div>
         </div>
-        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-4">People Records</h3>
-          <ul>
-            <% people.forEach(person => { %>
-              <li class="border-b border-gray-200 py-2"><a href="/people/<%= person.id %>" class="text-blue-500 hover:underline"><%= person.name %></a></li>
-            <% }) %>
-          </ul>
-        </div>
-        <script>
-          const peopleStatusData = <%- JSON.stringify(people.reduce((acc, person) => {
-            const status = person.bookings.find(b => b.case?.status === 'Convicted')?.case.status || 'N/A';
-            acc[status] = (acc[status] || 0) + 1;
-            return acc;
-          }, {})) %>;
-
-          const ctx = document.getElementById('peopleStatusChart').getContext('2d');
-          new Chart(ctx, {
-            type: 'pie',
-            data: {
-              labels: Object.keys(peopleStatusData),
-              datasets: [{
-                label: 'People by Status',
-                data: Object.values(peopleStatusData),
-                backgroundColor: [
-                  'rgba(255, 99, 132, 0.7)',
-                  'rgba(54, 162, 235, 0.7)',
-                  'rgba(255, 206, 86, 0.7)',
-                  'rgba(75, 192, 192, 0.7)',
-                  'rgba(153, 102, 255, 0.7)',
-                  'rgba(255, 159, 64, 0.7)'
-                ],
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-            }
-          });
-        </script>
-      <% } %>
-    </div>
-  </div>
+    <% } %>
 </body>
 </html>

@@ -84,7 +84,7 @@ router.get('/police', checkRole(['Police']), async (req, res) => {
   });
 
 
-  res.render('police/dashboard', {
+  res.render('dashboard', {
     user,
     bookingsToday,
     overdueHolds,
@@ -154,7 +154,7 @@ router.get('/prosecutor', checkRole(['Prosecutor']), async (req, res) => {
     { name: 'Dashboard', url: '/dashboard/prosecutor' }
   ];
 
-  res.render('prosecutor/dashboard', {
+  res.render('dashboard', {
     user,
     cases,
     remandRequests,
@@ -196,7 +196,7 @@ router.get('/court', checkRole(['Court']), async (req, res) => {
     { name: 'Dashboard', url: '/dashboard/court' }
   ];
 
-  res.render('court/dashboard', {
+  res.render('dashboard', {
     user,
     hearings,
     casesToAssign,
