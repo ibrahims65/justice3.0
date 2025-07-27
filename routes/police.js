@@ -1,191 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-const { checkRole } = require('../middleware/auth');
+const ensureAuthenticated = require('../middleware/auth');
+const prisma = require('../lib/prisma'); // adjust path if needed
 
-
-router.get('/people-redesigned', checkRole(['Police']), async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.userId },
-    include: { role: true },
-  });
-
-  const { search, role, bookingStatus, caseStatus, gender, ageRange } = req.query;
-  let where = {};
-
-  if (search) {
-    where.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
-      { id: { equals: parseInt(search) || 0 } },
-      { bookings: { some: { id: { equals: parseInt(search) || 0 } } } },
-      { bookings: { some: { case: { caseNumber: { contains: search, mode: 'insensitive' } } } } },
-    ];
-  }
-
-  if (role) {
-    // This requires a `roles` field on the `Person` model, which is not yet implemented.
-  }
-
-  if (bookingStatus) {
-    where.bookings = {
-      some: {
-        status: bookingStatus,
+// GET /police/dashboard
+router.get('/dashboard', ensureAuthenticated, async (req, res) => {
+  try {
+    const bookings = await prisma.booking.findMany({
+      where: {
+        officerId: req.user.id, // or remove filter if you want all bookings
       },
-    };
+      orderBy: {
+        date: 'desc',
+      },
+      take: 10, // limit to recent 10
+    });
+
+    res.render('police/dashboard', {
+      user: req.user,
+      bookings,
+    });
+  } catch (err) {
+    console.error('Error loading police dashboard:', err);
+    res.render('police/dashboard', {
+      user: req.user,
+      bookings: [],
+    });
   }
-
-  if (caseStatus) {
-    where.bookings = {
-      some: {
-        case: {
-          status: caseStatus,
-        },
-      },
-    };
-  }
-
-  if (gender) {
-    where.gender = gender;
-  }
-
-  if (ageRange) {
-    // This requires calculating the age from the `dob` field.
-  }
-
-  const people = await prisma.person.findMany({
-    where: {
-      ...where,
-      bookings: {
-        some: {},
-      },
-    },
-    include: {
-      bookings: {
-        include: {
-          case: true,
-        },
-      },
-    },
-    take: 20,
-  });
-
-  res.render('police/people-redesigned', {
-    user,
-    people,
-    page: '/police/people-redesigned',
-  });
 });
-
-router.get('/bookings', checkRole(['Police']), async (req, res) => {
-  const bookings = await prisma.booking.findMany({
-    include: {
-      person: true,
-      remandRequests: true,
-    },
-  });
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.userId },
-    include: { role: true },
-  });
-
-  const breadcrumbs = [
-    { name: 'Dashboard', url: '/dashboard/police' },
-    { name: 'Bookings', url: '/police/bookings' }
-  ];
-
-  res.render('police/bookings', {
-    user,
-    bookings,
-    page: '/police/bookings',
-    breadcrumbs
-  });
-});
-
-router.get('/search', checkRole(['Police']), async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.userId },
-    include: { role: true },
-  });
-  res.render('police/search', {
-    user,
-    page: '/police/search',
-  });
-});
-
-router.get('/people/:id', checkRole(['Police']), async (req, res) => {
-  const person = await prisma.person.findUnique({
-    where: { id: parseInt(req.params.id) },
-    include: {
-      bookings: {
-        include: {
-          case: true,
-          remandRequests: true,
-        },
-      },
-    },
-  });
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.userId },
-    include: { role: true },
-  });
-
-  const breadcrumbs = [
-    { name: 'Dashboard', url: '/dashboard/police' },
-    { name: 'People', url: '/police/people' },
-    { name: person.name, url: `/police/people/${person.id}` }
-  ];
-
-  res.render('police/show', {
-    user,
-    person,
-    page: '/police/people',
-    breadcrumbs
-  });
-});
-
-router.get('/remands', checkRole(['Police']), async (req, res) => {
-  const remandRequests = await prisma.remandRequest.findMany({
-    include: {
-      booking: {
-        include: {
-          person: true,
-        },
-      },
-    },
-  });
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.userId },
-    include: { role: true },
-  });
-
-  res.render('police/remands', {
-    user,
-    remandRequests,
-    page: '/police/remands',
-  });
-});
-
-router.get('/booking/:id', checkRole(['Police']), async (req, res) => {
-  const booking = await prisma.booking.findUnique({
-    where: { id: parseInt(req.params.id) },
-    include: {
-      person: true,
-      case: true,
-      remandRequests: true,
-    },
-  });
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.userId },
-    include: { role: true },
-  });
-
-  res.render('police/booking-detail', {
-    user,
-    booking,
-    page: '/police/bookings',
-  });
-});
-
 
 module.exports = router;
