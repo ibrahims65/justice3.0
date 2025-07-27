@@ -28,7 +28,15 @@ app.use((req, res, next) => {
 });
 
 const allRoutes = require('./routes/all');
+const policeRoutes = require('./routes/police');
+const prosecutorRoutes = require('./routes/prosecutor');
+const courtRoutes = require('./routes/court');
+const dashboardRoutes = require('./routes/dashboard');
 app.use(allRoutes);
+app.use('/police', policeRoutes);
+app.use('/prosecutor', prosecutorRoutes);
+app.use('/court', courtRoutes);
+app.use('/dashboard', dashboardRoutes);
 
 app.get('/dashboard', async (req, res) => {
   logger.info(`User ${req.session.userId} visited the dashboard`);
