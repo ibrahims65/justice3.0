@@ -127,7 +127,9 @@ router.get('/police', checkRole(['Police']), async (req, res) => {
     totalOpenCases,
     warrantsPending,
     cases,
-    upcomingEvents
+    upcomingEvents,
+    sortBy,
+    filterBy
   });
 });
 
