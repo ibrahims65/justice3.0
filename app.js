@@ -12,6 +12,9 @@ process.on('uncaughtException', (err) => {
   console.error('🧨 Uncaught Exception:', err);
 });
 
+const authRouter = require('./routes/auth');
+app.use('/auth', authRouter);
+
 process.on('unhandledRejection', (reason, promise) => {
   console.error('🧨 Unhandled Rejection:', reason);
 });
