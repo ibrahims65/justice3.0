@@ -33,7 +33,7 @@
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "multer": "^2.0.2",
-    "nanoid": "^5.1.5",
+    "nanoid": "^3.3.4",
     "pdfkit": "^0.17.1",
     "pdfkit-table": "^0.1.99",
     "pg": "^8.16.3",
