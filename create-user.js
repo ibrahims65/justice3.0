@@ -37,14 +37,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@prisma/client");
-var bcrypt_1 = require("bcrypt");
+var bcrypt = require("bcrypt");
 var prisma = new client_1.PrismaClient();
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         var hashedPassword;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, bcrypt_1.default.hash('password', 10)];
+                case 0: return [4 /*yield*/, bcrypt.hash('password', 10)];
                 case 1:
                     hashedPassword = _a.sent();
                     return [4 /*yield*/, prisma.user.create({

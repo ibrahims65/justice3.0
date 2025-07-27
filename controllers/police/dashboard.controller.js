@@ -9,30 +9,19 @@ exports.renderDashboard = async (req, res) => {
       return res.status(401).send('Unauthorized');
     }
 
+    console.log('Session user:', req.session.user);
     const recentBookings = await prisma.booking.findMany({
-      where: { officerId },
-      orderBy: { createdAt: 'desc' },
+      where: { arrestingOfficerName: req.session.user.username },
+      orderBy: { bookingDate: 'desc' },
       take: 5,
       include: { person: true }
-    });
-
-    const alerts = await prisma.systemAlert.findMany({
-      where: { role: 'POLICE' },
-      orderBy: { createdAt: 'desc' },
-      take: 3
-    });
-
-    const activityLog = await prisma.activity.findMany({
-      where: { actorId: officerId },
-      orderBy: { timestamp: 'desc' },
-      take: 5
     });
 
     res.render('police-dashboard', {
       officer: req.session.user,
       recentBookings,
-      alerts,
-      activityLog
+      alerts: [],
+      activityLog: []
     });
   } catch (err) {
     console.error('Dashboard render error:', err);

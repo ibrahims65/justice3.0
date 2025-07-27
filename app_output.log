@@ -1,1 +1,6 @@
-Server is running on port 3000
+[dotenv@17.2.1] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+🚀 Justice 3.0 booting...
+✅ View engine configured
+✅ Middleware configured
+✅ Routes registered
+✅ Server is running on port 3000
