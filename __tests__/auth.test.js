@@ -31,8 +31,12 @@ describe('Auth Middleware', () => {
   it('should return 403 if user does not have the correct role', () => {
     const req = {
       session: {
-        userId: 1,
-        role: 'Prosecutor',
+        user: {
+          id: 1,
+          role: {
+            name: 'Prosecutor',
+          },
+        },
       },
     };
     const res = {
@@ -51,8 +55,12 @@ describe('Auth Middleware', () => {
   it('should call next if user has the correct role', () => {
     const req = {
       session: {
-        userId: 1,
-        role: 'Police',
+        user: {
+          id: 1,
+          role: {
+            name: 'Police',
+          },
+        },
       },
     };
     const res = {
