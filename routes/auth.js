@@ -64,32 +64,19 @@ router.post('/login', async (req, res) => {
   }
 
   if (user && (await bcrypt.compare(password, user.password))) {
-    const userSessionData = {
-        id: user.id,
-        username: user.username,
-        role: {
-            id: user.role.id,
-            name: user.role.name,
-        },
-    };
-    req.session.user = userSessionData;
-    req.session.save((err) => {
-        if (err) {
-            return next(err);
-        }
-        console.log("Logged in role:", user.role.name);
-        if (user.role.name === 'Police') {
-            res.redirect('/dashboard/police');
-        } else if (user.role.name === 'Prosecutor') {
-            res.redirect('/dashboard/prosecutor');
-        } else if (user.role.name === 'Court') {
-            res.redirect('/dashboard/court');
-        } else if (user.role.name === 'Corrections') {
-            res.redirect('/corrections/dashboard');
-        } else {
-            res.redirect('/dashboard');
-        }
-    });
+    req.session.user = user;
+    console.log("Logged in role:", user.role.name);
+    if (user.role.name === 'Police') {
+        res.redirect('/dashboard/police');
+    } else if (user.role.name === 'Prosecutor') {
+        res.redirect('/dashboard/prosecutor');
+    } else if (user.role.name === 'Court') {
+        res.redirect('/dashboard/court');
+    } else if (user.role.name === 'Corrections') {
+        res.redirect('/corrections/dashboard');
+    } else {
+        res.redirect('/dashboard');
+    }
   } else {
     res.redirect('/auth/login');
   }
