@@ -41,23 +41,6 @@ router.get('/police', checkRole(['Police']), async (req, res) => {
     },
   });
 
-  const recentActivity = await prisma.actionHistory.findMany({
-    where: {
-      user: {
-        role: {
-          name: 'Police',
-        },
-      },
-    },
-    orderBy: {
-      timestamp: 'desc',
-    },
-    take: 10,
-    include: {
-      case: true,
-      user: true,
-    },
-  });
 
   const breadcrumbs = [
     { name: 'Dashboard', url: '/dashboard/police' }
@@ -66,14 +49,31 @@ router.get('/police', checkRole(['Police']), async (req, res) => {
   const newAssignments = 5; // dummy data
   const totalOpenCases = 15; // dummy data
   const warrantsPending = 2; // dummy data
-  const cases = await prisma.case.findMany({
-    where: {
-      actions: {
-        some: {
-          userId: user.id,
-        },
+  const { sortBy, filterBy } = req.query;
+  let caseWhere = {
+    actions: {
+      some: {
+        userId: user.id,
       },
     },
+  };
+
+  if (filterBy) {
+    caseWhere.status = filterBy;
+  }
+
+  let caseOrderBy = {};
+  if (sortBy === 'priority') {
+    caseOrderBy = { priority: 'desc' };
+  } else if (sortBy === 'date') {
+    caseOrderBy = { createdAt: 'desc' };
+  } else {
+    caseOrderBy = { updatedAt: 'desc' };
+  }
+
+  const cases = await prisma.case.findMany({
+    where: caseWhere,
+    orderBy: caseOrderBy,
     include: {
       booking: {
         include: {
@@ -83,8 +83,38 @@ router.get('/police', checkRole(['Police']), async (req, res) => {
     },
   });
 
+  const recentActivity = await prisma.actionHistory.findMany({
+      where: {
+          user: {
+              role: {
+                  name: 'Police',
+              },
+          },
+      },
+      orderBy: {
+          timestamp: 'desc',
+      },
+      take: 10,
+      include: {
+          case: true,
+          user: true,
+      },
+  });
 
-  res.render('police/dashboard', {
+  const upcomingEvents = await prisma.hearing.findMany({
+      where: {
+          hearingDate: {
+              gte: new Date(),
+              lte: new Date(new Date().setDate(new Date().getDate() + 7)),
+          },
+      },
+      include: {
+          case: true,
+      },
+  });
+
+
+  res.render('dashboard', {
     user,
     bookingsToday,
     overdueHolds,
@@ -96,7 +126,8 @@ router.get('/police', checkRole(['Police']), async (req, res) => {
     newAssignments,
     totalOpenCases,
     warrantsPending,
-    cases
+    cases,
+    upcomingEvents
   });
 });
 
@@ -154,7 +185,7 @@ router.get('/prosecutor', checkRole(['Prosecutor']), async (req, res) => {
     { name: 'Dashboard', url: '/dashboard/prosecutor' }
   ];
 
-  res.render('prosecutor/dashboard', {
+  res.render('dashboard', {
     user,
     cases,
     remandRequests,
@@ -196,7 +227,7 @@ router.get('/court', checkRole(['Court']), async (req, res) => {
     { name: 'Dashboard', url: '/dashboard/court' }
   ];
 
-  res.render('court/dashboard', {
+  res.render('dashboard', {
     user,
     hearings,
     casesToAssign,
