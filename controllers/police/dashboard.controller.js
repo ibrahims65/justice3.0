@@ -4,25 +4,20 @@ const prisma = new PrismaClient();
 
 exports.renderDashboard = async (req, res) => {
   try {
-    const officerId = req.session?.user?.id;
-    if (!officerId) {
-      return res.status(401).send('Unauthorized');
-    }
+    const officer = req.session.user;
 
-    console.log('Session user:', req.session.user);
     const recentBookings = await prisma.booking.findMany({
-      where: { arrestingOfficerName: req.session.user.username },
       orderBy: { bookingDate: 'desc' },
       take: 5,
       include: { person: true }
     });
 
     res.render('police-dashboard', {
-      officer: req.session.user,
+      officer,
+      results: [], // default empty search results
       recentBookings,
       alerts: [],
-      activityLog: [],
-      results: []
+      activityLog: []
     });
   } catch (err) {
     console.error('Dashboard render error:', err);

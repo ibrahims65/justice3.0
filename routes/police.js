@@ -8,23 +8,24 @@ router.get('/dashboard', isAuthenticated, policeDashboardController.renderDashbo
 
 router.post('/search', async (req, res) => {
   const { query } = req.body;
-  console.log('Search query:', query);
+  const officer = req.session.user;
+
   const results = await prisma.booking.findMany({
     where: {
       OR: [
-        { arrestingOfficerName: { contains: query, mode: 'insensitive' } },
         { person: { name: { contains: query, mode: 'insensitive' } } },
+        { person: { affiliations: { some: { organization: { contains: query, mode: 'insensitive' } } } } },
       ],
     },
     include: {
       person: true,
     },
   });
-  console.log(results);
+
   res.render('police-dashboard', {
-    officer: req.session.user,
+    officer,
     results,
-    recentBookings: [],
+    recentBookings: [], // optional: preload or skip
     alerts: [],
     activityLog: [],
   });
