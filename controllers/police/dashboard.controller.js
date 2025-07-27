@@ -1,5 +1,6 @@
 // controllers/police/dashboard.controller.js
-const prisma = require('../../prisma/client');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 exports.renderDashboard = async (req, res) => {
   try {
