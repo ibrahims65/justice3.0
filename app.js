@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const flash = require('connect-flash');
 const { checkRole } = require('./middleware/auth');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -17,10 +18,13 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use(flash());
 
 app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success');
+  res.locals.error_msg = req.flash('error');
   res.locals.page = req.path;
-  if (req.session.userId || req.path === '/auth/login' || req.path === '/auth/register') {
+  if (req.session.user || req.path === '/auth/login' || req.path === '/auth/register') {
     next();
   } else {
     res.redirect('/auth/login');
