@@ -4,83 +4,40 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
-router.get('/dashboard', checkRole(['Police']), async (req, res) => {
+router.get('/dashboard/police', checkRole(['Police']), async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.session.userId },
     include: { role: true },
   });
 
-  const bookings = await prisma.booking.findMany({
-    include: {
-      person: true,
-    },
-    orderBy: {
-      bookingDate: 'desc',
-    },
-    take: 5,
-  });
-
-  const cases = await prisma.case.findMany({
-    orderBy: {
-      booking: {
-        bookingDate: 'desc',
-      },
-    },
-    take: 5,
-  });
-
-  const warrants = await prisma.warrant.findMany({
+  const bookingsToday = await prisma.booking.count({
     where: {
-      status: 'Issued',
-    },
-    include: {
-      case: {
-        include: {
-          booking: {
-            include: {
-              person: true,
-            },
-          },
-        },
-      },
-    },
-    take: 5,
-  });
-
-  const remandRequests = await prisma.remandRequest.findMany({
-    where: {
-      status: 'pending',
-    },
-    include: {
-      booking: {
-        include: {
-          person: true,
-        },
+      bookingDate: {
+        gte: new Date(new Date().setHours(0, 0, 0, 0)),
       },
     },
   });
 
-  const people = await prisma.person.findMany();
-
-  const idleBookings = await prisma.booking.findMany({
+  const overdueHolds = await prisma.booking.count({
     where: {
-      status: 'New Booking',
       bookingDate: {
         lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
       },
+      status: 'New Arrest',
     },
   });
 
-  const missingSubmission = await prisma.booking.findMany({
+  const pendingSubmissions = await prisma.booking.count({
     where: {
-      status: 'New Booking',
-      case: null,
+      case: {
+        status: 'New Arrest',
+      },
     },
   });
 
-  const pendingRemandRequests = await prisma.remandRequest.findMany({
+  const inCustody = await prisma.booking.count({
     where: {
-      status: 'pending',
+      status: 'In-Custody',
     },
   });
 
@@ -102,18 +59,18 @@ router.get('/dashboard', checkRole(['Police']), async (req, res) => {
     },
   });
 
+  const breadcrumbs = [
+    { name: 'Dashboard', url: '/dashboard/police' }
+  ];
   res.render('police/dashboard', {
     user,
-    bookings,
-    cases,
-    warrants,
-    remandRequests,
-    people,
-    idleBookings,
-    missingSubmission,
-    pendingRemandRequests,
+    bookingsToday,
+    overdueHolds,
+    pendingSubmissions,
+    inCustody,
     recentActivity,
-    page: '/police/dashboard',
+    page: '/dashboard/police',
+    breadcrumbs
   });
 });
 
@@ -201,10 +158,16 @@ router.get('/bookings', checkRole(['Police']), async (req, res) => {
     include: { role: true },
   });
 
+  const breadcrumbs = [
+    { name: 'Dashboard', url: '/dashboard/police' },
+    { name: 'Bookings', url: '/police/bookings' }
+  ];
+
   res.render('police/bookings', {
     user,
     bookings,
     page: '/police/bookings',
+    breadcrumbs
   });
 });
 
@@ -236,10 +199,17 @@ router.get('/people/:id', checkRole(['Police']), async (req, res) => {
     include: { role: true },
   });
 
+  const breadcrumbs = [
+    { name: 'Dashboard', url: '/dashboard/police' },
+    { name: 'People', url: '/police/people' },
+    { name: person.name, url: `/police/people/${person.id}` }
+  ];
+
   res.render('police/show', {
     user,
     person,
     page: '/police/people',
+    breadcrumbs
   });
 });
 
@@ -286,70 +256,5 @@ router.get('/booking/:id', checkRole(['Police']), async (req, res) => {
   });
 });
 
-router.get('/tactical-dashboard', checkRole(['Police']), async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.userId },
-    include: { role: true },
-  });
-
-  const bookingsToday = await prisma.booking.count({
-    where: {
-      bookingDate: {
-        gte: new Date(new Date().setHours(0, 0, 0, 0)),
-      },
-    },
-  });
-
-  const overdueHolds = await prisma.booking.count({
-    where: {
-      bookingDate: {
-        lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      },
-      status: 'New Arrest',
-    },
-  });
-
-  const pendingSubmissions = await prisma.booking.count({
-    where: {
-      case: {
-        status: 'New Arrest',
-      },
-    },
-  });
-
-  const inCustody = await prisma.booking.count({
-    where: {
-      status: 'In-Custody',
-    },
-  });
-
-  const recentActivity = await prisma.actionHistory.findMany({
-    where: {
-      user: {
-        role: {
-          name: 'Police',
-        },
-      },
-    },
-    orderBy: {
-      timestamp: 'desc',
-    },
-    take: 10,
-    include: {
-      case: true,
-      user: true,
-    },
-  });
-
-  res.render('police/tactical-dashboard', {
-    user,
-    bookingsToday,
-    overdueHolds,
-    pendingSubmissions,
-    inCustody,
-    recentActivity,
-    page: '/police/tactical-dashboard',
-  });
-});
 
 module.exports = router;

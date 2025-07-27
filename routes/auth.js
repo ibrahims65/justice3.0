@@ -67,7 +67,17 @@ router.post('/login', async (req, res) => {
     req.session.userId = user.id;
     req.session.role = user.role.name;
     console.log("Logged in role:", user.role.name);
-    res.redirect('/dashboard');
+    if (user.role.name === 'Police') {
+      res.redirect('/dashboard/police');
+    } else if (user.role.name === 'Prosecutor') {
+      res.redirect('/dashboard/prosecutor');
+    } else if (user.role.name === 'Court') {
+      res.redirect('/dashboard/court');
+    } else if (user.role.name === 'Corrections') {
+      res.redirect('/corrections/dashboard');
+    } else {
+      res.redirect('/dashboard');
+    }
   } else {
     res.redirect('/auth/login');
   }
