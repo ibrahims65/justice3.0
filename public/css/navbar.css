@@ -1,0 +1,113 @@
+.navbar {
+    background-color: #1a202c;
+    color: #fff;
+    padding: 0 2rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+}
+
+.navbar-left, .navbar-center, .navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand img {
+    height: 40px;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 1.5rem;
+    margin-left: 2rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #cbd5e0;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 2px solid transparent;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+.nav-link:hover {
+    color: #fff;
+}
+
+.nav-link.active {
+    color: #fff;
+    border-bottom-color: #3b82f6;
+}
+
+.nav-link .icon {
+    width: 20px;
+    height: 20px;
+}
+
+.user-menu {
+    position: relative;
+}
+
+.user-menu-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+
+.user-menu-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+    min-width: 160px;
+    display: none;
+}
+
+.user-menu:hover .user-menu-dropdown {
+    display: block;
+}
+
+.dropdown-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #333;
+    text-decoration: none;
+}
+
+.dropdown-link:hover {
+    background-color: #f4f7f6;
+}
+
+.create-button {
+    background-color: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    margin-left: 1.5rem;
+}
+
+.create-button:hover {
+    background-color: #2563eb;
+}

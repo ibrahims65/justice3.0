@@ -1,54 +1,79 @@
-<nav class="bg-gray-800">
-  <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-    <div class="relative flex items-center justify-between h-16">
-      <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-        <div class="flex-shrink-0">
-          <a href="/dashboard">
-            <img class="h-8 w-auto" src="/images/logo.svg" alt="Logo">
-          </a>
-        </div>
-        <div class="hidden sm:block sm:ml-6">
-          <div class="flex space-x-4">
-            <a href="/dashboard" class="px-3 py-2 rounded-md text-sm font-medium <%= page === '/dashboard' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Dashboard</a>
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="/dashboard" class="navbar-brand">
+            <img src="/images/logo.svg" alt="Logo">
+        </a>
+    </div>
+    <div class="navbar-center">
+        <div class="navbar-links">
+            <a href="/dashboard" class="nav-link <%= page === '/dashboard' ? 'active' : '' %>">
+                <i class="icon view-grid-outline"></i>
+                <span>Dashboard</span>
+            </a>
             <% if (user.role.name === 'Police') { %>
-              <a href="/police/dashboard" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/police/dashboard') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Dashboard</a>
-              <a href="/police/people-redesigned" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/police/people') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">People</a>
-              <a href="/police/bookings" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/police/bookings') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Bookings</a>
-              <a href="/police/remands" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/police/remands') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Remands</a>
-              <a href="/warrants" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/warrants') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Warrants</a>
-              <a href="/police/search" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/police/search') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Search</a>
+                <a href="/police/cases" class="nav-link <%= page.startsWith('/police/cases') ? 'active' : '' %>">
+                    <i class="icon briefcase-outline"></i>
+                    <span>Cases</span>
+                </a>
+                <a href="/police/people" class="nav-link <%= page.startsWith('/police/people') ? 'active' : '' %>">
+                    <i class="icon users-outline"></i>
+                    <span>People</span>
+                </a>
+                <a href="/police/bookings" class="nav-link <%= page.startsWith('/police/bookings') ? 'active' : '' %>">
+                    <i class="icon office-building-outline"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="/police/warrants" class="nav-link <%= page.startsWith('/police/warrants') ? 'active' : '' %>">
+                    <i class="icon document-text-outline"></i>
+                    <span>Warrants</span>
+                </a>
+                <a href="/police/search" class="nav-link <%= page.startsWith('/police/search') ? 'active' : '' %>">
+                    <i class="icon search-outline"></i>
+                    <span>Search</span>
+                </a>
             <% } %>
             <% if (user.role.name === 'Prosecutor') { %>
-              <a href="/prosecutor/dashboard" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/prosecutor/dashboard') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Dashboard</a>
-              <a href="/cases" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/cases') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Cases</a>
-              <a href="/remand" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/remand') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Remand Requests</a>
+                <a href="/prosecutor/cases" class="nav-link <%= page.startsWith('/prosecutor/cases') ? 'active' : '' %>">
+                    <i class="icon briefcase-outline"></i>
+                    <span>Cases</span>
+                </a>
+                <a href="/prosecutor/remand" class="nav-link <%= page.startsWith('/prosecutor/remand') ? 'active' : '' %>">
+                    <i class="icon clock-outline"></i>
+                    <span>Remand Requests</span>
+                </a>
             <% } %>
             <% if (user.role.name === 'Court') { %>
-              <a href="/cases" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/cases') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Cases</a>
-              <a href="/hearings" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/hearings') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Hearings</a>
+                <a href="/court/cases" class="nav-link <%= page.startsWith('/court/cases') ? 'active' : '' %>">
+                    <i class="icon briefcase-outline"></i>
+                    <span>Cases</span>
+                </a>
+                <a href="/court/hearings" class="nav-link <%= page.startsWith('/court/hearings') ? 'active' : '' %>">
+                    <i class="icon calendar-outline"></i>
+                    <span>Hearings</span>
+                </a>
             <% } %>
-            <% if (user.role.name === 'Corrections') { %>
-              <a href="/corrections" class="px-3 py-2 rounded-md text-sm font-medium <%= page.startsWith('/corrections') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' %>">Inmates</a>
-            <% } %>
-            <% if (user.role.name === 'Admin') { %>
-              <div class="relative">
-                <button class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Admin</button>
-                <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 hidden">
-                  <a href="/admin/regions" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Regions</a>
-                  <a href="/admin/districts" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Districts</a>
-                  <a href="/admin/cities" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cities</a>
-                  <a href="/admin/police-stations" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Police Stations</a>
-                  <a href="/admin/courts" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Courts</a>
-                </div>
-              </div>
-            <% } %>
-            <a href="/notifications" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Notifications</a>
-          </div>
         </div>
-      </div>
-      <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-        <a href="/logout" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Logout</a>
-      </div>
     </div>
-  </div>
+    <div class="navbar-right">
+        <div class="user-menu">
+            <button class="user-menu-button">
+                <span><%= user.username %></span>
+                <i class="icon chevron-down-outline"></i>
+            </button>
+            <div class="user-menu-dropdown">
+                <a href="/profile" class="dropdown-link">Profile</a>
+                <a href="/auth/logout" class="dropdown-link">Logout</a>
+            </div>
+        </div>
+        <div class="create-menu">
+            <button class="create-button">
+                <i class="icon plus-outline"></i>
+                <span>Create</span>
+            </button>
+            <div class="create-menu-dropdown">
+                <a href="/cases/new" class="dropdown-link">New Case File</a>
+                <a href="/bookings/new" class="dropdown-link">New Booking</a>
+            </div>
+        </div>
+    </div>
 </nav>

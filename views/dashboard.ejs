@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/heroicons@1.0.6/dist/outline.min.css" rel="stylesheet">
+    <link href="/css/navbar.css" rel="stylesheet">
     <% if (user.role.name === 'Police') { %>
         <link href="/css/dashboard.css" rel="stylesheet">
     <% } else { %>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <% } %>
 </head>
-<body>
+<body style="padding-top: 64px;">
     <%- include('./partials/navbar', { user: user, page: page }) %>
 
     <% if (user.role.name === 'Police') { %>
@@ -28,16 +33,55 @@
                 </div>
             </div>
             <div class="column center-column">
-                <h3>My Active Cases</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3>My Active Cases</h3>
+                    <div class="flex gap-4">
+                        <div class="sort-controls">
+                            <label for="sort-by">Sort by:</label>
+                            <select id="sort-by" onchange="location = this.value;">
+                                <option value="/dashboard/police?sortBy=updated" <%= sortBy === 'updated' ? 'selected' : '' %>>Last Updated</option>
+                                <option value="/dashboard/police?sortBy=priority" <%= sortBy === 'priority' ? 'selected' : '' %>>Priority</option>
+                                <option value="/dashboard/police?sortBy=date" <%= sortBy === 'date' ? 'selected' : '' %>>Date Created</option>
+                            </select>
+                        </div>
+                        <div class="filter-controls">
+                            <a href="/dashboard/police" class="filter-button <%= !filterBy ? 'active' : '' %>">All</a>
+                            <a href="/dashboard/police?filterBy=Active" class="filter-button <%= filterBy === 'Active' ? 'active' : '' %>">Active</a>
+                            <a href="/dashboard/police?filterBy=Needs Review" class="filter-button <%= filterBy === 'Needs Review' ? 'active' : '' %>">Needs Review</a>
+                        </div>
+                    </div>
+                </div>
                 <% cases.forEach(caseRecord => { %>
                     <div class="card case-card">
-                        <h4>Case #<%= caseRecord.caseNumber %></h4>
-                        <p><%= caseRecord.booking.person.name %></p>
-                        <p>Date of Offense: <%= new Date(caseRecord.booking.bookingDate).toLocaleDateString() %></p>
-                        <p><span class="badge badge-<%= caseRecord.status.toLowerCase().replace(' ', '-') %>"><%= caseRecord.status %></span></p>
-                        <a href="/cases/<%= caseRecord.id %>">View Case</a>
+                        <div class="flex justify-between items-start">
+                            <h4>Case #<%= caseRecord.caseNumber %></h4>
+                            <% if (caseRecord.priority) { %>
+                                <span class="priority-flag"><i class="icon fire-solid"></i></span>
+                            <% } %>
+                        </div>
+                        <p><strong>Subject:</strong> <%= caseRecord.booking.person.name %></p>
+                        <p><strong>Offense:</strong> <%= caseRecord.offense %></p>
+                        <p><strong>Status:</strong> <span class="badge badge-<%= caseRecord.status.toLowerCase().replace(' ', '-') %>"><%= caseRecord.status %></span></p>
+                        <p><strong>Last Update:</strong> <%= new Date(caseRecord.updatedAt).toLocaleString() %></p>
+                        <a href="/cases/<%= caseRecord.id %>" class="view-case-link">View Case</a>
                     </div>
                 <% }) %>
+                <div class="pagination">
+                    <a href="#" class="prev-button">Previous</a>
+                    <a href="#" class="next-button">Next</a>
+                </div>
+                <div class="card mt-8">
+                    <h3>Recent Activity</h3>
+                    <ul>
+                        <% recentActivity.forEach(activity => { %>
+                            <li>
+                                <i class="icon <%= activity.action === 'Created' ? 'plus-outline' : 'arrow-up-outline' %>"></i>
+                                <span><%= new Date(activity.timestamp).toLocaleString() %></span>
+                                <span><%= activity.details %></span>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
             </div>
             <div class="column right-column">
                 <input type="text" class="search-bar" id="live-search" placeholder="Search by Case #, Name, or Badge ID...">
@@ -51,6 +95,18 @@
                     <h3>Quick Links</h3>
                     <a href="/reports/new">Generate Report</a>
                     <a href="/police/bookings">View All Station Bookings</a>
+            </div>
+            <div class="card mt-8">
+                <h3>Upcoming Deadlines & Hearings</h3>
+                <ul>
+                    <% upcomingEvents.forEach(event => { %>
+                        <li>
+                            <span><%= new Date(event.hearingDate).toLocaleDateString() %></span>
+                            <span><%= event.type %></span>
+                            <a href="/cases/<%= event.case.id %>">Case #<%= event.case.caseNumber %></a>
+                        </li>
+                    <% }) %>
+                </ul>
                 </div>
             </div>
         </div>
