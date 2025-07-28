@@ -19,6 +19,9 @@
             <%= person.email %>
           </p>
         </div>
+        <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+          <a href="/police/people/<%= person.id %>/print" target="_blank" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Print Record</a>
+        </div>
         <div class="border-t border-gray-200">
           <dl>
             <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">

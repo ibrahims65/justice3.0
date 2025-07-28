@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criminal Record - <%= person.name %></title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body class="bg-white">
+  <div class="max-w-4xl mx-auto py-12">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-800">Criminal Record</h1>
+      <p class="text-lg text-gray-600">Strictly Confidential</p>
+    </div>
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-12">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Personal Information
+        </h3>
+      </div>
+      <div class="border-t border-gray-200">
+        <dl>
+          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">
+              Full Name
+            </dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= person.name %>
+            </dd>
+          </div>
+          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">
+              Email Address
+            </dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= person.email %>
+            </dd>
+          </div>
+          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">
+              Date of Birth
+            </dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <%= new Date(person.dob).toLocaleDateString() %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6">
+        Booking History
+      </h3>
+      <% person.bookings.forEach(booking => { %>
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+          <div class="px-4 py-5 sm:px-6">
+            <h4 class="text-md leading-6 font-medium text-gray-900">
+              Booking #<%= booking.id %>
+            </h4>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">
+              Case #<%= booking.case.caseNumber %>
+            </p>
+          </div>
+          <div class="border-t border-gray-200">
+            <dl>
+              <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500">
+                  Booking Date
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <%= new Date(booking.bookingDate).toLocaleString() %>
+                </dd>
+              </div>
+              <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500">
+                  Status
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <%= booking.status %>
+                </dd>
+              </div>
+              <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500">
+                  Police Station
+                </dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <%= booking.policeStation.name %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+  <script>
+    window.onload = function() {
+      window.print();
+    }
+  </script>
+</body>
+</html>
