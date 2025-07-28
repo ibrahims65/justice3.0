@@ -42,6 +42,11 @@ try {
     saveUninitialized: true,
   }));
 
+  app.use((req, res, next) => {
+    res.locals.user = req.session.user;
+    next();
+  });
+
   const { getBreadcrumbs } = require('./utils/breadcrumbs');
   app.locals.getBreadcrumbs = getBreadcrumbs;
 
