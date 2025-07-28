@@ -1,0 +1,38 @@
+<div class="min-h-screen bg-slate-900 text-white">
+    <%- include('../partials/header') %>
+    <main class="p-6 space-y-6">
+        <div x-data="{ activeTab: 'Info' }">
+            <ul class="flex border-b border-slate-700">
+                <% ['Info','Victims','Evidence','Witnesses','Hearings','Notes'].forEach(tab=> { %>
+                <li class="mr-1">
+                    <a @click.prevent="activeTab='<%=tab%>'" :class="{ 'bg-slate-800 border-slate-700': activeTab === '<%=tab%>' }" class="inline-block py-2 px-4 text-slate-300 hover:text-white font-semibold" href="#"><%=tab%></a>
+                </li>
+                <% }) %>
+            </ul>
+            <div class="py-4">
+                <div x-show="activeTab==='Info'">
+                    <%- include('../partials/case-info-form.ejs') %>
+                </div>
+                <div x-show="activeTab==='Victims'">
+                    <%- include('../partials/victims-list.ejs') %>
+                    <%- include('../partials/victim-form.ejs') %>
+                </div>
+                <div x-show="activeTab==='Evidence'">
+                    <%- include('../partials/evidence-list.ejs') %>
+                    <%- include('../partials/evidence-form.ejs') %>
+                </div>
+                <div x-show="activeTab==='Witnesses'">
+                    <%- include('../partials/witnesses-list.ejs') %>
+                    <%- include('../partials/witness-form.ejs') %>
+                </div>
+                <div x-show="activeTab==='Hearings'">
+                    <%- include('../partials/hearings-list.ejs') %>
+                    <%- include('../partials/hearing-form.ejs') %>
+                </div>
+                <div x-show="activeTab==='Notes'">
+                    <%- include('../partials/notes-form.ejs') %>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

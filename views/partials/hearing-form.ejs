@@ -1,0 +1,9 @@
+<form action="/cases/<%= booking.case.id %>/hearings" method="POST">
+  <input type="datetime-local" name="hearingDate">
+  <input type="text" name="verdict" placeholder="Verdict">
+  <select name="courtId">
+    <!-- This should be populated from the database -->
+    <option value="1">Court 1</option>
+  </select>
+  <button type="submit">Add Hearing</button>
+</form>
