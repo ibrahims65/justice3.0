@@ -19,6 +19,7 @@ router.post('/cases/new/step2', isAuthenticated, policeController.postNewCaseSte
 
 // Person
 router.get('/people/:id', isAuthenticated, policeController.getPerson);
+router.get('/people/:id/print', isAuthenticated, policeController.printPersonRecord);
 
 // Booking
 router.get('/bookings/:id', isAuthenticated, policeController.getBooking);

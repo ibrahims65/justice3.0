@@ -272,3 +272,18 @@ exports.search = async (req, res) => {
     });
     res.render('police/search-results', { cases, user: req.user, req: req });
 };
+
+exports.printPersonRecord = async (req, res) => {
+    const person = await prisma.person.findUnique({
+        where: { id: parseInt(req.params.id) },
+        include: {
+            bookings: {
+                include: {
+                    case: true,
+                    policeStation: true,
+                },
+            },
+        },
+    });
+    res.render('police/print-record', { person, layout: false });
+};
