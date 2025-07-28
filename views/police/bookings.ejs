@@ -1,59 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bookings</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-  <%- include('../partials/navbar', { user: user, page: page }) %>
+<link rel="stylesheet" href="/node_modules/datatables.net-dt/css/jquery.dataTables.css">
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+  <%- include('../partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
+  <div class="px-4 py-6 sm:px-0">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold text-gray-800">Bookings</h2>
+      <a href="/people/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create Booking</a>
+    </div>
 
-  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <%- include('../partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
-    <div class="px-4 py-6 sm:px-0">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold text-gray-800">Bookings</h2>
-        <a href="/people/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create Booking</a>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <% if (bookings.length > 0) { %>
-          <table class="w-full text-left">
-            <thead>
-              <tr>
-                <th class="py-2">Booking ID</th>
-                <th class="py-2">Person</th>
-                <th class="py-2">Booking Date</th>
-                <th class="py-2">Status</th>
-                <th class="py-2">Remand Status</th>
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <% if (bookings.length > 0) { %>
+        <table id="bookingsTable" class="w-full text-left">
+          <thead>
+            <tr>
+              <th class="py-2">Booking ID</th>
+              <th class="py-2">Person</th>
+              <th class="py-2">Booking Date</th>
+              <th class="py-2">Status</th>
+              <th class="py-2">Remand Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% bookings.forEach(booking => { %>
+              <tr class="border-b border-gray-200">
+                <td class="py-2"><%= booking.id %></td>
+                <td class="py-2">
+                  <a href="/police/people/<%= booking.person.id %>" class="text-blue-500 hover:underline"><%= booking.person.name %></a>
+                </td>
+                <td class="py-2"><%= new Date(booking.bookingDate).toLocaleDateString() %></td>
+                <td class="py-2"><%= booking.status %></td>
+                <td class="py-2">
+                  <% if (booking.remandRequests.length > 0) { %>
+                    <%= booking.remandRequests[booking.remandRequests.length - 1].status %>
+                  <% } else { %>
+                    N/A
+                  <% } %>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              <% bookings.forEach(booking => { %>
-                <tr class="border-b border-gray-200">
-                  <td class="py-2"><%= booking.id %></td>
-                  <td class="py-2">
-                    <a href="/police/people/<%= booking.person.id %>" class="text-blue-500 hover:underline"><%= booking.person.name %></a>
-                  </td>
-                  <td class="py-2"><%= new Date(booking.bookingDate).toLocaleDateString() %></td>
-                  <td class="py-2"><%= booking.status %></td>
-                  <td class="py-2">
-                    <% if (booking.remandRequests.length > 0) { %>
-                      <%= booking.remandRequests[booking.remandRequests.length - 1].status %>
-                    <% } else { %>
-                      N/A
-                    <% } %>
-                  </td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        <% } else { %>
-          <p>No bookings found.</p>
-        <% } %>
-      </div>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p>No bookings found.</p>
+      <% } %>
     </div>
   </div>
-</body>
-</html>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="/node_modules/datatables.net-dt/js/jquery.dataTables.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#bookingsTable').DataTable();
+  });
+</script>

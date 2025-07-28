@@ -1,41 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <%- include('../partials/head') %>
-</head>
-<body class="bg-gray-100">
-  <%- include('../partials/navbar') %>
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+  <%- include('../partials/breadcrumbs', { current: 'New Person' }) %>
 
-  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <%- include('../partials/breadcrumbs', { current: 'New Person' }) %>
+  <div class="px-4 py-6 sm:px-0">
+    <h2 class="text-2xl font-bold text-gray-800 mb-8">Register New Person</h2>
 
-    <div class="px-4 py-6 sm:px-0">
-      <h2 class="text-2xl font-bold text-gray-800 mb-8">Register New Person</h2>
-
-      <form action="/police/people/new" method="POST">
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg p-8">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-              <input type="text" name="name" id="name" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
-            </div>
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-              <input type="email" name="email" id="email" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
-            </div>
-            <div>
-              <label for="dob" class="block text-sm font-medium text-gray-700">Date of Birth</label>
-              <input type="date" name="dob" id="dob" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
-            </div>
+    <form action="/police/people/new" method="POST" id="newPersonForm">
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+            <input type="text" name="name" id="name" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
           </div>
-          <div class="mt-8 flex justify-end">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Register Person</button>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <input type="email" name="email" id="email" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
+          </div>
+          <div>
+            <label for="dob" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+            <input type="date" name="dob" id="dob" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
           </div>
         </div>
-      </form>
-    </div>
+        <div class="mt-8 flex justify-end">
+          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Register Person</button>
+        </div>
+      </div>
+    </form>
   </div>
-
-  <%- include('../partials/footer') %>
-</body>
-</html>
+</div>
+<script>
+  const form = document.getElementById('newPersonForm');
+  form.addEventListener('submit', function(event) {
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    form.classList.add('was-validated');
+  });
+</script>

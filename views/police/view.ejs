@@ -1,11 +1,15 @@
-<div x-data="{ activeTab: 'Info' }">
+<div x-data="{ activeTab: 'Info', counts: {} }" x-init="
+  fetch('/api/bookings/<%= booking.id %>/counts')
+    .then(res => res.json())
+    .then(data => counts = data)
+">
   <ul class="flex border-b">
     <% ['Info','Victims','Evidence','Witnesses','Hearings','Notes'].forEach(tab=>{ %>
       <li class="mr-4">
         <a @click.prevent="activeTab='<%=tab%>'"
            :class="activeTab==='<%=tab%>' && 'border-b-2 border-blue-600'"
            href="#">
-          <%=tab%> (<%= booking.case && booking.case[tab.toLowerCase()] && booking.case[tab.toLowerCase()].length || '' %>)
+          <%=tab%> <span x-text="counts.<%=tab.toLowerCase()%>"></span>
         </a>
       </li>
     <% }) %>
@@ -17,63 +21,34 @@
     <p><strong>Status:</strong> <%= booking.status %></p>
   </div>
 
-  <div x-show="activeTab==='Victims'">
-    <h3>Victims</h3>
-    <% if (booking.case && booking.case.victims.length > 0) { %>
-      <ul>
-      <% booking.case.victims.forEach(v => { %>
-        <li><%= v.name %> — <%= v.statement || 'No statement' %></li>
-      <% }) %>
-      </ul>
-    <% } else { %>
-      <p>No victims added yet.</p>
-    <% } %>
-  </div>
+  <div x-show="activeTab==='Victims'" x-init="
+    fetch('/api/bookings/<%= booking.id %>/victims')
+      .then(res => res.text())
+      .then(html => $el.innerHTML = html)
+  "></div>
 
-  <div x-show="activeTab==='Evidence'">
-    <h3>Evidence</h3>
-    <% if (booking.case && booking.case.evidence.length > 0) { %>
-      <ul>
-      <% booking.case.evidence.forEach(e => { %>
-        <li><%= e.evidenceType %>: <%= e.description %></li>
-      <% }) %>
-      </ul>
-    <% } else { %>
-      <p>No evidence added yet.</p>
-    <% } %>
-  </div>
+  <div x-show="activeTab==='Evidence'" x-init="
+    fetch('/api/bookings/<%= booking.id %>/evidence')
+      .then(res => res.text())
+      .then(html => $el.innerHTML = html)
+  "></div>
 
-  <div x-show="activeTab==='Witnesses'">
-    <h3>Witnesses</h3>
-    <% if (booking.case && booking.case.witnesses.length > 0) { %>
-      <ul>
-      <% booking.case.witnesses.forEach(w => { %>
-        <li><%= w.name %> — <%= w.statement || 'No statement' %></li>
-      <% }) %>
-      </ul>
-    <% } else { %>
-      <p>No witnesses added yet.</p>
-    <% } %>
-  </div>
+  <div x-show="activeTab==='Witnesses'" x-init="
+    fetch('/api/bookings/<%= booking.id %>/witnesses')
+      .then(res => res.text())
+      .then(html => $el.innerHTML = html)
+  "></div>
 
-    <div x-show="activeTab==='Hearings'">
-    <h3>Hearings</h3>
-    <% if (booking.case && booking.case.hearings.length > 0) { %>
-        <ul>
-        <% booking.case.hearings.forEach(h => { %>
-            <li><%= h.hearingDate.toLocaleString() %> — <%= h.verdict || 'No verdict' %></li>
-        <% }) %>
-        </ul>
-    <% } else { %>
-        <p>No hearings added yet.</p>
-    <% } %>
-    </div>
+  <div x-show="activeTab==='Hearings'" x-init="
+    fetch('/api/bookings/<%= booking.id %>/hearings')
+      .then(res => res.text())
+      .then(html => $el.innerHTML = html)
+  "></div>
 
-    <div x-show="activeTab==='Notes'">
+  <div x-show="activeTab==='Notes'">
     <h3>Officer Notes</h3>
     <p><%= booking.officerNotes || 'No notes yet' %></p>
-    </div>
-
+  </div>
 </div>
 
 <hr>

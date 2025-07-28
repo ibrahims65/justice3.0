@@ -70,7 +70,8 @@ try {
   app.use('/auth', authRouter);
   app.use('/dashboard', dashboardRouter);
   app.use('/police', require('./routes/police'));
-  app.use('/api', require('./routes/api/search.routes'));
+  app.use('/api/search', require('./routes/api/search.routes'));
+  app.use('/api/bookings', require('./routes/api/bookings'));
   app.use('/admin', require('./routes/admin'));
   console.log('✅ Routes registered');
 } catch (err) {
