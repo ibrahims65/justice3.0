@@ -1,0 +1,26 @@
+<div class="bg-white shadow overflow-hidden sm:rounded-lg mt-8">
+  <div class="px-4 py-5 sm:px-6">
+    <h3 class="text-lg leading-6 font-medium text-gray-900">
+      Your Recent Bookings
+    </h3>
+  </div>
+  <div class="border-t border-gray-200">
+    <ul class="divide-y divide-gray-200">
+      <% userBookings.forEach(booking => { %>
+        <li class="p-4">
+          <a href="/police/booking/<%= booking.id %>" class="block hover:bg-gray-50">
+            <div class="flex items-center">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-indigo-600 truncate"><%= booking.person.name %></p>
+                <p class="text-sm text-gray-500"><%= booking.case.caseNumber %></p>
+              </div>
+              <div class="text-sm text-gray-500">
+                <%= new Date(booking.bookingDate).toLocaleDateString() %>
+              </div>
+            </div>
+          </a>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+</div>
