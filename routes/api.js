@@ -49,4 +49,6 @@ router.get('/police/search', checkRole(['Police']), async (req, res) => {
     }
 });
 
+router.use('/persons', require('./api/persons'));
+
 module.exports = router;

@@ -1,0 +1,10 @@
+<h2>Evidence</h2>
+<% if (booking.evidence && booking.evidence.length > 0) { %>
+  <ul>
+    <% booking.evidence.forEach(e => { %>
+      <li><%= e.evidenceType %>: <%= e.description %></li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <p>No evidence added yet.</p>
+<% } %>

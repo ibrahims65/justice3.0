@@ -58,6 +58,7 @@ try {
   app.use('/auth', authRouter);
   app.use('/dashboard', dashboardRouter);
   app.use('/police', require('./routes/police'));
+  app.use('/bookings', require('./routes/bookings'));
   app.use('/booking', require('./routes/booking'));
   console.log('✅ Routes registered');
 } catch (err) {

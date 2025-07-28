@@ -265,4 +265,42 @@ router.post('/:id/evaluation', checkRole(['Prosecutor']), async (req, res) => {
   }
 });
 
+router.post('/:caseId/victims', async (req, res) => {
+  const caseId = parseInt(req.params.caseId, 10);
+  const { name, statement } = req.body;
+  await prisma.victim.create({
+    data: {
+      name,
+      statement,
+      caseId,
+      dob: new Date(),
+    },
+  });
+  const booking = await prisma.booking.findFirst({
+    where: {
+      caseId: caseId,
+    },
+  });
+  res.redirect(`/bookings/${booking.id}/edit`);
+});
+
+router.post('/:caseId/evidence', async (req, res) => {
+  const caseId = parseInt(req.params.caseId, 10);
+  const { evidenceType, description } = req.body;
+  await prisma.evidence.create({
+    data: {
+      evidenceType,
+      description,
+      caseId,
+      fileUrl: '',
+    },
+  });
+  const booking = await prisma.booking.findFirst({
+    where: {
+      caseId: caseId,
+    },
+  });
+  res.redirect(`/bookings/${booking.id}/edit`);
+});
+
 module.exports = router;
