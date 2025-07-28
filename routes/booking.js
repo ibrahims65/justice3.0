@@ -9,7 +9,15 @@ router.get('/:id', async (req, res) => {
 
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
-      include: { person: true }, // enrich with person info
+      include: {
+        person: true,
+        case: {
+          include: {
+            victims: true,
+            evidence: true,
+          },
+        },
+      },
     });
 
     if (!booking) {
