@@ -75,9 +75,25 @@ router.get('/:id/bookings/new', checkRole(['Police']), async (req, res) => {
   res.render('bookings/new', { personId: req.params.id, policeStations });
 });
 
-router.post('/:id/bookings', checkRole(['Police']), async (req, res) => {
-  const { status, charges, policeStationId, arrestingOfficerName, arrestingOfficerRank } = req.body;
+router.post('/:id/bookings', checkRole(['Police']), [
+  check('charges').notEmpty().withMessage('Charges are required.'),
+  check('policeStationId').notEmpty().withMessage('Police station is required.'),
+  check('arrestingOfficerName').notEmpty().withMessage('Arresting officer name is required.'),
+  check('arrestingOfficerRank').notEmpty().withMessage('Arresting officer rank is required.'),
+], async (req, res) => {
+  const errors = validationResult(req);
   const personId = parseInt(req.params.id);
+  if (!errors.isEmpty()) {
+    const policeStations = await prisma.policeStation.findMany();
+    return res.status(400).render('bookings/new', {
+      errors: errors.array(),
+      personId,
+      policeStations,
+      ...req.body,
+    });
+  }
+
+  const { status, charges, policeStationId, arrestingOfficerName, arrestingOfficerRank } = req.body;
   try {
     const newBooking = await prisma.booking.create({
       data: {

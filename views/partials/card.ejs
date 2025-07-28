@@ -1,0 +1,15 @@
+<div class="bg-white p-4 rounded shadow">
+  <h3 class="text-lg font-semibold text-gray-800"><%= title %></h3>
+  <% if (typeof count !== 'undefined') { %>
+    <p class="text-3xl font-bold text-gray-900"><%= count %></p>
+  <% } %>
+  <% if (typeof data !== 'undefined' && data.length > 0) { %>
+    <ul>
+      <% data.forEach(item => { %>
+        <li class="py-1"><%= item.message %></li>
+      <% }) %>
+    </ul>
+  <% } else if (typeof data !== 'undefined') { %>
+    <p class="text-gray-500">No data available.</p>
+  <% } %>
+</div>
