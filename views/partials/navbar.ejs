@@ -1,85 +1,29 @@
-<nav class="navbar">
-    <div class="navbar-left">
-        <a href="/dashboard" class="navbar-brand">
-            <img src="/images/logo.svg" alt="Logo">
-        </a>
-    </div>
-    <div class="navbar-center">
-        <div class="relative">
-            <input type="text" id="live-search" placeholder="Search..." class="bg-gray-700 text-white rounded-full py-2 px-4 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <div id="search-results-container" class="absolute left-0 mt-2 w-full bg-white rounded-lg shadow-lg z-10" style="display: none;">
-                <div id="search-results"></div>
-            </div>
+<nav class="bg-gray-800">
+  <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+    <div class="relative flex items-center justify-between h-16">
+      <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+        <div class="flex-shrink-0 flex items-center">
+          <img class="block lg:hidden h-8 w-auto" src="/images/logo.svg" alt="Workflow">
+          <img class="hidden lg:block h-8 w-auto" src="/images/logo.svg" alt="Workflow">
         </div>
-        <div class="navbar-links">
-            <a href="/dashboard" class="nav-link <%= page === '/dashboard' ? 'active' : '' %>">
-                <i class="icon view-grid-outline"></i>
-                <span>Dashboard</span>
-            </a>
-            <% if (user.role.name === 'Police') { %>
-                <a href="/police/cases" class="nav-link <%= page.startsWith('/police/cases') ? 'active' : '' %>">
-                    <i class="icon briefcase-outline"></i>
-                    <span>Cases</span>
-                </a>
-                <a href="/police/people" class="nav-link <%= page.startsWith('/police/people') ? 'active' : '' %>">
-                    <i class="icon users-outline"></i>
-                    <span>People</span>
-                </a>
-                <a href="/police/bookings" class="nav-link <%= page.startsWith('/police/bookings') ? 'active' : '' %>">
-                    <i class="icon office-building-outline"></i>
-                    <span>Bookings</span>
-                </a>
-                <a href="/police/warrants" class="nav-link <%= page.startsWith('/police/warrants') ? 'active' : '' %>">
-                    <i class="icon document-text-outline"></i>
-                    <span>Warrants</span>
-                </a>
-                <a href="/police/search" class="nav-link <%= page.startsWith('/police/search') ? 'active' : '' %>">
-                    <i class="icon search-outline"></i>
-                    <span>Search</span>
-                </a>
-            <% } %>
-            <% if (user.role.name === 'Prosecutor') { %>
-                <a href="/prosecutor/cases" class="nav-link <%= page.startsWith('/prosecutor/cases') ? 'active' : '' %>">
-                    <i class="icon briefcase-outline"></i>
-                    <span>Cases</span>
-                </a>
-                <a href="/prosecutor/remand" class="nav-link <%= page.startsWith('/prosecutor/remand') ? 'active' : '' %>">
-                    <i class="icon clock-outline"></i>
-                    <span>Remand Requests</span>
-                </a>
-            <% } %>
-            <% if (user.role.name === 'Court') { %>
-                <a href="/court/cases" class="nav-link <%= page.startsWith('/court/cases') ? 'active' : '' %>">
-                    <i class="icon briefcase-outline"></i>
-                    <span>Cases</span>
-                </a>
-                <a href="/court/hearings" class="nav-link <%= page.startsWith('/court/hearings') ? 'active' : '' %>">
-                    <i class="icon calendar-outline"></i>
-                    <span>Hearings</span>
-                </a>
-            <% } %>
+        <div class="hidden sm:block sm:ml-6">
+          <div class="flex space-x-4">
+            <a href="/police/dashboard" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+            <a href="/police/cases" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Cases</a>
+            <a href="/police/people" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">People</a>
+          </div>
         </div>
-    </div>
-    <div class="navbar-right">
-        <div class="user-menu">
-            <button class="user-menu-button">
-                <span><%= user.username %></span>
-                <i class="icon chevron-down-outline"></i>
+      </div>
+      <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+        <div class="ml-3 relative">
+          <div>
+            <button type="button" class="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+              <span class="sr-only">Open user menu</span>
+              <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
             </button>
-            <div class="user-menu-dropdown">
-                <a href="/profile" class="dropdown-link">Profile</a>
-                <a href="/auth/logout" class="dropdown-link">Logout</a>
-            </div>
+          </div>
         </div>
-        <div class="create-menu">
-            <button class="create-button">
-                <i class="icon plus-outline"></i>
-                <span>Create</span>
-            </button>
-            <div class="create-menu-dropdown">
-                <a href="/cases/new" class="dropdown-link">New Case File</a>
-                <a href="/bookings/new" class="dropdown-link">New Booking</a>
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
 </nav>
