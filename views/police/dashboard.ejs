@@ -1,43 +1,30 @@
-<div class="min-h-screen bg-slate-900 text-white">
-  <%- include('../partials/header') %>
+<%- include('../partials/header') %>
 
-  <main class="p-6 space-y-6">
-    <%- include('../partials/breadcrumbs', { path: req.path, lookup: {} }) %>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <%- include('../partials/card-overdue', { title: 'Overdue', count: 0 }) %>
-      <%- include('../partials/card-new-bookings', { title: 'New Today', count: 0 }) %>
-      <%- include('../partials/card-search') %>
-      <%- include('../partials/card-alerts', { alerts: [] }) %>
-    </div>
+<div class="container mx-auto p-4">
+  <%- include('../partials/breadcrumbs', { path: '/police/dashboard' }) %>
 
-    <section class="dashboard-section">
-      <h2 class="text-xl font-semibold mb-4">📋 Recent Bookings</h2>
-      <% if (recentBookings && recentBookings.length > 0) { %>
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-slate-700 text-slate-300">
-              <th class="px-4 py-2">Name</th>
-              <th class="px-4 py-2">Date</th>
-              <th class="px-4 py-2">Status</th>
-              <th class="px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% recentBookings.forEach(booking => { %>
-              <tr class="border-b border-slate-700 hover:bg-slate-800">
-                <td class="px-4 py-2"><%= booking.person.name %></td>
-                <td class="px-4 py-2"><%= booking.bookingDate.toLocaleString() %></td>
-                <td class="px-4 py-2"><%= booking.status %></td>
-                <td class="px-4 py-2">
-                  <a href="/police/booking/<%= booking.id %>" class="text-blue-400 hover:underline">View</a>
-                </td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      <% } else { %>
-        <p class="text-slate-400">No recent bookings found.</p>
-      <% } %>
-    </section>
-  </main>
+  <h1 class="text-2xl font-bold my-4">Police Dashboard</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <%- include('../partials/card-overdue', { title: 'Overdue Bookings', count: overdueBookings.length }) %>
+    <%- include('../partials/card-new-bookings', { title: 'New Bookings (24h)', count: newBookings.length }) %>
+    <%- include('../partials/card-alerts', { alerts: alerts }) %>
+    <%- include('../partials/card-search') %>
+  </div>
+
+  <div class="mt-8">
+    <h2 class="text-xl font-bold">Recent Activity</h2>
+    <ul class="bg-white p-4 rounded shadow mt-2">
+      <% recentBookings.forEach(booking => { %>
+        <li class="border-b py-2">
+          <a href="/police/booking/<%= booking.id %>" class="text-blue-500 hover:underline">
+            <%= booking.person.name %> - Case #<%= booking.case.caseNumber %>
+          </a>
+          <span class="text-gray-500 text-sm">(<%= new Date(booking.bookingDate).toLocaleString() %>)</span>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
 </div>
+
+<%- include('../partials/footer') %>

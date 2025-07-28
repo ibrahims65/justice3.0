@@ -41,14 +41,20 @@ router.get('/case/new', isAuthenticated, (req, res) => {
 });
 
 router.post('/case/new', isAuthenticated, [
-    check('personId').isInt().withMessage('Person ID must be a number'),
-    check('caseNumber').isLength({ min: 1 }).withMessage('Case number is required'),
-    check('status').isLength({ min: 1 }).withMessage('Status is required'),
-    check('policeStationId').isInt().withMessage('Police station ID must be a number'),
+    check('personId').notEmpty().withMessage('Person is required.').isInt({ gt: 0 }).withMessage('Invalid person selected.'),
+    check('caseNumber').notEmpty().withMessage('Case number is required.').isLength({ min: 5 }).withMessage('Case number must be at least 5 characters long.'),
+    check('status').notEmpty().withMessage('Status is required.'),
+    check('policeStationId').notEmpty().withMessage('Police station is required.').isInt({ gt: 0 }).withMessage('Invalid police station selected.'),
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).render('police/case-step', { errors: errors.array(), personId: req.body.personId });
+        return res.status(400).render('police/case-step', {
+            errors: errors.array(),
+            personId: req.body.personId,
+            caseNumber: req.body.caseNumber,
+            status: req.body.status,
+            policeStationId: req.body.policeStationId,
+        });
     }
 
     const { personId, caseNumber, status, policeStationId } = req.body;
