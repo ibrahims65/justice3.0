@@ -68,6 +68,7 @@ try {
   app.use('/dashboard', dashboardRouter);
   app.use('/police', require('./routes/police'));
   app.use('/api', require('./routes/api/search.routes'));
+  app.use('/admin', require('./routes/admin'));
   console.log('✅ Routes registered');
 } catch (err) {
   console.error('❌ Route registration failed:', err);
