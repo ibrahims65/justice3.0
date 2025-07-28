@@ -9,7 +9,7 @@ exports.getDashboard = async (req, res) => {
     const overdueBookings = await prisma.booking.count({
       where: {
         status: 'Pending',
-        createdAt: {
+        bookingDate: {
           lt: twentyFourHoursAgo,
         },
       },
