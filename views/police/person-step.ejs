@@ -9,7 +9,7 @@
     </template>
   </ul>
 
-  <a :href="'/police/bookings/new/case?personId=' + selectedPerson" :disabled="!selectedPerson">
+  <a :href="'/police/case/new?personId=' + selectedPerson" :disabled="!selectedPerson">
     <button>Next: Create Case</button>
   </a>
 </div>
@@ -21,7 +21,7 @@
   <button @click="open = !open">New Person</button>
 
   <div x-show="open">
-    <form action="/police/bookings/new/person" method="POST">
+    <form action="/police/person/new" method="POST">
       <input type="text" name="name" placeholder="Name">
       <input type="email" name="email" placeholder="Email">
       <button type="submit">Create Person</button>
