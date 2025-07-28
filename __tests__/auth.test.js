@@ -57,7 +57,9 @@ describe('Auth Middleware', () => {
       session: {
         user: {
           id: 1,
-          role: 'Police',
+          role: {
+            name: 'Police',
+          },
         },
       },
     };

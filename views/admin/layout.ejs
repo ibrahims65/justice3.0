@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body class="bg-gray-100">
+  <div class="flex h-screen bg-gray-200">
+    <div class="w-64 bg-gray-800 text-white">
+      <div class="p-4 text-2xl font-bold">Admin</div>
+      <nav class="mt-10">
+        <a href="/admin" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Dashboard</a>
+        <a href="/admin/regions" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Regions</a>
+        <a href="/admin/districts" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Districts</a>
+        <a href="/admin/cities" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Cities</a>
+        <a href="/admin/police-stations" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Police Stations</a>
+        <a href="/admin/courts" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Courts</a>
+      </nav>
+    </div>
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <header class="flex justify-between items-center p-4 bg-white border-b">
+        <div></div>
+        <div>
+          <span class="text-sm text-gray-700">Logged in as <%= user.username %></span>
+          <a href="/auth/logout" class="ml-4 text-sm text-blue-500 hover:text-blue-700">Logout</a>
+        </div>
+      </header>
+      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200 p-8">
+        <%- body %>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

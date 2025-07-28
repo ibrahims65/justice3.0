@@ -1,35 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - New Police Station</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-  <div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="bg-white rounded-lg shadow-md p-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-8">New Police Station</h2>
-      <form action="/admin/police-stations" method="POST">
-        <div class="mb-4">
-          <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Police Station Name</label>
-          <input type="text" name="name" id="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-        </div>
-        <div class="mb-4">
-          <label for="cityId" class="block text-gray-700 text-sm font-bold mb-2">City</label>
-          <select name="cityId" id="cityId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-            <% cities.forEach(city => { %>
-              <option value="<%= city.id %>"><%= city.name %></option>
-            <% }) %>
-          </select>
-        </div>
-        <div class="mt-8 flex justify-end">
-          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Create Police Station
-          </button>
-        </div>
-      </form>
+<%- layout('../layout') %>
+
+<h2 class="text-2xl font-bold text-gray-800 mb-8">New Police Station</h2>
+<form action="/admin/police-stations" method="POST">
+  <div class="bg-white rounded-lg shadow-md p-8">
+    <div class="mb-4">
+      <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Police Station Name</label>
+      <input type="text" name="name" id="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+    </div>
+    <div class="mb-4">
+      <label for="cityId" class="block text-gray-700 text-sm font-bold mb-2">City</label>
+      <select name="cityId" id="cityId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+        <% cities.forEach(city => { %>
+          <option value="<%= city.id %>"><%= city.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="mt-8 flex justify-end">
+      <a href="/admin/police-stations" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-4">Cancel</a>
+      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Create Police Station
+      </button>
     </div>
   </div>
-</body>
-</html>
+</form>

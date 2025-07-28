@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const { generateCaseNumber } = require('../utils/caseNumber');
 const prisma = new PrismaClient();
 
 async function getDashboardStats(officerId) {
@@ -188,7 +189,13 @@ exports.getNewCaseStep3 = async (req, res) => {
 };
 
 exports.postNewCaseConfirm = async (req, res) => {
-    const { name, email, dob, caseNumber, status, policeStationId } = req.session.caseData;
+    const { name, email, dob, status, policeStationId } = req.session.caseData;
+    const policeStation = await prisma.policeStation.findUnique({
+        where: { id: parseInt(policeStationId) },
+        include: { city: { include: { district: { include: { region: true } } } } },
+    });
+    const caseNumber = generateCaseNumber(policeStation.city.district.region.name, policeStation.city.name);
+
     const person = await prisma.person.create({
         data: {
             name,
