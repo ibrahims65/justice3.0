@@ -22,6 +22,9 @@ const app = express();
 
 // 🧱 View engine setup
 try {
+  const expressLayouts = require('express-ejs-layouts');
+  app.use(expressLayouts);
+  app.set('layout', 'admin/layout'); // default layout
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'ejs');
   console.log('✅ View engine configured');
