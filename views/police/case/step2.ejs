@@ -1,55 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <%- include('../../partials/head') %>
-</head>
-<body class="bg-gray-100">
-  <%- include('../../partials/navbar') %>
+<%- layout('layout') %>
+<%- block('breadcrumb', 'New Case - Step 2') %>
+<%- block('title', 'New Case - Step 2: Case Details') %>
+<%- block('progress', 66) %>
 
-  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <%- include('../../partials/breadcrumbs', { current: 'New Case - Step 2' }) %>
-
-    <div class="px-4 py-6 sm:px-0">
-      <h2 class="text-2xl font-bold text-gray-800 mb-8">New Case - Step 2: Case Details</h2>
-
-      <%- include('../../partials/progress-bar', { progress: 66 }) %>
-
-      <form action="/police/cases/new/step2" method="POST">
-        <input type="hidden" name="personId" value="<%= personId %>">
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg p-8">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <label for="caseNumber" class="block text-sm font-medium text-gray-700">Case Number</label>
-              <input type="text" name="caseNumber" id="caseNumber" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
-            </div>
-            <div>
-              <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-              <select name="status" id="status" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-                <option>Open</option>
-                <option>Closed</option>
-              </select>
-            </div>
-            <div>
-              <label for="policeStationId" class="block text-sm font-medium text-gray-700">Police Station</label>
-              <select name="policeStationId" id="policeStationId" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-                <% policeStations.forEach(station => { %>
-                  <option value="<%= station.id %>"><%= station.name %></option>
-                <% }) %>
-              </select>
-            </div>
-          </div>
-          <div class="mt-8 flex justify-between">
-            <a href="/police/cases/new/step1" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Back</a>
-            <div>
-              <a href="/police/management" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-4">Cancel</a>
-              <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Next</button>
-            </div>
-          </div>
-        </div>
-      </form>
+<form action="/police/cases/new/step2" method="POST">
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg p-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div>
+        <label for="caseNumber" class="block text-sm font-medium text-gray-700">Case Number</label>
+        <input type="text" name="caseNumber" id="caseNumber" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
+      </div>
+      <div>
+        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+        <select name="status" id="status" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+          <option>Open</option>
+          <option>Closed</option>
+        </select>
+      </div>
+      <div>
+        <label for="policeStationId" class="block text-sm font-medium text-gray-700">Police Station</label>
+        <select name="policeStationId" id="policeStationId" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+          <% policeStations.forEach(station => { %>
+            <option value="<%= station.id %>"><%= station.name %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+    <div class="mt-8 flex justify-between">
+      <a href="/police/cases/new/step1" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Back</a>
+      <div>
+        <a href="/police/management" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-4">Cancel</a>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Next</button>
+      </div>
     </div>
   </div>
-
-  <%- include('../../partials/footer') %>
-</body>
-</html>
+</form>

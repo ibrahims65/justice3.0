@@ -22,8 +22,11 @@ const app = express();
 
 // 🧱 View engine setup
 try {
+  const expressLayouts = require('express-ejs-layouts');
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'ejs');
+  app.use(expressLayouts);
+  app.set('layout', 'police/case/layout');
   console.log('✅ View engine configured');
 } catch (err) {
   console.error('❌ View engine setup failed:', err);
