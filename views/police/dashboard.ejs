@@ -1,15 +1,25 @@
-<%- include('../partials/header') %>
-
 <div class="container mx-auto p-4">
   <%- include('../partials/breadcrumbs', { path: req.path }) %>
 
-  <h1 class="text-2xl font-bold my-4">Police Dashboard</h1>
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold">Police Dashboard</h1>
+    <div class="flex space-x-2">
+      <a href="/police/bookings/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Create New Booking
+      </a>
+      <a href="/police/search" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+        Search for a Person
+      </a>
+    </div>
+  </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <%- include('../partials/card', { title: 'Overdue Bookings', count: overdueBookings.length, data: overdueBookings.map(b => ({ message: `${b.person.name} - Case #${b.case.caseNumber}`})) }) %>
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-xl font-bold text-gray-800">Overdue Bookings</h2>
+      <p class="text-3xl font-bold text-red-500"><%= overdueBookings.length %></p>
+      <a href="/police/bookings?filter=overdue" class="text-blue-500 hover:underline">View Overdue Bookings</a>
+    </div>
     <%- include('../partials/card', { title: 'Alerts', count: alerts.length, data: alerts.map(a => ({ message: a.message })) }) %>
     <%- include('../partials/card', { title: 'Recent Activity', count: recentActivity.length, data: recentActivity.map(b => ({ message: `${b.person.name} - Case #${b.case.caseNumber}`})) }) %>
   </div>
 </div>
-
-<%- include('../partials/footer') %>
