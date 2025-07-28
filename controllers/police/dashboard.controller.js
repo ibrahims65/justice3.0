@@ -12,10 +12,10 @@ exports.renderDashboard = async (req, res) => {
       include: { person: true }
     });
 
-    res.render('police-dashboard', {
+    res.render('police/dashboard', {
       officer,
       results: [], // default empty search results
-      recentBookings,
+      bookings: recentBookings,
       alerts: [],
       activityLog: []
     });

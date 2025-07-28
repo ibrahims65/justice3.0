@@ -1,4 +1,6 @@
-[dotenv@17.2.1] injecting env (0) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+[dotenv@17.2.1] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
 🚀 Justice 3.0 booting...
 ✅ View engine configured
 ✅ Middleware configured
+✅ Routes registered
+✅ Server is running on port 3000

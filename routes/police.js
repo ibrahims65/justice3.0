@@ -22,10 +22,10 @@ router.post('/search', async (req, res) => {
     },
   });
 
-  res.render('police-dashboard', {
+  res.render('police/dashboard', {
     officer,
     results,
-    recentBookings: [], // optional: preload or skip
+    bookings: [], // optional: preload or skip
     alerts: [],
     activityLog: [],
   });
