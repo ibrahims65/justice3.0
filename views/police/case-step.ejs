@@ -1,15 +1,26 @@
 <h1>Case Creation</h1>
 
+<% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+  <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+    <strong class="font-bold">Validation Error!</strong>
+    <ul>
+      <% errors.forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
 <form action="/police/case/new" method="POST">
   <input type="hidden" name="personId" value="<%= personId %>">
-  <input type="text" name="caseNumber" placeholder="Case Number">
+  <input type="text" name="caseNumber" placeholder="Case Number" value="<%= typeof caseNumber !== 'undefined' ? caseNumber : '' %>">
   <select name="status">
-    <option value="Open">Open</option>
-    <option value="Closed">Closed</option>
+    <option value="Open" <%= typeof status !== 'undefined' && status === 'Open' ? 'selected' : '' %>>Open</option>
+    <option value="Closed" <%= typeof status !== 'undefined' && status === 'Closed' ? 'selected' : '' %>>Closed</option>
   </select>
   <select name="policeStationId">
     <!-- This should be populated from the database -->
-    <option value="1">Police Station 1</option>
+    <option value="1" <%= typeof policeStationId !== 'undefined' && policeStationId == 1 ? 'selected' : '' %>>Police Station 1</option>
   </select>
   <button type="submit">Create Case & Continue</button>
 </form>
