@@ -1,0 +1,30 @@
+<h1>Person Selection</h1>
+
+<div x-data="{ query: '', persons: [], selectedPerson: null }">
+  <input type="text" x-model="query" @input.debounce.500ms="fetch('/api/persons?q=' + query).then(res => res.json()).then(data => persons = data)" placeholder="Search for a person...">
+
+  <ul>
+    <template x-for="person in persons" :key="person.id">
+      <li @click="selectedPerson = person.id" x-text="person.name"></li>
+    </template>
+  </ul>
+
+  <a :href="'/bookings/new/case?personId=' + selectedPerson" :disabled="!selectedPerson">
+    <button>Next: Create Case</button>
+  </a>
+</div>
+
+<hr>
+
+<h2>Create New Person</h2>
+<div x-data="{ open: false }">
+  <button @click="open = !open">New Person</button>
+
+  <div x-show="open">
+    <form action="/bookings/new/person" method="POST">
+      <input type="text" name="name" placeholder="Name">
+      <input type="email" name="email" placeholder="Email">
+      <button type="submit">Create Person</button>
+    </form>
+  </div>
+</div>

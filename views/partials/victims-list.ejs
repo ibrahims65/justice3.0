@@ -1,0 +1,10 @@
+<h2>Victims</h2>
+<% if (booking.victims && booking.victims.length > 0) { %>
+  <ul>
+    <% booking.victims.forEach(v => { %>
+      <li><%= v.name %> — <%= v.statement || 'No statement' %></li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <p>No victims added yet.</p>
+<% } %>

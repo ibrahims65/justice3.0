@@ -1,0 +1,30 @@
+<h1>Edit Case</h1>
+
+<div x-data="{ activeTab: 'Info' }">
+  <ul class="flex border-b">
+    <% ['Info','Victims','Evidence','Witnesses','Hearings','Notes'].forEach(tab=>{ %>
+      <li class="mr-4">
+        <a @click.prevent="activeTab='<%=tab%>'"
+           :class="activeTab==='<%=tab%>' && 'border-b-2 border-blue-600'"
+           href="#">
+          <%=tab%> (<%= booking[tab.toLowerCase()] && booking[tab.toLowerCase()].length || '' %>)
+        </a>
+      </li>
+    <% }) %>
+  </ul>
+
+  <div x-show="activeTab==='Info'">
+    <p><strong>Person:</strong> <%= booking.person.name %></p>
+    <p><strong>Status:</strong> <%= booking.status %></p>
+  </div>
+
+  <div x-show="activeTab==='Victims'">
+    <%- include('../partials/victims-list.ejs') %>
+    <%- include('../partials/victim-form.ejs') %>
+  </div>
+
+  <div x-show="activeTab==='Evidence'">
+    <%- include('../partials/evidence-list.ejs') %>
+    <%- include('../partials/evidence-form.ejs') %>
+  </div>
+</div>
