@@ -26,12 +26,12 @@
       </h2>
     </div>
 
-    <!-- Quranic Verse (Arabic only; no translation) -->
+    <!-- Quranic Verse -->
     <div class="text-center px-4">
       <p
-        class="notranslate text-lg sm:text-2xl font-bold text-gray-100 leading-relaxed"
-        translate="no"
+        class="text-lg sm:text-2xl font-bold text-gray-100 leading-relaxed"
         lang="ar"
+        translate="no"
         dir="rtl"
       >
         إِنَّ ٱللَّهَ يَأْمُرُكُمْ أَن تُؤَدُّوا۟ ٱلْأَمَـٰنَـٰتِ إِلَىٰٓ أَهْلِهَا ۖ  
@@ -40,21 +40,15 @@
       </p>
     </div>
 
-    <!-- Flash Messages -->
+    <!-- Flash Message -->
     <% if (error_msg) { %>
       <div class="bg-red-700 text-white p-3 rounded">
         <%= error_msg %>
       </div>
     <% } %>
-    <% if (success_msg) { %>
-      <div class="bg-green-700 text-white p-3 rounded">
-        <%= success_msg %>
-      </div>
-    <% } %>
 
     <!-- Login Form -->
     <form action="/auth/login" method="POST" class="space-y-4">
-      <input type="hidden" name="_csrf" value="<%= _csrf %>" />
 
       <div>
         <label for="email" class="block text-gray-200">Email</label>
@@ -103,7 +97,9 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.97 9.97 0 011.175-4.875m5.399-2.709A9.955 9.955 0 0112 3c5.523 0 10 4.477 10 10 0 2.205-.705 4.243-1.903 5.935"
+              d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10a9.97 9.97 0  
+                011.175-4.875m5.399-2.709A9.955 9.955 0 0112 3c5.523 0 10 4.477 10 10 0
+                2.205-.705 4.243-1.903 5.935"
             />
           </svg>
         </button>
@@ -121,13 +117,13 @@
 
       <button
         type="submit"
-        class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded  
+               focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         Sign In
       </button>
     </form>
 
-    <!-- Footer Note -->
     <p class="text-xs text-gray-300 text-center mt-4">
       Authorized users only. Unauthorized access may be prosecuted.
     </p>
@@ -135,17 +131,16 @@
 
   <script>
     const togglePassword = document.querySelector('#togglePassword');
-    const passwordField = document.querySelector('#password');
-    const eyeIcon = document.querySelector('#eyeIcon');
-    const eyeSlashIcon = document.querySelector('#eyeSlashIcon');
+    const passwordField  = document.querySelector('#password');
+    const eyeIcon        = document.querySelector('#eyeIcon');
+    const eyeSlashIcon   = document.querySelector('#eyeSlashIcon');
 
     togglePassword.addEventListener('click', () => {
-      const isPassword = passwordField.getAttribute('type') === 'password';
-      passwordField.setAttribute('type', isPassword ? 'text' : 'password');
+      const isPassword = passwordField.type === 'password';
+      passwordField.type = isPassword ? 'text' : 'password';
       eyeIcon.classList.toggle('hidden');
       eyeSlashIcon.classList.toggle('hidden');
     });
   </script>
 </body>
 </html>
-```
