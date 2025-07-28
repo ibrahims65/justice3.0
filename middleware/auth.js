@@ -7,6 +7,13 @@ const isAuthenticated = (req, res, next) => {
   }
 };
 
+const ensureAdmin = (req, res, next) => {
+  if (req.session.user && req.session.user.role && req.session.user.role.name === 'SuperAdmin') {
+    return next();
+  }
+  res.status(403).send('Forbidden');
+};
+
 const checkRole = (roles) => {
   return (req, res, next) => {
     if (req.session.user && roles.map(r => r.toLowerCase()).includes(req.session.user.role.name.toLowerCase())) {
@@ -17,4 +24,4 @@ const checkRole = (roles) => {
   };
 };
 
-module.exports = { isAuthenticated, checkRole };
+module.exports = { isAuthenticated, checkRole, ensureAdmin };

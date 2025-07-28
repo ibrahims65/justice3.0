@@ -1,101 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-const { checkRole } = require('../middleware/auth');
+const adminController = require('../controllers/adminController');
+const { ensureAdmin } = require('../middleware/auth');
 
-router.use(checkRole(['SuperAdmin']));
+router.use(ensureAdmin);
 
-router.get('/', (req, res) => {
-  res.render('admin/index');
-});
+router.get('/', adminController.getDashboard);
 
 // Regions
-router.get('/regions', async (req, res) => {
-  const regions = await prisma.region.findMany();
-  res.render('admin/regions/index', { regions });
-});
-
-router.get('/regions/new', (req, res) => {
-  res.render('admin/regions/new');
-});
-
-router.post('/regions', async (req, res) => {
-  const { name } = req.body;
-  await prisma.region.create({ data: { name } });
-  res.redirect('/admin/regions');
-});
+router.get('/regions', adminController.getRegions);
+router.get('/regions/new', adminController.getNewRegion);
+router.post('/regions', adminController.createRegion);
 
 // Districts
-router.get('/districts', async (req, res) => {
-  const districts = await prisma.district.findMany({ include: { region: true } });
-  const regions = await prisma.region.findMany();
-  res.render('admin/districts/index', { districts, regions });
-});
-
-router.get('/districts/new', async (req, res) => {
-  const regions = await prisma.region.findMany();
-  res.render('admin/districts/new', { regions });
-});
-
-router.post('/districts', async (req, res) => {
-  const { name, regionId } = req.body;
-  await prisma.district.create({ data: { name, regionId: parseInt(regionId) } });
-  res.redirect('/admin/districts');
-});
+router.get('/districts', adminController.getDistricts);
+router.get('/districts/new', adminController.getNewDistrict);
+router.post('/districts', adminController.createDistrict);
 
 // Cities
-router.get('/cities', async (req, res) => {
-  const cities = await prisma.city.findMany({ include: { district: true } });
-  const districts = await prisma.district.findMany();
-  res.render('admin/cities/index', { cities, districts });
-});
-
-router.get('/cities/new', async (req, res) => {
-  const districts = await prisma.district.findMany();
-  res.render('admin/cities/new', { districts });
-});
-
-router.post('/cities', async (req, res) => {
-  const { name, districtId } = req.body;
-  await prisma.city.create({ data: { name, districtId: parseInt(districtId) } });
-  res.redirect('/admin/cities');
-});
+router.get('/cities', adminController.getCities);
+router.get('/cities/new', adminController.getNewCity);
+router.post('/cities', adminController.createCity);
 
 // Police Stations
-router.get('/police-stations', async (req, res) => {
-  const policeStations = await prisma.policeStation.findMany();
-  const cities = await prisma.city.findMany();
-  res.render('admin/police-stations/index', { policeStations, cities });
-});
-
-router.get('/police-stations/new', async (req, res) => {
-  const cities = await prisma.city.findMany();
-  res.render('admin/police-stations/new', { cities });
-});
-
-router.post('/police-stations', async (req, res) => {
-  const { name, cityId } = req.body;
-  await prisma.policeStation.create({ data: { name, cityId: parseInt(cityId) } });
-  res.redirect('/admin/police-stations');
-});
+router.get('/police-stations', adminController.getPoliceStations);
+router.get('/police-stations/new', adminController.getNewPoliceStation);
+router.post('/police-stations', adminController.createPoliceStation);
 
 // Courts
-router.get('/courts', async (req, res) => {
-  const courts = await prisma.court.findMany();
-  const cities = await prisma.city.findMany();
-  res.render('admin/courts/index', { courts, cities });
-});
-
-router.get('/courts/new', async (req, res) => {
-  const cities = await prisma.city.findMany();
-  res.render('admin/courts/new', { cities });
-});
-
-router.post('/courts', async (req, res) => {
-  const { name, cityId } = req.body;
-  await prisma.court.create({ data: { name, cityId: parseInt(cityId) } });
-  res.redirect('/admin/courts');
-});
+router.get('/courts', adminController.getCourts);
+router.get('/courts/new', adminController.getNewCourt);
+router.post('/courts', adminController.createCourt);
 
 module.exports = router;
