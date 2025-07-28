@@ -1,8 +1,49 @@
 <h2>Booking Details</h2>
-
 <p><strong>Person:</strong> <%= booking.person.name %></p>
 <p><strong>Status:</strong> <%= booking.status %></p>
-<p><strong>Charges:</strong> <%= booking.charges || 'N/A' %></p>
-<p><strong>Booking Date:</strong> <%= booking.bookingDate.toDateString() %></p>
+
+<hr>
+
+<h3>Victims</h3>
+<% if (booking.case && booking.case.victims.length > 0) { %>
+  <% booking.case.victims.forEach(v => { %>
+    <p><%= v.name %> — <%= v.statement || 'No statement' %></p>
+  <% }) %>
+<% } else { %>
+  <p>No victims added yet.</p>
+<% } %>
+<button>Add Victim</button>
+
+<hr>
+
+<h3>Evidence</h3>
+<% if (booking.case && booking.case.evidence.length > 0) { %>
+  <% booking.case.evidence.forEach(e => { %>
+    <p><%= e.evidenceType %>: <%= e.description %></p>
+  <% }) %>
+<% } else { %>
+  <p>No evidence added yet.</p>
+<% } %>
+<button>Add Evidence</button>
+
+<hr>
+
+<h3>Officer Notes</h3>
+<p><%= booking.officerNotes || 'No notes yet' %></p>
+<button>Edit Notes</button>
+
+<hr>
+
+<h3>Linked Case</h3>
+<% if (!booking.case) { %>
+  <form method="POST" action="/case/create">
+    <input type="hidden" name="bookingId" value="<%= booking.id %>">
+    <button>Create Case</button>
+  </form>
+<% } else { %>
+  <a href="/case/<%= booking.case.id %>">View Case</a>
+<% } %>
+
+<hr>
 
 <a href="/police/dashboard">← Back to Dashboard</a>
