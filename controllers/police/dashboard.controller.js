@@ -15,32 +15,12 @@ exports.getDashboard = async (req, res) => {
       },
     });
 
-    const alerts = await prisma.alert.findMany({
-      where: {
-        userId: req.user.id,
-        read: false,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    const recentActivity = await prisma.activityLog.findMany({
-      where: {
-        userId: req.user.id,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: 10,
-    });
-
     res.render('police/dashboard', {
       title: 'Police Dashboard',
       user: req.user,
       overdueBookings,
-      alerts,
-      recentActivity,
+      alerts: [],
+      recentActivity: [],
       req: req,
     });
   } catch (error) {
