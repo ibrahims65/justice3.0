@@ -1,4 +1,4 @@
-[dotenv@17.2.1] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.2.1] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
 🚀 Justice 3.0 booting...
 ✅ View engine configured
 ✅ Middleware configured

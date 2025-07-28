@@ -122,4 +122,27 @@ router.get('/booking/:bookingId', isAuthenticated, async (req, res) => {
     res.render('police/view', { booking: vm });
 });
 
+router.post('/search', isAuthenticated, async (req, res) => {
+    const { query } = req.body;
+    const officer = req.session.user;
+
+    const results = await prisma.booking.findMany({
+        where: {
+            OR: [
+                { person: { name: { contains: query, mode: 'insensitive' } } },
+                { id: parseInt(query) || undefined }
+            ],
+        },
+        include: {
+            person: true,
+        },
+    });
+
+    res.render('police/dashboard', {
+        officer,
+        results,
+        recentBookings: [] // keep this for now
+    });
+});
+
 module.exports = router;

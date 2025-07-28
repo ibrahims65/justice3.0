@@ -1,6 +1,10 @@
 <head>
   <link rel="stylesheet" href="/styles/main.css">
 </head>
-<header class="bg-gray-800 text-white p-4">
-  <h1 class="text-xl font-bold">Justice 3.0</h1>
-</header>
+<header class="bg-slate-800 px-6 py-4 flex justify-between items-center shadow-md">
+    <h1 class="text-2xl font-bold">🚓 Police Dashboard</h1>
+    <div class="flex items-center space-x-4">
+      <span class="text-sm text-slate-300">Logged in as <%= officer.username %></span>
+      <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm">Logout</a>
+    </div>
+  </header>
