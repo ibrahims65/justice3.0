@@ -1,0 +1,15 @@
+<h1>Case Creation</h1>
+
+<form action="/police/bookings/new/case" method="POST">
+  <input type="hidden" name="personId" value="<%= personId %>">
+  <input type="text" name="caseNumber" placeholder="Case Number">
+  <select name="status">
+    <option value="Open">Open</option>
+    <option value="Closed">Closed</option>
+  </select>
+  <select name="policeStationId">
+    <!-- This should be populated from the database -->
+    <option value="1">Police Station 1</option>
+  </select>
+  <button type="submit">Create Case & Continue</button>
+</form>

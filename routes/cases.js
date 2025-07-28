@@ -303,4 +303,51 @@ router.post('/:caseId/evidence', async (req, res) => {
   res.redirect(`/bookings/${booking.id}/edit`);
 });
 
+router.post('/:caseId/witnesses', async (req, res) => {
+    const caseId = parseInt(req.params.caseId, 10);
+    const { name, statement } = req.body;
+    await prisma.witness.create({
+        data: {
+        name,
+        statement,
+        caseId,
+        },
+    });
+    const booking = await prisma.booking.findFirst({
+        where: {
+        caseId: caseId,
+        },
+    });
+    res.redirect(`/police/bookings/${booking.id}/edit`);
+});
+
+router.post('/:caseId/hearings', async (req, res) => {
+    const caseId = parseInt(req.params.caseId, 10);
+    const { hearingDate, verdict, courtId } = req.body;
+    await prisma.hearing.create({
+        data: {
+        hearingDate: new Date(hearingDate),
+        verdict,
+        caseId,
+        courtId: parseInt(courtId),
+        },
+    });
+    const booking = await prisma.booking.findFirst({
+        where: {
+        caseId: caseId,
+        },
+    });
+    res.redirect(`/police/bookings/${booking.id}/edit`);
+});
+
+router.post('/:bookingId/notes', async (req, res) => {
+    const bookingId = parseInt(req.params.bookingId, 10);
+    const { officerNotes } = req.body;
+    await prisma.booking.update({
+        where: { id: bookingId },
+        data: { officerNotes },
+    });
+    res.redirect(`/police/bookings/${bookingId}/edit`);
+});
+
 module.exports = router;

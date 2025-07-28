@@ -11,14 +11,15 @@ datasource db {
 }
 
 model User {
-  id       Int             @id @default(autoincrement())
-  username String          @unique
-  password String
+  id              Int              @id @default(autoincrement())
+  username        String           @unique
+  password        String
   role            Role             @relation(fields: [roleId], references: [id])
   roleId          Int
   actions         ActionHistory[]
   prosecutorNotes ProsecutorNote[]
-  notifications Notification[]
+  notifications   Notification[]
+  Booking         Booking[]
 }
 
 model Role {
@@ -28,73 +29,74 @@ model Role {
 }
 
 model Person {
-  id          Int           @id @default(autoincrement())
-  name        String
-  dob         DateTime
-  photoUrl    String?
-  address     String?
-  phone       String?
-  email       String?       @unique
-  bookings    Booking[]
-  nextOfKin   NextOfKin[]
-  deletedAt   DateTime?
-  rebookedAt  DateTime?
+  id           Int           @id @default(autoincrement())
+  name         String
+  dob          DateTime
+  photoUrl     String?
+  address      String?
+  phone        String?
+  email        String?       @unique
+  bookings     Booking[]
+  nextOfKin    NextOfKin[]
+  deletedAt    DateTime?
+  rebookedAt   DateTime?
   affiliations Affiliation[]
 }
 
 model Booking {
-  id              Int            @id @default(autoincrement())
-  person          Person         @relation(fields: [personId], references: [id])
-  personId        Int
-  bookingDate     DateTime       @default(now())
-  status          String
-  charges         String?
-  policeStation   PoliceStation? @relation(fields: [policeStationId], references: [id])
-  policeStationId Int?
-  case            Case?
+  id                     Int                  @id @default(autoincrement())
+  person                 Person               @relation(fields: [personId], references: [id])
+  personId               Int
+  bookingDate            DateTime             @default(now())
+  status                 String
+  charges                String?
+  policeStation          PoliceStation?       @relation(fields: [policeStationId], references: [id])
+  policeStationId        Int?
+  case                   Case?
   incarcerationStartDate DateTime?
-  facilityName String?
+  facilityName           String?
   rehabilitationPrograms String?
-  releaseDate DateTime?
-  paroleEligibility DateTime?
-  arrestingOfficerName String?
-  arrestingOfficerRank String?
-  disciplinaryActions DisciplinaryAction[]
-  visitationLogs      VisitationLog[]
-  releasedAt          DateTime?
-  custodyExpiresAt    DateTime?
-  remandRequests      RemandRequest[]
-  releaseRecord       ReleaseRecord?
+  releaseDate            DateTime?
+  paroleEligibility      DateTime?
+  arrestingOfficerId     Int?
+  arrestingOfficer       User?                @relation(fields: [arrestingOfficerId], references: [id])
+  officerNotes           String?
+  disciplinaryActions    DisciplinaryAction[]
+  visitationLogs         VisitationLog[]
+  releasedAt             DateTime?
+  custodyExpiresAt       DateTime?
+  remandRequests         RemandRequest[]
+  releaseRecord          ReleaseRecord?
 }
 
 model Case {
-  id         Int             @id @default(autoincrement())
-  caseNumber String          @unique
-  booking    Booking         @relation(fields: [bookingId], references: [id])
-  bookingId  Int             @unique
-  status     String
-  crimeSceneDetails String?
-  interrogationLogs String?
-  preliminaryFindings String?
-  evidence   Evidence[]
-  witnesses  Witness[]
-  hearings   Hearing[]
-  actions          ActionHistory[]
-  victims          Victim[]
-  prosecutorNotes  ProsecutorNote[]
-  pleaBargains     PleaBargain[]
-  investigations   Investigation[]
-  bailDecisions    BailDecision[]
-  recommendedCharges String?
-  riskAssessment String?
+  id                     Int              @id @default(autoincrement())
+  caseNumber             String           @unique
+  booking                Booking          @relation(fields: [bookingId], references: [id])
+  bookingId              Int              @unique
+  status                 String
+  crimeSceneDetails      String?
+  interrogationLogs      String?
+  preliminaryFindings    String?
+  evidence               Evidence[]
+  witnesses              Witness[]
+  hearings               Hearing[]
+  actions                ActionHistory[]
+  victims                Victim[]
+  prosecutorNotes        ProsecutorNote[]
+  pleaBargains           PleaBargain[]
+  investigations         Investigation[]
+  bailDecisions          BailDecision[]
+  recommendedCharges     String?
+  riskAssessment         String?
   evidenceStrengthRating Int?
-  warrants Warrant[]
-  searchWarrants SearchWarrant[]
-  lawyers         Lawyer[]
-  medicalRecords  MedicalRecord[]
-  deletedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  warrants               Warrant[]
+  searchWarrants         SearchWarrant[]
+  lawyers                Lawyer[]
+  medicalRecords         MedicalRecord[]
+  deletedAt              DateTime?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
 }
 
 model Region {
@@ -133,15 +135,15 @@ model Court {
 }
 
 model Evidence {
-  id              Int      @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   description     String
   fileUrl         String
-  case            Case     @relation(fields: [caseId], references: [id])
+  case            Case      @relation(fields: [caseId], references: [id])
   caseId          Int
   receivedFrom    String?
   storageLocation String?
   dateReceived    DateTime?
-  version         Int      @default(1)
+  version         Int       @default(1)
   tags            String?
   evidenceType    String?
   serialNumber    String?
@@ -149,11 +151,11 @@ model Evidence {
 }
 
 model Witness {
-  id           Int     @id @default(autoincrement())
-  name         String
-  statement    String
-  case         Case    @relation(fields: [caseId], references: [id])
-  caseId       Int
+  id            Int     @id @default(autoincrement())
+  name          String
+  statement     String
+  case          Case    @relation(fields: [caseId], references: [id])
+  caseId        Int
   testimonyType String?
   testimonyUrl  String?
 }
@@ -180,43 +182,43 @@ model ActionHistory {
 }
 
 model Affiliation {
-  id          Int     @id @default(autoincrement())
-  personId    Int
-  person      Person  @relation(fields: [personId], references: [id])
+  id           Int    @id @default(autoincrement())
+  personId     Int
+  person       Person @relation(fields: [personId], references: [id])
   organization String
-  type        String // gang, extremist, terrorist
+  type         String // gang, extremist, terrorist
 }
 
 model RemandRequest {
-  id              Int      @id @default(autoincrement())
-  bookingId       Int
-  booking         Booking  @relation(fields: [bookingId], references: [id])
-  requestedBy     String
-  reason          String
-  requestedDays   Int
-  status          String // pending, approved, rejected
-  judgeId         Int?
-  decisionDate    DateTime?
+  id            Int       @id @default(autoincrement())
+  bookingId     Int
+  booking       Booking   @relation(fields: [bookingId], references: [id])
+  requestedBy   String
+  reason        String
+  requestedDays Int
+  status        String // pending, approved, rejected
+  judgeId       Int?
+  decisionDate  DateTime?
 }
 
 model ReleaseRecord {
-  id            Int      @id @default(autoincrement())
-  bookingId     Int      @unique
-  booking       Booking  @relation(fields: [bookingId], references: [id])
-  releasedBy    String
-  releaseDate   DateTime
-  reason        String
-  notes         String?
+  id          Int      @id @default(autoincrement())
+  bookingId   Int      @unique
+  booking     Booking  @relation(fields: [bookingId], references: [id])
+  releasedBy  String
+  releaseDate DateTime
+  reason      String
+  notes       String?
 }
 
 model DisciplinaryAction {
-  id          Int      @id @default(autoincrement())
-  bookingId   Int
-  booking     Booking  @relation(fields: [bookingId], references: [id])
-  date        DateTime
-  infraction  String
-  sanction    String
-  notes       String?
+  id         Int      @id @default(autoincrement())
+  bookingId  Int
+  booking    Booking  @relation(fields: [bookingId], references: [id])
+  date       DateTime
+  infraction String
+  sanction   String
+  notes      String?
 }
 
 model VisitationLog {
@@ -229,15 +231,15 @@ model VisitationLog {
 }
 
 model Lawyer {
-  id          Int           @id @default(autoincrement())
-  name        String
-  firm        String
-  license     String        @unique
-  case        Case          @relation(fields: [caseId], references: [id])
-  caseId      Int
-  visits      LawyerVisit[]
+  id              Int           @id @default(autoincrement())
+  name            String
+  firm            String
+  license         String        @unique
+  case            Case          @relation(fields: [caseId], references: [id])
+  caseId          Int
+  visits          LawyerVisit[]
   areaOfExpertise String?
-  barNumber   String?
+  barNumber       String?
 }
 
 model LawyerVisit {
@@ -259,28 +261,28 @@ model ProsecutorNote {
 }
 
 model PleaBargain {
-  id          Int      @id @default(autoincrement())
-  caseId      Int
-  case        Case     @relation(fields: [caseId], references: [id])
-  offer       String
-  status      String // Proposed, Accepted, Rejected
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  caseId    Int
+  case      Case     @relation(fields: [caseId], references: [id])
+  offer     String
+  status    String // Proposed, Accepted, Rejected
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Investigation {
-  id              Int          @id @default(autoincrement())
-  caseId          Int
-  case            Case         @relation(fields: [caseId], references: [id])
-  investigatorName String
+  id                      Int     @id @default(autoincrement())
+  caseId                  Int
+  case                    Case    @relation(fields: [caseId], references: [id])
+  investigatorName        String
   investigatorBadgeNumber String
-  investigatorRank String
-  details         String?
-  media           Media[]
+  investigatorRank        String
+  details                 String?
+  media                   Media[]
 }
 
 model Media {
-  id              Int      @id @default(autoincrement())
+  id              Int           @id @default(autoincrement())
   url             String
   type            String // video, audio, image
   investigationId Int
@@ -291,7 +293,7 @@ model BailDecision {
   id         Int      @id @default(autoincrement())
   caseId     Int
   amount     Float
-  status     String   // e.g., "Granted", "Denied", "Revoked"
+  status     String // e.g., "Granted", "Denied", "Revoked"
   conditions String?
   decidedAt  DateTime @default(now())
   judgeName  String
@@ -299,24 +301,24 @@ model BailDecision {
 }
 
 model MedicalRecord {
-  id        Int      @id @default(autoincrement())
-  bookingId Int
-  condition String
-  allergies String?
-  notes     String?
-  case      Case     @relation(fields: [caseId], references: [id])
-  caseId    Int
+  id          Int                  @id @default(autoincrement())
+  bookingId   Int
+  condition   String
+  allergies   String?
+  notes       String?
+  case        Case                 @relation(fields: [caseId], references: [id])
+  caseId      Int
   medications MedicationSchedule[]
 }
 
 model MedicationSchedule {
-  id           Int      @id @default(autoincrement())
-  medicalId    Int
-  medication   String
-  dosage       String
-  frequency    String
-  startDate    DateTime
-  endDate      DateTime?
+  id            Int           @id @default(autoincrement())
+  medicalId     Int
+  medication    String
+  dosage        String
+  frequency     String
+  startDate     DateTime
+  endDate       DateTime?
   medicalRecord MedicalRecord @relation(fields: [medicalId], references: [id])
 }
 
@@ -341,25 +343,25 @@ model Notification {
 }
 
 model Warrant {
-  id          Int      @id @default(autoincrement())
-  caseId      Int
-  case        Case     @relation(fields: [caseId], references: [id])
-  status      String   // "Issued", "Executed", "Expired"
-  details     String
-  issuedAt    DateTime @default(now())
-  expiresAt   DateTime
+  id        Int      @id @default(autoincrement())
+  caseId    Int
+  case      Case     @relation(fields: [caseId], references: [id])
+  status    String // "Issued", "Executed", "Expired"
+  details   String
+  issuedAt  DateTime @default(now())
+  expiresAt DateTime
 }
 
 model SearchWarrant {
-  id             Int      @id @default(autoincrement())
-  caseId         Int
-  requestedBy    String
-  reason         String
-  targetType     String
-  targetDetails  String
-  dateRequested  DateTime @default(now())
-  status         String
-  case           Case     @relation(fields: [caseId], references: [id])
+  id            Int      @id @default(autoincrement())
+  caseId        Int
+  requestedBy   String
+  reason        String
+  targetType    String
+  targetDetails String
+  dateRequested DateTime @default(now())
+  status        String
+  case          Case     @relation(fields: [caseId], references: [id])
 }
 
 model Victim {

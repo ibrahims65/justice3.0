@@ -1,0 +1,36 @@
+<form action="/cases/<%= booking.case.id %>" method="POST">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <label for="caseNumber" class="block text-sm font-medium text-slate-300">Case Number</label>
+            <input type="text" name="caseNumber" id="caseNumber" value="<%= booking.case.caseNumber %>" class="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+        <div>
+            <label for="status" class="block text-sm font-medium text-slate-300">Status</label>
+            <select name="status" id="status" class="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <option value="New Arrest" <%= booking.case.status === 'New Arrest' ? 'selected' : '' %>>New Arrest</option>
+                <option value="Prosecutor Review" <%= booking.case.status === 'Prosecutor Review' ? 'selected' : '' %>>Prosecutor Review</option>
+                <option value="Accepted" <%= booking.case.status === 'Accepted' ? 'selected' : '' %>>Accepted</option>
+                <option value="Rejected" <%= booking.case.status === 'Rejected' ? 'selected' : '' %>>Rejected</option>
+                <option value="Information Requested" <%= booking.case.status === 'Information Requested' ? 'selected' : '' %>>Information Requested</option>
+                <option value="Submitted to Court" <%= booking.case.status === 'Submitted to Court' ? 'selected' : '' %>>Submitted to Court</option>
+                <option value="Sent Back to Prosecutor" <%= booking.case.status === 'Sent Back to Prosecutor' ? 'selected' : '' %>>Sent Back to Prosecutor</option>
+                <option value="Closed" <%= booking.case.status === 'Closed' ? 'selected' : '' %>>Closed</option>
+            </select>
+        </div>
+        <div class="md:col-span-2">
+            <label for="crimeSceneDetails" class="block text-sm font-medium text-slate-300">Crime Scene Details</label>
+            <textarea name="crimeSceneDetails" id="crimeSceneDetails" rows="4" class="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"><%= booking.case.crimeSceneDetails %></textarea>
+        </div>
+        <div class="md:col-span-2">
+            <label for="interrogationLogs" class="block text-sm font-medium text-slate-300">Interrogation Logs</label>
+            <textarea name="interrogationLogs" id="interrogationLogs" rows="4" class="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"><%= booking.case.interrogationLogs %></textarea>
+        </div>
+        <div class="md:col-span-2">
+            <label for="preliminaryFindings" class="block text-sm font-medium text-slate-300">Preliminary Findings</label>
+            <textarea name="preliminaryFindings" id="preliminaryFindings" rows="4" class="mt-1 block w-full bg-slate-800 border border-slate-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"><%= booking.case.preliminaryFindings %></textarea>
+        </div>
+    </div>
+    <div class="mt-6">
+        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-md">Save Changes</button>
+    </div>
+</form>

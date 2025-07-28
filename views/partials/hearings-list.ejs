@@ -1,0 +1,10 @@
+<h2>Hearings</h2>
+<% if (booking.case.hearings && booking.case.hearings.length > 0) { %>
+  <ul>
+    <% booking.case.hearings.forEach(h => { %>
+      <li><%= h.hearingDate.toLocaleString() %> — <%= h.verdict || 'No verdict' %></li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <p>No hearings added yet.</p>
+<% } %>

@@ -7,6 +7,7 @@ exports.renderDashboard = async (req, res) => {
     const officer = req.session.user;
 
     const recentBookings = await prisma.booking.findMany({
+      where: { arrestingOfficerId: officer.id },
       orderBy: { bookingDate: 'desc' },
       take: 5,
       include: { person: true }
@@ -14,7 +15,7 @@ exports.renderDashboard = async (req, res) => {
 
     res.render('police/dashboard', {
       officer,
-      results: [], // default empty search results
+      results: [],
       recentBookings,
       alerts: [],
       activityLog: []
