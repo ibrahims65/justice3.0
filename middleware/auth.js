@@ -9,7 +9,7 @@ const isAuthenticated = (req, res, next) => {
 
 const checkRole = (roles) => {
   return (req, res, next) => {
-    if (req.session.user && roles.includes(req.session.user.role.name)) {
+    if (req.session.user && roles.map(r => r.toLowerCase()).includes(req.session.user.role.name.toLowerCase())) {
       next();
     } else {
       res.status(403).send('Forbidden');
