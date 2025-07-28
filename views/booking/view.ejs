@@ -1,0 +1,8 @@
+<h2>Booking Details</h2>
+
+<p><strong>Person:</strong> <%= booking.person.name %></p>
+<p><strong>Status:</strong> <%= booking.status %></p>
+<p><strong>Charges:</strong> <%= booking.charges || 'N/A' %></p>
+<p><strong>Booking Date:</strong> <%= booking.bookingDate.toDateString() %></p>
+
+<a href="/police/dashboard">← Back to Dashboard</a>
