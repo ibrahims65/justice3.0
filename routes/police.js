@@ -14,7 +14,7 @@ router.post('/search', async (req, res) => {
     where: {
       OR: [
         { person: { name: { contains: query, mode: 'insensitive' } } },
-        { person: { affiliations: { some: { organization: { contains: query, mode: 'insensitive' } } } } },
+        { id: parseInt(query) || undefined }
       ],
     },
     include: {
@@ -25,9 +25,7 @@ router.post('/search', async (req, res) => {
   res.render('police/dashboard', {
     officer,
     results,
-    bookings: [], // optional: preload or skip
-    alerts: [],
-    activityLog: [],
+    recentBookings: [] // keep this for now
   });
 });
 

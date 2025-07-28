@@ -15,7 +15,7 @@ exports.renderDashboard = async (req, res) => {
     res.render('police/dashboard', {
       officer,
       results: [], // default empty search results
-      bookings: recentBookings,
+      recentBookings,
       alerts: [],
       activityLog: []
     });
