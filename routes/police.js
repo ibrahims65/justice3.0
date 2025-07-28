@@ -9,6 +9,14 @@ const { check, validationResult } = require('express-validator');
 // Dashboard
 router.get('/dashboard', isAuthenticated, getDashboardData);
 
+router.get('/cases', isAuthenticated, (req, res) => {
+    res.send('<h1>Police Cases</h1>');
+});
+
+router.get('/people', isAuthenticated, (req, res) => {
+    res.send('<h1>Police People</h1>');
+});
+
 // Person Selection/Creation
 router.get('/person/new', isAuthenticated, (req, res) => {
   res.render('police/person-step');
