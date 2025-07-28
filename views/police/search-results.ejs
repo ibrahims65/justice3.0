@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+</head>
+<body class="bg-gray-100">
+  <%- include('../partials/navbar') %>
+
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <%- include('../partials/breadcrumbs', { current: 'Search Results' }) %>
+
+    <div class="px-4 py-6 sm:px-0">
+      <h2 class="text-2xl font-bold text-gray-800 mb-8">Search Results</h2>
+
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <ul class="divide-y divide-gray-200">
+          <% cases.forEach(c => { %>
+            <li class="p-4">
+              <a href="/police/bookings/<%= c.bookingId %>" class="block hover:bg-gray-50">
+                <div class="flex items-center">
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-indigo-600 truncate"><%= c.caseNumber %></p>
+                    <p class="text-sm text-gray-500"><%= c.booking.person.name %></p>
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    <%= new Date(c.booking.bookingDate).toLocaleDateString() %>
+                  </div>
+                </div>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

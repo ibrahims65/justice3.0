@@ -1,176 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
 const { isAuthenticated } = require('../middleware/auth');
-const { getDashboardData } = require('../controllers/policeController');
-const { check, validationResult } = require('express-validator');
+const policeController = require('../controllers/policeController');
 
 // Dashboard
-router.get('/dashboard', isAuthenticated, getDashboardData);
+router.get('/dashboard', isAuthenticated, policeController.getDashboardData);
 
-router.get('/cases', isAuthenticated, (req, res) => {
-    res.send('<h1>Police Cases</h1>');
-});
-
-router.get('/people', isAuthenticated, (req, res) => {
-    res.send('<h1>Police People</h1>');
-});
-
-// Person Selection/Creation
-router.get('/person/new', isAuthenticated, (req, res) => {
-  res.render('police/person-step');
-});
-
-router.post('/person/new', isAuthenticated, [
-  check('name').notEmpty().withMessage('Name is required.'),
-  check('email').isEmail().withMessage('A valid email is required.'),
-], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).render('police/person-step', {
-      errors: errors.array(),
-      name: req.body.name,
-      email: req.body.email,
-    });
-  }
-
-  const { name, email } = req.body;
-  const person = await prisma.person.create({
-    data: {
-      name,
-      email,
-      dob: new Date(),
-    },
-  });
-  res.redirect(`/police/case/new?personId=${person.id}`);
-});
+// Management
+router.get('/management', isAuthenticated, policeController.getManagementData);
+router.get('/cases', isAuthenticated, (req, res) => res.redirect('/police/management'));
+router.get('/people', isAuthenticated, (req, res) => res.redirect('/police/management'));
 
 // Case Creation
-router.get('/case/new', isAuthenticated, (req, res) => {
-  res.render('police/case-step', { personId: req.query.personId });
-});
+router.get('/cases/new', isAuthenticated, policeController.getNewCaseStep1);
+router.post('/cases/new', isAuthenticated, policeController.postNewCaseStep1);
+router.get('/cases/new/step2', isAuthenticated, policeController.getNewCaseStep2);
+router.post('/cases/new/step2', isAuthenticated, policeController.postNewCaseStep2);
 
-router.post('/case/new', isAuthenticated, [
-    check('personId').notEmpty().withMessage('Person is required.').isInt({ gt: 0 }).withMessage('Invalid person selected.'),
-    check('caseNumber').notEmpty().withMessage('Case number is required.').isLength({ min: 5 }).withMessage('Case number must be at least 5 characters long.'),
-    check('status').notEmpty().withMessage('Status is required.'),
-    check('policeStationId').notEmpty().withMessage('Police station is required.').isInt({ gt: 0 }).withMessage('Invalid police station selected.'),
-], async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).render('police/case-step', {
-            errors: errors.array(),
-            personId: req.body.personId,
-            caseNumber: req.body.caseNumber,
-            status: req.body.status,
-            policeStationId: req.body.policeStationId,
-        });
-    }
+// Person
+router.get('/people/:id', isAuthenticated, policeController.getPerson);
 
-    const { personId, caseNumber, status, policeStationId } = req.body;
-    const booking = await prisma.booking.create({
-        data: {
-            personId: parseInt(personId),
-            policeStationId: parseInt(policeStationId),
-            bookingDate: new Date(),
-            status: 'Open',
-            arrestingOfficerId: req.session.user.id,
-        },
-    });
-    const createdCase = await prisma.case.create({
-        data: {
-            bookingId: booking.id,
-            caseNumber,
-            status,
-        },
-    });
-    await prisma.booking.update({
-        where: { id: booking.id },
-        data: { caseId: createdCase.id },
-    });
-    res.redirect(`/police/booking/${booking.id}/edit`);
-});
+// Booking
+router.get('/bookings/:id', isAuthenticated, policeController.getBooking);
+router.get('/bookings/:id/edit', isAuthenticated, policeController.getEditBooking);
+router.post('/bookings/:id/edit', isAuthenticated, policeController.postEditBooking);
 
-// Tabbed Case-Details Editor
-router.get('/booking/:bookingId/edit', isAuthenticated, async (req, res) => {
-  const bookingId = parseInt(req.params.bookingId, 10);
-  const booking = await prisma.booking.findUnique({
-    where: { id: bookingId },
-    include: {
-      person: true,
-      policeStation: true,
-      case: {
-        include: {
-          victims: true,
-          evidence: true,
-          witnesses: true,
-          hearings: true,
-          prosecutorNotes: true,
-        },
-      },
-      visitationLogs: true,
-      remandRequests: true,
-      disciplinaryActions: true,
-      releaseRecord: true,
-    },
-  });
-  // flatten for templates:
-  const { case: crim, ...rest } = booking;
-  const vm = { ...rest, ...crim };
-  res.render('police/edit', { booking: vm });
-});
-
-// Read-Only Case View
-router.get('/booking/:bookingId', isAuthenticated, async (req, res) => {
-    const bookingId = parseInt(req.params.bookingId, 10);
-    const booking = await prisma.booking.findUnique({
-        where: { id: bookingId },
-        include: {
-            person: true,
-            policeStation: true,
-            case: {
-                include: {
-                    victims: true,
-                    evidence: true,
-                    witnesses: true,
-                    hearings: true,
-                    prosecutorNotes: true,
-                },
-            },
-            visitationLogs: true,
-            remandRequests: true,
-            disciplinaryActions: true,
-            releaseRecord: true,
-        },
-    });
-    // flatten for templates:
-    const { case: crim, ...rest } = booking;
-    const vm = { ...rest, ...crim };
-    res.render('police/view', { booking: vm });
-});
-
-router.post('/search', isAuthenticated, async (req, res) => {
-    const { query } = req.body;
-    const officer = req.session.user;
-
-    const results = await prisma.booking.findMany({
-        where: {
-            OR: [
-                { person: { name: { contains: query, mode: 'insensitive' } } },
-                { id: parseInt(query) || undefined }
-            ],
-        },
-        include: {
-            person: true,
-        },
-    });
-
-    res.render('police/dashboard', {
-        officer,
-        results,
-        recentBookings: [] // keep this for now
-    });
-});
+// Search
+router.post('/search', isAuthenticated, policeController.search);
 
 module.exports = router;
