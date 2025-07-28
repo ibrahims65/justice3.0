@@ -1,91 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <%- include('../../partials/head') %>
-</head>
-<body class="bg-gray-100">
-  <%- include('../../partials/navbar') %>
+<%- layout('layout') %>
+<%- block('breadcrumb', 'New Case - Step 3') %>
+<%- block('title', 'New Case - Step 3: Confirmation') %>
+<%- block('progress', 100) %>
 
-  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <%- include('../../partials/breadcrumbs', { current: 'New Case - Step 3' }) %>
-
-    <div class="px-4 py-6 sm:px-0">
-      <h2 class="text-2xl font-bold text-gray-800 mb-8">New Case - Step 3: Confirmation</h2>
-
-      <%- include('../../partials/progress-bar', { progress: 100 }) %>
-
-      <div class="bg-white shadow overflow-hidden sm:rounded-lg p-8 mt-8">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Please confirm the details below:
-        </h3>
-        <div class="mt-5 border-t border-gray-200">
-          <dl class="sm:divide-y sm:divide-gray-200">
-            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-500">
-                Full Name
-              </dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                <%= person.name %>
-              </dd>
-            </div>
-            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-500">
-                Email
-              </dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                <%= person.email %>
-              </dd>
-            </div>
-            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-500">
-                Date of Birth
-              </dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                <%= new Date(person.dob).toLocaleDateString() %>
-              </dd>
-            </div>
-            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-500">
-                Case Number
-              </dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                <%= caseDetails.caseNumber %>
-              </dd>
-            </div>
-            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-500">
-                Status
-              </dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                <%= caseDetails.status %>
-              </dd>
-            </div>
-            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
-              <dt class="text-sm font-medium text-gray-500">
-                Police Station
-              </dt>
-              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                <%= policeStation.name %>
-              </dd>
-            </div>
-          </dl>
-        </div>
-        <div class="mt-8 flex justify-between">
-          <a href="/police/cases/new/step2?personId=<%= person.id %>" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Back</a>
-          <div>
-            <a href="/police/management" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-4">Cancel</a>
-            <form action="/police/cases/new/confirm" method="POST" class="inline">
-            <input type="hidden" name="personId" value="<%= person.id %>">
-            <input type="hidden" name="caseNumber" value="<%= caseDetails.caseNumber %>">
-            <input type="hidden" name="status" value="<%= caseDetails.status %>">
-            <input type="hidden" name="policeStationId" value="<%= policeStation.id %>">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create Case</button>
-          </form>
-        </div>
+<div class="bg-white shadow overflow-hidden sm:rounded-lg p-8 mt-8">
+  <h3 class="text-lg leading-6 font-medium text-gray-900">
+    Please confirm the details below:
+  </h3>
+  <div class="mt-5 border-t border-gray-200">
+    <dl class="sm:divide-y sm:divide-gray-200">
+      <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">
+          Full Name
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= person.name %>
+        </dd>
       </div>
+      <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">
+          Email
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= person.email %>
+        </dd>
+      </div>
+      <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">
+          Date of Birth
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= new Date(person.dob).toLocaleDateString() %>
+        </dd>
+      </div>
+      <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">
+          Case Number
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= caseDetails.caseNumber %>
+        </dd>
+      </div>
+      <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">
+          Status
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= caseDetails.status %>
+        </dd>
+      </div>
+      <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-gray-500">
+          Police Station
+        </dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+          <%= policeStation.name %>
+        </dd>
+      </div>
+    </dl>
+  </div>
+  <div class="mt-8 flex justify-between">
+    <a href="/police/cases/new/step2" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Back</a>
+    <div>
+      <a href="/police/management" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-4">Cancel</a>
+      <form action="/police/cases/new/confirm" method="POST" class="inline">
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create Case</button>
+      </form>
     </div>
   </div>
-
-  <%- include('../../partials/footer') %>
-</body>
-</html>
+</div>

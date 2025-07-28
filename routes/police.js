@@ -11,13 +11,21 @@ router.get('/management', isAuthenticated, policeController.getManagementData);
 router.get('/cases', isAuthenticated, (req, res) => res.redirect('/police/management'));
 router.get('/people', isAuthenticated, (req, res) => res.redirect('/police/management'));
 
+const checkStep = (step) => (req, res, next) => {
+    if (req.session.caseData && req.session.caseData.step >= step) {
+        next();
+    } else {
+        res.redirect('/police/cases/new/step1');
+    }
+};
+
 // Case Creation
 router.get('/cases/new/step1', isAuthenticated, policeController.getNewCaseStep1);
 router.post('/cases/new/step1', isAuthenticated, policeController.postNewCaseStep1);
-router.get('/cases/new/step2', isAuthenticated, policeController.getNewCaseStep2);
-router.post('/cases/new/step2', isAuthenticated, policeController.postNewCaseStep2);
-router.get('/cases/new/step3', isAuthenticated, policeController.getNewCaseStep3);
-router.post('/cases/new/confirm', isAuthenticated, policeController.postNewCaseConfirm);
+router.get('/cases/new/step2', isAuthenticated, checkStep(2), policeController.getNewCaseStep2);
+router.post('/cases/new/step2', isAuthenticated, checkStep(2), policeController.postNewCaseStep2);
+router.get('/cases/new/step3', isAuthenticated, checkStep(3), policeController.getNewCaseStep3);
+router.post('/cases/new/confirm', isAuthenticated, checkStep(3), policeController.postNewCaseConfirm);
 
 // Person
 router.get('/people/new', isAuthenticated, policeController.getNewPerson);

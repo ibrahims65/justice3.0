@@ -146,44 +146,41 @@ exports.getManagementData = async (req, res) => {
 };
 
 exports.getNewCaseStep1 = (req, res) => {
+    console.log('Session caseData:', req.session.caseData);
+    req.session.caseData = { step: 1 };
     res.render('police/case/step1', { user: req.user, req: req });
 };
 
-exports.postNewCaseStep1 = async (req, res) => {
-    const { name, email, dob } = req.body;
-    const person = await prisma.person.create({
-        data: {
-            name,
-            email,
-            dob: new Date(dob),
-        },
-    });
-    res.redirect(`/police/case/new/step2?personId=${person.id}`);
+exports.postNewCaseStep1 = (req, res) => {
+    console.log('Session caseData:', req.session.caseData);
+    req.session.caseData = { ...req.session.caseData, ...req.body, step: 2 };
+    res.redirect('/police/cases/new/step2');
 };
 
 exports.getNewCaseStep2 = async (req, res) => {
+    console.log('Session caseData:', req.session.caseData);
     const policeStations = await prisma.policeStation.findMany();
     res.render('police/case/step2', {
         user: req.user,
-        personId: req.query.personId,
+        caseData: req.session.caseData,
         policeStations,
         req: req,
     });
 };
 
 exports.postNewCaseStep2 = async (req, res) => {
-    const { personId, caseNumber, status, policeStationId } = req.body;
-    req.session.caseDetails = { personId, caseNumber, status, policeStationId };
+    console.log('Session caseData:', req.session.caseData);
+    req.session.caseData = { ...req.session.caseData, ...req.body, step: 3 };
     res.redirect('/police/cases/new/step3');
 };
 
 exports.getNewCaseStep3 = async (req, res) => {
-    const { personId, caseNumber, status, policeStationId } = req.session.caseDetails;
-    const person = await prisma.person.findUnique({ where: { id: parseInt(personId) } });
+    console.log('Session caseData:', req.session.caseData);
+    const { name, email, dob, caseNumber, status, policeStationId } = req.session.caseData;
     const policeStation = await prisma.policeStation.findUnique({ where: { id: parseInt(policeStationId) } });
     res.render('police/case/step3', {
         user: req.user,
-        person,
+        person: { name, email, dob },
         caseDetails: { caseNumber, status },
         policeStation,
         req: req,
@@ -191,10 +188,17 @@ exports.getNewCaseStep3 = async (req, res) => {
 };
 
 exports.postNewCaseConfirm = async (req, res) => {
-    const { personId, caseNumber, status, policeStationId } = req.session.caseDetails;
+    const { name, email, dob, caseNumber, status, policeStationId } = req.session.caseData;
+    const person = await prisma.person.create({
+        data: {
+            name,
+            email,
+            dob: new Date(dob),
+        },
+    });
     const booking = await prisma.booking.create({
         data: {
-            personId: parseInt(personId),
+            personId: person.id,
             policeStationId: parseInt(policeStationId),
             bookingDate: new Date(),
             status: 'Open',
@@ -212,7 +216,7 @@ exports.postNewCaseConfirm = async (req, res) => {
         where: { id: booking.id },
         data: { caseId: createdCase.id },
     });
-    delete req.session.caseDetails;
+    delete req.session.caseData;
     res.redirect('/police/management');
 };
 
