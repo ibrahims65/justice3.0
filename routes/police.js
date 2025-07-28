@@ -12,12 +12,16 @@ router.get('/cases', isAuthenticated, (req, res) => res.redirect('/police/manage
 router.get('/people', isAuthenticated, (req, res) => res.redirect('/police/management'));
 
 // Case Creation
-router.get('/cases/new', isAuthenticated, policeController.getNewCaseStep1);
-router.post('/cases/new', isAuthenticated, policeController.postNewCaseStep1);
+router.get('/cases/new/step1', isAuthenticated, policeController.getNewCaseStep1);
+router.post('/cases/new/step1', isAuthenticated, policeController.postNewCaseStep1);
 router.get('/cases/new/step2', isAuthenticated, policeController.getNewCaseStep2);
 router.post('/cases/new/step2', isAuthenticated, policeController.postNewCaseStep2);
+router.get('/cases/new/step3', isAuthenticated, policeController.getNewCaseStep3);
+router.post('/cases/new/confirm', isAuthenticated, policeController.postNewCaseConfirm);
 
 // Person
+router.get('/people/new', isAuthenticated, policeController.getNewPerson);
+router.post('/people/new', isAuthenticated, policeController.postNewPerson);
 router.get('/people/:id', isAuthenticated, policeController.getPerson);
 router.get('/people/:id/print', isAuthenticated, policeController.printPersonRecord);
 
@@ -27,6 +31,6 @@ router.get('/bookings/:id/edit', isAuthenticated, policeController.getEditBookin
 router.post('/bookings/:id/edit', isAuthenticated, policeController.postEditBooking);
 
 // Search
-router.post('/search', isAuthenticated, policeController.search);
+router.get('/search', isAuthenticated, policeController.search);
 
 module.exports = router;

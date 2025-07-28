@@ -173,6 +173,25 @@ exports.getNewCaseStep2 = async (req, res) => {
 
 exports.postNewCaseStep2 = async (req, res) => {
     const { personId, caseNumber, status, policeStationId } = req.body;
+    req.session.caseDetails = { personId, caseNumber, status, policeStationId };
+    res.redirect('/police/cases/new/step3');
+};
+
+exports.getNewCaseStep3 = async (req, res) => {
+    const { personId, caseNumber, status, policeStationId } = req.session.caseDetails;
+    const person = await prisma.person.findUnique({ where: { id: parseInt(personId) } });
+    const policeStation = await prisma.policeStation.findUnique({ where: { id: parseInt(policeStationId) } });
+    res.render('police/case/step3', {
+        user: req.user,
+        person,
+        caseDetails: { caseNumber, status },
+        policeStation,
+        req: req,
+    });
+};
+
+exports.postNewCaseConfirm = async (req, res) => {
+    const { personId, caseNumber, status, policeStationId } = req.session.caseDetails;
     const booking = await prisma.booking.create({
         data: {
             personId: parseInt(personId),
@@ -193,6 +212,7 @@ exports.postNewCaseStep2 = async (req, res) => {
         where: { id: booking.id },
         data: { caseId: createdCase.id },
     });
+    delete req.session.caseDetails;
     res.redirect('/police/management');
 };
 
@@ -254,7 +274,7 @@ exports.postEditBooking = async (req, res) => {
 };
 
 exports.search = async (req, res) => {
-    const { q } = req.body;
+    const { q } = req.query;
     const cases = await prisma.case.findMany({
         where: {
             OR: [
@@ -286,4 +306,20 @@ exports.printPersonRecord = async (req, res) => {
         },
     });
     res.render('police/print-record', { person, layout: false });
+};
+
+exports.getNewPerson = (req, res) => {
+    res.render('police/new-person', { user: req.user, req: req });
+};
+
+exports.postNewPerson = async (req, res) => {
+    const { name, email, dob } = req.body;
+    const person = await prisma.person.create({
+        data: {
+            name,
+            email,
+            dob: new Date(dob),
+        },
+    });
+    res.redirect('/police/management');
 };
