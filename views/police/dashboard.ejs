@@ -5,27 +5,10 @@
 
   <h1 class="text-2xl font-bold my-4">Police Dashboard</h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <%- include('../partials/card', { title: 'Overdue Bookings', count: overdueBookings }) %>
-    <%- include('../partials/card', { title: 'Alerts', data: alerts }) %>
-  </div>
-
-  <div class="mt-8">
-    <h2 class="text-xl font-bold">Recent Activity</h2>
-    <div class="bg-white p-4 rounded shadow mt-2">
-      <% if (recentActivity && recentActivity.length > 0) { %>
-        <ul>
-          <% recentActivity.forEach(activity => { %>
-            <li class="border-b py-2">
-              <span class="text-gray-500 text-sm">(<%= new Date(activity.createdAt).toLocaleString() %>)</span>
-              <p><%= activity.description %></p>
-            </li>
-          <% }) %>
-        </ul>
-      <% } else { %>
-        <p>No recent activity.</p>
-      <% } %>
-    </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <%- include('../partials/card', { title: 'Overdue Bookings', count: overdueBookings.length, data: overdueBookings.map(b => ({ message: `${b.person.name} - Case #${b.case.caseNumber}`})) }) %>
+    <%- include('../partials/card', { title: 'Alerts', count: alerts.length, data: alerts.map(a => ({ message: a.message })) }) %>
+    <%- include('../partials/card', { title: 'Recent Activity', count: recentActivity.length, data: recentActivity.map(b => ({ message: `${b.person.name} - Case #${b.case.caseNumber}`})) }) %>
   </div>
 </div>
 

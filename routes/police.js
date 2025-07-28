@@ -3,11 +3,11 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { isAuthenticated } = require('../middleware/auth');
-const policeDashboardController = require('../controllers/police/dashboard.controller');
+const { getDashboardData } = require('../controllers/policeController');
 const { check, validationResult } = require('express-validator');
 
 // Dashboard
-router.get('/dashboard', isAuthenticated, policeDashboardController.getDashboard);
+router.get('/dashboard', isAuthenticated, getDashboardData);
 
 // Person Selection/Creation
 router.get('/person/new', isAuthenticated, (req, res) => {
