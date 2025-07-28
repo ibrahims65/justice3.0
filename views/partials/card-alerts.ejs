@@ -1,0 +1,12 @@
+<div class="bg-white p-4 rounded shadow">
+  <h3>Alerts</h3>
+  <% if (alerts && alerts.length > 0) { %>
+    <ul>
+      <% alerts.forEach(alert => { %>
+        <li><%= alert.message %></li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No alerts.</p>
+  <% } %>
+</div>

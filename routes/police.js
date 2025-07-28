@@ -4,6 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { isAuthenticated } = require('../middleware/auth');
 const policeDashboardController = require('../controllers/police/dashboard.controller');
+const { check, validationResult } = require('express-validator');
 
 // Dashboard
 router.get('/dashboard', isAuthenticated, policeDashboardController.renderDashboard);
@@ -39,22 +40,32 @@ router.get('/case/new', isAuthenticated, (req, res) => {
   res.render('police/case-step', { personId: req.query.personId });
 });
 
-router.post('/case/new', isAuthenticated, async (req, res) => {
+router.post('/case/new', isAuthenticated, [
+    check('personId').isInt().withMessage('Person ID must be a number'),
+    check('caseNumber').isLength({ min: 1 }).withMessage('Case number is required'),
+    check('status').isLength({ min: 1 }).withMessage('Status is required'),
+    check('policeStationId').isInt().withMessage('Police station ID must be a number'),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).render('police/case-step', { errors: errors.array(), personId: req.body.personId });
+    }
+
     const { personId, caseNumber, status, policeStationId } = req.body;
     const booking = await prisma.booking.create({
         data: {
-        personId: parseInt(personId),
-        policeStationId: parseInt(policeStationId),
-        bookingDate: new Date(),
-        status: 'Open',
-        arrestingOfficerId: req.session.user.id,
+            personId: parseInt(personId),
+            policeStationId: parseInt(policeStationId),
+            bookingDate: new Date(),
+            status: 'Open',
+            arrestingOfficerId: req.session.user.id,
         },
     });
     const createdCase = await prisma.case.create({
         data: {
-        bookingId: booking.id,
-        caseNumber,
-        status,
+            bookingId: booking.id,
+            caseNumber,
+            status,
         },
     });
     await prisma.booking.update({

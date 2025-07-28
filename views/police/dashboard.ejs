@@ -2,39 +2,13 @@
   <%- include('../partials/header') %>
 
   <main class="p-6 space-y-6">
-    <section class="dashboard-section">
-      <h2 class="text-xl font-semibold mb-4">🔍 Search Records</h2>
-      <form action="/police/search" method="POST" class="space-y-4">
-        <input type="text" name="query" placeholder="Enter name or ID" class="w-full bg-slate-900 text-white border border-slate-700 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-md">Search</button>
-      </form>
-      <% if (results && results.length > 0) { %>
-        <table class="w-full text-left border-collapse mt-4">
-          <thead>
-            <tr class="bg-slate-700 text-slate-300">
-              <th class="px-4 py-2">Name</th>
-              <th class="px-4 py-2">Date</th>
-              <th class="px-4 py-2">Status</th>
-              <th class="px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% results.forEach(result => { %>
-              <tr class="border-b border-slate-700 hover:bg-slate-800">
-                <td class="px-4 py-2"><%= result.person.name %></td>
-                <td class="px-4 py-2"><%= result.bookingDate.toLocaleString() %></td>
-                <td class="px-4 py-2"><%= result.status %></td>
-                <td class="px-4 py-2">
-                  <a href="/police/booking/<%= result.id %>" class="text-blue-400 hover:underline">View</a>
-                </td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      <% } else if (typeof results !== 'undefined') { %>
-        <p class="text-slate-400">No search results found.</p>
-      <% } %>
-    </section>
+    <%- include('../partials/breadcrumbs', { path: req.path, lookup: {} }) %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <%- include('../partials/card-overdue', { title: 'Overdue', count: 0 }) %>
+      <%- include('../partials/card-new-bookings', { title: 'New Today', count: 0 }) %>
+      <%- include('../partials/card-search') %>
+      <%- include('../partials/card-alerts', { alerts: [] }) %>
+    </div>
 
     <section class="dashboard-section">
       <h2 class="text-xl font-semibold mb-4">📋 Recent Bookings</h2>
