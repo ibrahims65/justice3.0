@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <%- include('../../partials/head') %>
+  <%- include('../partials/head') %>
 </head>
 <body class="bg-gray-100">
-  <%- include('../../partials/navbar') %>
+  <%- include('../partials/navbar') %>
 
   <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <%- include('../../partials/breadcrumbs', { current: 'New Case - Step 1' }) %>
+    <%- include('../partials/breadcrumbs', { current: 'New Person' }) %>
 
     <div class="px-4 py-6 sm:px-0">
-      <h2 class="text-2xl font-bold text-gray-800 mb-8">New Case - Step 1: Person Details</h2>
+      <h2 class="text-2xl font-bold text-gray-800 mb-8">Register New Person</h2>
 
-      <%- include('../../partials/progress-bar', { progress: 33 }) %>
-
-      <form action="/police/cases/new/step1" method="POST">
+      <form action="/police/people/new" method="POST">
         <div class="bg-white shadow overflow-hidden sm:rounded-lg p-8">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
@@ -31,14 +29,13 @@
             </div>
           </div>
           <div class="mt-8 flex justify-end">
-            <a href="/police/management" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-4">Cancel</a>
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Next</button>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Register Person</button>
           </div>
         </div>
       </form>
     </div>
   </div>
 
-  <%- include('../../partials/footer') %>
+  <%- include('../partials/footer') %>
 </body>
 </html>

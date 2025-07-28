@@ -12,10 +12,10 @@
     <div class="px-4 py-6 sm:px-0">
       <div class="flex justify-between items-center mb-8">
         <h2 class="text-2xl font-bold text-gray-800">Case & Person Management</h2>
-        <a href="/police/cases/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create New Case</a>
+        <a href="/police/cases/new/step1" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create New Case</a>
       </div>
 
-      <form action="/police/search" method="POST" class="mb-8">
+      <form action="/police/search" method="GET" class="mb-8">
         <div class="flex items-center">
           <input type="text" name="q" placeholder="Search for cases, people..." class="w-full px-4 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500">
           <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r-md">Search</button>
