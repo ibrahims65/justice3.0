@@ -41,6 +41,10 @@ try {
     resave: false,
     saveUninitialized: true,
   }));
+
+  const { getBreadcrumbs } = require('./utils/breadcrumbs');
+  app.locals.getBreadcrumbs = getBreadcrumbs;
+
   console.log('✅ Middleware configured');
 } catch (err) {
   console.error('❌ Middleware setup failed:', err);
@@ -77,7 +81,11 @@ app.listen(PORT, () => {
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(err.status || 500).render('error', { message: err.message });
+  res.status(err.status || 500).render('error', {
+    message: err.message,
+    error: app.get('env') === 'development' ? err : {},
+    req: req,
+  });
 });
 
 module.exports = app;

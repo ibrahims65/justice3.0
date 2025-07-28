@@ -2,41 +2,53 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-exports.renderDashboard = async (req, res) => {
+exports.getDashboard = async (req, res) => {
   try {
-    const officer = req.session.user;
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-    const overdueBookings = await prisma.booking.findMany({
+    const overdueBookings = await prisma.booking.count({
       where: {
-        status: 'Open',
-        bookingDate: { lt: twentyFourHoursAgo },
+        status: 'Pending',
+        createdAt: {
+          lt: twentyFourHoursAgo,
+        },
       },
     });
 
-    const newBookings = await prisma.booking.findMany({
+    const alerts = await prisma.alert.findMany({
       where: {
-        bookingDate: { gte: twentyFourHoursAgo },
+        userId: req.user.id,
+        read: false,
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     });
 
-    const recentBookings = await prisma.booking.findMany({
-      where: { arrestingOfficerId: officer.id },
-      orderBy: { bookingDate: 'desc' },
-      take: 5,
-      include: { person: true, case: true },
+    const recentActivity = await prisma.activityLog.findMany({
+      where: {
+        userId: req.user.id,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 10,
     });
 
     res.render('police/dashboard', {
-      officer,
+      title: 'Police Dashboard',
+      user: req.user,
       overdueBookings,
-      newBookings,
-      recentBookings,
-      alerts: [], // Placeholder for future alerts
+      alerts,
+      recentActivity,
       req: req,
     });
-  } catch (err) {
-    console.error('Dashboard render error:', err);
-    res.status(500).send('Internal Server Error');
+  } catch (error) {
+    console.error(error);
+    res.render('error', {
+      message: 'Error loading police dashboard.',
+      error,
+      req: req,
+    });
   }
 };

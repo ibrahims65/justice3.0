@@ -7,32 +7,35 @@ const policeDashboardController = require('../controllers/police/dashboard.contr
 const { check, validationResult } = require('express-validator');
 
 // Dashboard
-router.get('/dashboard', isAuthenticated, policeDashboardController.renderDashboard);
+router.get('/dashboard', isAuthenticated, policeDashboardController.getDashboard);
 
 // Person Selection/Creation
 router.get('/person/new', isAuthenticated, (req, res) => {
   res.render('police/person-step');
 });
 
-router.post('/person/new', isAuthenticated, async (req, res) => {
-  const { name, email } = req.body;
-  if (name && email) {
-    const person = await prisma.person.create({
-      data: {
-        name,
-        email,
-        dob: new Date(),
-      },
+router.post('/person/new', isAuthenticated, [
+  check('name').notEmpty().withMessage('Name is required.'),
+  check('email').isEmail().withMessage('A valid email is required.'),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).render('police/person-step', {
+      errors: errors.array(),
+      name: req.body.name,
+      email: req.body.email,
     });
-    res.redirect(`/police/case/new?personId=${person.id}`);
-  } else {
-    const { personId } = req.body;
-    if (personId) {
-      res.redirect(`/police/case/new?personId=${personId}`);
-    } else {
-      res.redirect('/police/person/new');
-    }
   }
+
+  const { name, email } = req.body;
+  const person = await prisma.person.create({
+    data: {
+      name,
+      email,
+      dob: new Date(),
+    },
+  });
+  res.redirect(`/police/case/new?personId=${person.id}`);
 });
 
 // Case Creation
