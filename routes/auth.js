@@ -8,12 +8,7 @@ router.get('/login', (req, res) => {
   if (req.session.user) {
     return res.redirect('/dashboard');
   }
-
-  res.render('login', {
-    _csrf:       req.csrfToken(),
-    error_msg:   null,
-    success_msg: null
-  });
+  res.render('login', { error_msg: null });
 });
 
 // POST login credentials
@@ -22,45 +17,29 @@ router.post('/login', async (req, res) => {
 
   try {
     const user = await prisma.user.findUnique({
-      where:  { username },
-      include:{ role: true },
+      where:   { username },
+      include: { role: true },
     });
 
     if (!user) {
-      return res.render('login', {
-        _csrf:       req.csrfToken(),
-        error_msg:   'Invalid username or password.',
-        success_msg: null
-      });
+      return res.render('login', { error_msg: 'Invalid username or password.' });
     }
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-      return res.render('login', {
-        _csrf:       req.csrfToken(),
-        error_msg:   'Invalid username or password.',
-        success_msg: null
-      });
+      return res.render('login', { error_msg: 'Invalid username or password.' });
     }
 
     if (!user.role || !user.role.name) {
-      return res.render('login', {
-        _csrf:       req.csrfToken(),
-        error_msg:   'User role is missing.',
-        success_msg: null
-      });
+      return res.render('login', { error_msg: 'User role is missing.' });
     }
 
-    // Successful login → set session
     req.session.user = {
       id:       user.id,
       username: user.username,
       role:     user.role.name
     };
 
-    console.log('Logged in:', req.session.user);
-
-    // Redirect based on role
     switch (user.role.name) {
       case 'Police':
         return res.redirect('/police/dashboard');
@@ -73,20 +52,16 @@ router.post('/login', async (req, res) => {
       default:
         return res.redirect('/dashboard');
     }
+
   } catch (err) {
     console.error('Login error:', err);
-    return res.render('login', {
-      _csrf:       req.csrfToken(),
-      error_msg:   'Something went wrong. Please try again.',
-      success_msg: null
-    });
+    return res.render('login', { error_msg: 'Something went wrong. Please try again.' });
   }
 });
 
-// Optional logout route
+// GET logout
 router.get('/logout', (req, res) => {
   req.session.destroy(() => {
-    // you could flash a “Logged out successfully” message here
     res.redirect('/auth/login');
   });
 });
