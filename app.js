@@ -24,6 +24,8 @@ const app = express();
 try {
   const expressLayouts = require('express-ejs-layouts');
   app.use(expressLayouts);
+  app.set('layout extractScripts', true);
+  app.set('layout extractStyles', true);
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'ejs');
   console.log('✅ View engine configured');
