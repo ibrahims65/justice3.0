@@ -40,7 +40,7 @@ router.post('/login', async (req, res) => {
     req.session.user = {
       id: user.id,
       username: user.username,
-      role: user.role.name,
+      role: user.role,
     };
 
     console.log('Logged in:', req.session.user);
