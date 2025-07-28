@@ -1,23 +1,25 @@
 const express = require('express');
-const router  = express.Router();
-const bcrypt  = require('bcrypt');
-const prisma  = require('../lib/prisma');
+const bcrypt = require('bcrypt');
+const prisma = require('../lib/prisma');
 
-// GET login page
+const router = express.Router();
+
+// GET: Render login page
 router.get('/login', (req, res) => {
   if (req.session.user) {
     return res.redirect('/dashboard');
   }
+
   res.render('login', { error_msg: null });
 });
 
-// POST login credentials
+// POST: Handle login credentials
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
     const user = await prisma.user.findUnique({
-      where:   { username },
+      where: { username },
       include: { role: true },
     });
 
@@ -25,8 +27,8 @@ router.post('/login', async (req, res) => {
       return res.render('login', { error_msg: 'Invalid username or password.' });
     }
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return res.render('login', { error_msg: 'Invalid username or password.' });
     }
 
@@ -34,12 +36,16 @@ router.post('/login', async (req, res) => {
       return res.render('login', { error_msg: 'User role is missing.' });
     }
 
+    // Store user session
     req.session.user = {
-      id:       user.id,
+      id: user.id,
       username: user.username,
-      role:     user.role.name
+      role: user.role.name,
     };
 
+    console.log('Logged in:', req.session.user);
+
+    // Redirect based on role
     switch (user.role.name) {
       case 'Police':
         return res.redirect('/police/dashboard');
@@ -55,11 +61,11 @@ router.post('/login', async (req, res) => {
 
   } catch (err) {
     console.error('Login error:', err);
-    return res.render('login', { error_msg: 'Something went wrong. Please try again.' });
+    res.render('login', { error_msg: 'Something went wrong. Please try again.' });
   }
 });
 
-// GET logout
+// GET: Logout route
 router.get('/logout', (req, res) => {
   req.session.destroy(() => {
     res.redirect('/auth/login');
