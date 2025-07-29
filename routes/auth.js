@@ -38,23 +38,17 @@ router.post('/login', async (req, res) => {
 
     // Store user session
     req.session.user = user;
-    req.user = user;
+    req.user         = user;
+    console.log(`✔ Logged in: ${user.username} (${user.role.name})`);
 
-    console.log('Logged in:', req.session.user);
-
-    // Redirect based on role
-    switch (user.role.name) {
-      case 'Police':
-        return res.redirect('/police/dashboard');
-      case 'Prosecutor':
-        return res.redirect('/prosecutor/dashboard');
-      case 'Court':
-        return res.redirect('/court/dashboard');
-      case 'Corrections':
-        return res.redirect('/corrections/dashboard');
-      default:
-        return res.redirect('/dashboard');
+    // Role-based redirect
+    if (user.role.name === 'SuperAdmin') {
+      return res.redirect('/admin');
     }
+    if (user.role.name === 'Police') {
+      return res.redirect('/police/dashboard');
+    }
+    res.redirect('/');
 
   } catch (err) {
     console.error('Login error:', err);
