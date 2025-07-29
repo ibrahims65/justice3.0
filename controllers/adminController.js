@@ -1,8 +1,17 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-exports.getDashboard = (req, res) => {
-  res.render('admin/dashboard', { user: req.user });
+exports.getDashboard = async (req, res) => {
+  try {
+    const user = req.user || req.session.user;
+    if (!user) {
+      return res.status(403).send('Forbidden: No user context');
+    }
+    res.render('admin/dashboard', { user });
+  } catch (err) {
+    console.error('Admin dashboard error:', err);
+    res.status(500).send('Internal Server Error');
+  }
 };
 
 // Regions

@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const { ensureAuthenticated, ensureAdmin } = require('../middleware/auth');
 const adminController = require('../controllers/adminController');
-const { ensureAdmin } = require('../middleware/auth');
 
-router.use(ensureAdmin);
-
-router.get('/', adminController.getDashboard);
+router.get('/', ensureAuthenticated, ensureAdmin, adminController.getDashboard);
 
 // Regions
 router.get('/regions', adminController.getRegions);

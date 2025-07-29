@@ -7,12 +7,13 @@ const isAuthenticated = (req, res, next) => {
   }
 };
 
-const ensureAdmin = (req, res, next) => {
-  if (req.session.user && req.session.user.role && req.session.user.role.name === 'SuperAdmin') {
+function ensureAdmin(req, res, next) {
+  const user = req.user || req.session.user;
+  if (user && user.role && user.role.name === 'SuperAdmin') {
     return next();
   }
-  res.status(403).send('Forbidden');
-};
+  return res.status(403).send('Forbidden');
+}
 
 const checkRole = (roles) => {
   return (req, res, next) => {
