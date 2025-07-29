@@ -37,11 +37,8 @@ router.post('/login', async (req, res) => {
     }
 
     // Store user session
-    req.session.user = {
-      id: user.id,
-      username: user.username,
-      role: user.role,
-    };
+    req.session.user = user;
+    req.user = user;
 
     console.log('Logged in:', req.session.user);
 
