@@ -25,4 +25,7 @@ const checkRole = (roles) => {
   };
 };
 
+exports.ensureAuthenticated = isAuthenticated;
+exports.ensureAdmin = ensureAdmin;
+
 module.exports = { isAuthenticated, checkRole, ensureAdmin };
