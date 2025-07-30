@@ -1,7 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const session = require('express-session');
-const { isAuthenticated, checkRole } = require('../middleware/auth');
+const { ensureAuthenticated, checkRole } = require('../middleware/auth');
 
 const app = express();
 
@@ -13,11 +13,11 @@ app.use(
   })
 );
 
-app.get('/test/protected', isAuthenticated, (req, res) => {
+app.get('/test/protected', ensureAuthenticated, (req, res) => {
   res.send('Protected Route');
 });
 
-app.get('/test/police', isAuthenticated, checkRole(['Police']), (req, res) => {
+app.get('/test/police', ensureAuthenticated, checkRole(['Police']), (req, res) => {
   res.send('Police Dashboard');
 });
 
@@ -31,12 +31,7 @@ describe('Auth Middleware', () => {
   it('should return 403 if user does not have the correct role', () => {
     const req = {
       session: {
-        user: {
-          id: 1,
-          role: {
-            name: 'Prosecutor',
-          },
-        },
+        userId: 1
       },
     };
     const res = {
@@ -55,12 +50,7 @@ describe('Auth Middleware', () => {
   it('should call next if user has the correct role', () => {
     const req = {
       session: {
-        user: {
-          id: 1,
-          role: {
-            name: 'Police',
-          },
-        },
+        userId: 1
       },
     };
     const res = {

@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "export DATABASE_URL=\"postgresql://postgres:password@localhost:5432/justice3.0?schema=public\" && jest",
     "migrate": "npx cross-env NODE_OPTIONS='-r dotenv/config' prisma migrate dev",
-    "build:css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css"
+    "build:css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css",
+    "seed": "export DATABASE_URL=\"postgresql://postgres:password@localhost:5432/justice3.0?schema=public\" && node prisma/seed.js"
   },
   "repository": {
     "type": "git",
@@ -44,7 +45,9 @@
     "pdfkit-table": "^0.1.99",
     "pg": "^8.16.3",
     "tailwindcss": "^4.1.11",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "express-flash": "0.0.2",
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
