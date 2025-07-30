@@ -1,34 +1,34 @@
 const express = require('express');
 const router  = express.Router();
 const { ensureAuthenticated, ensureAdmin } = require('../middleware/auth');
-const adminController = require('../controllers/adminController');
+const { getDashboard, getRegions, getNewRegion, createRegion, getDistricts, getNewDistrict, createDistrict, getCities, getNewCity, createCity, getPoliceStations, getNewPoliceStation, createPoliceStation, getCourts, getNewCourt, createCourt } = require('../controllers/adminController');
 
 // Register the handler without invoking it
-router.get('/', ensureAuthenticated, ensureAdmin, adminController.getDashboard);
+router.get('/', ensureAuthenticated, ensureAdmin, getDashboard);
 
 // Regions
-router.get('/regions', adminController.getRegions);
-router.get('/regions/new', adminController.getNewRegion);
-router.post('/regions', adminController.createRegion);
+router.get('/regions', getRegions);
+router.get('/regions/new', getNewRegion);
+router.post('/regions', createRegion);
 
 // Districts
-router.get('/districts', adminController.getDistricts);
-router.get('/districts/new', adminController.getNewDistrict);
-router.post('/districts', adminController.createDistrict);
+router.get('/districts', getDistricts);
+router.get('/districts/new', getNewDistrict);
+router.post('/districts', createDistrict);
 
 // Cities
-router.get('/cities', adminController.getCities);
-router.get('/cities/new', adminController.getNewCity);
-router.post('/cities', adminController.createCity);
+router.get('/cities', getCities);
+router.get('/cities/new', getNewCity);
+router.post('/cities', createCity);
 
 // Police Stations
-router.get('/police-stations', adminController.getPoliceStations);
-router.get('/police-stations/new', adminController.getNewPoliceStation);
-router.post('/police-stations', adminController.createPoliceStation);
+router.get('/police-stations', getPoliceStations);
+router.get('/police-stations/new', getNewPoliceStation);
+router.post('/police-stations', createPoliceStation);
 
 // Courts
-router.get('/courts', adminController.getCourts);
-router.get('/courts/new', adminController.getNewCourt);
-router.post('/courts', adminController.createCourt);
+router.get('/courts', getCourts);
+router.get('/courts/new', getNewCourt);
+router.post('/courts', createCourt);
 
 module.exports = router;
