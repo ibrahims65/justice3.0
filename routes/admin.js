@@ -1,13 +1,13 @@
 const express = require('express');
 const router  = express.Router();
 const { ensureAuthenticated, ensureAdmin } = require('../middleware/auth');
-const { getDashboard } = require('../controllers/adminController');
+const adminController = require('../controllers/adminController');
 
 // Register the handler without invoking it
-router.get('/', ensureAuthenticated, ensureAdmin, getDashboard);
+router.get('/', ensureAuthenticated, ensureAdmin, adminController.getDashboard);
 
 // Regions
-router.get('/regions', require('../controllers/adminController').getRegions);
+router.get('/regions', adminController.getRegions);
 router.get('/regions/new', adminController.getNewRegion);
 router.post('/regions', adminController.createRegion);
 
