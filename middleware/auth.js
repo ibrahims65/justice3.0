@@ -1,31 +1,31 @@
-const isAuthenticated = (req, res, next) => {
-  if (req.session.user) {
-    req.user = req.session.user; // make user available to downstream routes
-    next();
-  } else {
-    res.redirect('/auth/login');
-  }
-};
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-function ensureAdmin(req, res, next) {
-  const user = req.user || req.session.user;
-  if (user && user.role && user.role.name === 'SuperAdmin') {
-    return next();
-  }
-  return res.status(403).send('Forbidden');
-}
-
-const checkRole = (roles) => {
-  return (req, res, next) => {
-    if (req.session.user && roles.map(r => r.toLowerCase()).includes(req.session.user.role.name.toLowerCase())) {
-      next();
-    } else {
-      res.status(403).send('Forbidden');
+module.exports = {
+    ensureAuthenticated: function(req, res, next) {
+        if (req.session.userId) {
+            return next();
+        }
+        res.redirect('/auth/login');
+    },
+    ensureAdmin: async function(req, res, next) {
+        if (req.session.userId) {
+            const user = await prisma.user.findUnique({ where: { id: req.session.userId }, include: { role: true } });
+            if (user && user.role.name === 'Admin') {
+                return next();
+            }
+        }
+        res.redirect('/login');
+    },
+    checkRole: function(roles) {
+        return async (req, res, next) => {
+            if (req.session.userId) {
+                const user = await prisma.user.findUnique({ where: { id: req.session.userId }, include: { role: true } });
+                if (user && roles.includes(user.role.name)) {
+                    return next();
+                }
+            }
+            res.status(403).send('Forbidden');
+        };
     }
-  };
 };
-
-exports.ensureAuthenticated = isAuthenticated;
-exports.ensureAdmin = ensureAdmin;
-
-module.exports = { isAuthenticated, checkRole, ensureAdmin };
