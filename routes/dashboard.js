@@ -5,10 +5,7 @@ const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
 router.get('/police', checkRole(['Police']), async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.user.id },
-    include: { role: true },
-  });
+  const user = req.session.user;
 
   const bookingsToday = await prisma.booking.count({
     where: {
@@ -132,10 +129,7 @@ router.get('/police', checkRole(['Police']), async (req, res) => {
 });
 
 router.get('/prosecutor', checkRole(['Prosecutor']), async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.user.id },
-    include: { role: true },
-  });
+  const user = req.session.user;
 
   const cases = await prisma.case.findMany({
     where: {
@@ -196,10 +190,7 @@ router.get('/prosecutor', checkRole(['Prosecutor']), async (req, res) => {
 });
 
 router.get('/court', checkRole(['Court']), async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.session.user.id },
-    include: { role: true },
-  });
+  const user = req.session.user;
 
   const hearings = await prisma.hearing.findMany({
     include: {
@@ -242,7 +233,7 @@ router.get('/', (req, res) => {
     return res.redirect('/auth/login');
   }
 
-  const role = req.session.user.role;
+  const role = req.session.user.role.name;
   switch (role) {
     case 'Police':
       return res.redirect('/police/dashboard');

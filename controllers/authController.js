@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 const bcrypt = require('bcryptjs');
 
 exports.getLogin = (req, res) => {
@@ -8,13 +7,18 @@ exports.getLogin = (req, res) => {
 
 exports.postLogin = async (req, res) => {
     const { username, password } = req.body;
-    const user = await prisma.user.findUnique({ where: { username } });
+    const user = await prisma.user.findUnique({
+        where: { username },
+        include: { role: true }
+    });
+
     if (user && bcrypt.compareSync(password, user.password)) {
         req.session.userId = user.id;
-        res.redirect('/dashboard');
+        req.session.user = user;
+        return res.redirect('/dashboard');
     } else {
         req.flash('error', 'Invalid username or password');
-        res.redirect('/login');
+        return res.redirect('/login');
     }
 };
 
