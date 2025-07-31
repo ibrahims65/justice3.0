@@ -1,7 +1,15 @@
 const request = require('supertest');
 const express = require('express');
 const session = require('express-session');
+const { mockDeep, mockReset } = require('jest-mock-extended');
 const { ensureAuthenticated, checkRole } = require('../middleware/auth');
+const prisma = require('../lib/prisma');
+
+jest.mock('../lib/prisma', () => mockDeep());
+
+beforeEach(() => {
+  mockReset(prisma);
+});
 
 const app = express();
 
@@ -28,10 +36,10 @@ describe('Auth Middleware', () => {
     expect(res.headers.location).toBe('/auth/login');
   });
 
-  it('should return 403 if user does not have the correct role', () => {
+  it('should return 403 if user does not have the correct role', async () => {
     const req = {
       session: {
-        userId: 1
+        userId: 1,
       },
     };
     const res = {
@@ -40,17 +48,19 @@ describe('Auth Middleware', () => {
     };
     const next = jest.fn();
 
-    checkRole(['Police'])(req, res, next);
+    prisma.user.findUnique.mockResolvedValue({ id: 1, role: { name: 'User' } });
+
+    await checkRole(['Police'])(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.send).toHaveBeenCalledWith('Forbidden');
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should call next if user has the correct role', () => {
+  it('should call next if user has the correct role', async () => {
     const req = {
       session: {
-        userId: 1
+        userId: 1,
       },
     };
     const res = {
@@ -59,7 +69,9 @@ describe('Auth Middleware', () => {
     };
     const next = jest.fn();
 
-    checkRole(['Police'])(req, res, next);
+    prisma.user.findUnique.mockResolvedValue({ id: 1, role: { name: 'Police' } });
+
+    await checkRole(['Police'])(req, res, next);
 
     expect(res.status).not.toHaveBeenCalled();
     expect(res.send).not.toHaveBeenCalled();
