@@ -1,7 +1,7 @@
 <h2>Victims</h2>
-<% if (case.victims && case.victims.length > 0) { %>
+<% if (caseData.victims && caseData.victims.length > 0) { %>
   <ul>
-    <% case.victims.forEach(v => { %>
+    <% caseData.victims.forEach(v => { %>
       <li><%= v.name %> — <%= v.statement || 'No statement' %></li>
     <% }) %>
   </ul>
