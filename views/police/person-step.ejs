@@ -21,7 +21,7 @@
   <button @click="open = !open">New Person</button>
 
   <div x-show="open">
-    <form action="/police/person/new" method="POST">
+    <form action="/police/people/new" method="POST">
       <% if (typeof errors !== 'undefined') { %>
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
           <ul>

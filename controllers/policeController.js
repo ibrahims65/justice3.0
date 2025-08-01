@@ -119,7 +119,11 @@ exports.getDashboardData = async (req, res, next) => {
 
 exports.getManagementData = async (req, res) => {
     try {
-        const officerId = req.user.id;
+        if (!req.session.user) {
+            req.flash('error', 'You must be logged in to view this page.');
+            return res.redirect('/login');
+        }
+        const officerId = req.session.user.id;
         const cases = await prisma.case.findMany({
             where: {
                 booking: {
@@ -142,7 +146,7 @@ exports.getManagementData = async (req, res) => {
         });
 
         res.render('police/management', {
-            user: req.user,
+            user: req.session.user,
             cases,
             people,
             req: req,
