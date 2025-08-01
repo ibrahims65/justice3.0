@@ -231,13 +231,21 @@ exports.postNewCaseConfirm = async (req, res, next) => {
 
         const caseNumber = generateCaseNumber(region.name, city.name);
 
-        const person = await prisma.person.create({
-        data: {
-            name,
-            email,
-            dob: new Date(dob),
-        },
-    });
+        // --- Find or Create Person Logic ---
+        let person = await prisma.person.findUnique({
+            where: { email: email },
+        });
+
+        if (!person) {
+            person = await prisma.person.create({
+                data: {
+                    name,
+                    email,
+                    dob: new Date(dob),
+                },
+            });
+        }
+        // --- End Find or Create Person Logic ---
     const booking = await prisma.booking.create({
         data: {
             personId: person.id,
