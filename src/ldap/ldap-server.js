@@ -85,6 +85,8 @@ server.search(BASE_DN, (req, res, next) => {
 // Add — wildcard handler for all DNs
 server.add('', (req, res, next) => {
   const dn = req.dn.toString();
+  console.log(`📥 Incoming ADD request for: ${dn}`);
+
   const attrs = req
     .toObject()
     .attributes.reduce((acc, a) => {
@@ -92,8 +94,14 @@ server.add('', (req, res, next) => {
       return acc;
     }, {});
 
+  console.log(`📦 Attributes received:`, attrs);
+
   db.addEntry(dn, attrs, err => {
-    if (err) return next(new ldap.EntryAlreadyExistsError(dn));
+    if (err) {
+      console.error(`❌ db.addEntry failed for ${dn}:`, err.message);
+      return next(new ldap.OperationsError(err.message));
+    }
+    console.log(`✅ Entry successfully added: ${dn}`);
     res.end();
     return next();
   });
