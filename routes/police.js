@@ -4,7 +4,7 @@ const { ensureAuthenticated } = require('../middleware/auth');
 const policeController = require('../controllers/policeController');
 
 // Dashboard
-router.get('/dashboard', ensureAuthenticated, policeController.getDashboardData);
+router.get('/', ensureAuthenticated, policeController.getPoliceDashboard);
 
 // Management
 router.get('/management', ensureAuthenticated, policeController.getManagementData);
@@ -41,6 +41,10 @@ router.post('/bookings/:id/edit', ensureAuthenticated, policeController.postEdit
 
 // Search
 router.get('/search', ensureAuthenticated, policeController.search);
+
+// Remand Request
+router.get('/remand/new/:bookingId', ensureAuthenticated, policeController.getNewRemandRequest);
+router.post('/remand/new/:bookingId', ensureAuthenticated, policeController.postNewRemandRequest);
 
 // Case Detail View
 router.get('/cases/:caseId/view', ensureAuthenticated, policeController.getCaseDetail);

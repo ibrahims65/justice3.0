@@ -24,6 +24,18 @@
               <% }) %>
             </select>
           </div>
+          <div>
+            <label for="charges" class="block text-sm font-medium text-gray-700">Charges</label>
+            <input type="text" name="charges" id="charges" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+          </div>
+          <div>
+            <label for="custodyExpiresAt" class="block text-sm font-medium text-gray-700">Custody Expires At</label>
+            <input type="datetime-local" name="custodyExpiresAt" id="custodyExpiresAt" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+          </div>
+          <div class="md:col-span-2">
+            <label for="officerNotes" class="block text-sm font-medium text-gray-700">Officer Notes</label>
+            <textarea name="officerNotes" id="officerNotes" rows="4" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
+          </div>
         </div>
         <div class="mt-8 flex justify-between">
           <a href="/police/cases/new/step1" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Back</a>

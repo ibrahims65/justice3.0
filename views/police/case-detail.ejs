@@ -1,45 +1,69 @@
 <%- include('../partials/header') %>
 
-<script>const CASE_ID = <%= caseData.id %>;</script>
-<script>window.labels = <%- JSON.stringify(labels) %>;</script>
-<script>window.icons  = <%- JSON.stringify(icons) %>;</script>
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">Case #<%= caseData.caseNumber %></h1>
+    <p class="text-gray-600 mb-8">Status: <%= caseData.status %></p>
 
-<section class="cards-container">
-  <div class="cards-grid">
-    <% Object.keys(counts).forEach(mod => { %>
-      <div
-        class="card"
-        tabindex="0"
-        x-data
-        @click="openSlideOver('<%= mod %>')"
-        @keydown.enter="openSlideOver('<%= mod %>')"
-      >
-        <i :class="`fas fa-${icons[mod]} fa-2x`"></i>
-        <h3><%= labels[mod] %></h3>
-        <span class="badge"><%= counts[mod] %></span>
-        <button class="manage-btn">Manage</button>
-      </div>
-    <% }) %>
-  </div>
-</section>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Sidebar with Navigation Cards -->
+        <div class="md:col-span-1">
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <h3 class="text-lg font-bold mb-4">Case Modules</h3>
+                <nav class="space-y-2">
+                    <% Object.keys(counts).forEach(mod => { %>
+                        <a href="/police/cases/<%= caseData.id %>/view?module=<%= mod %>"
+                           class="flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium
+                                  <%= module === mod ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100' %>">
+                            <span class="flex items-center">
+                                <i class="fas <%= icons[mod] %> w-6 text-center mr-3"></i>
+                                <%= labels[mod] %>
+                            </span>
+                            <span class="px-2 py-1 text-xs font-bold leading-none text-white <%= module === mod ? 'bg-blue-600' : 'bg-gray-400' %> rounded-full">
+                                <%= counts[mod] %>
+                            </span>
+                        </a>
+                    <% }) %>
+                </nav>
+            </div>
+        </div>
 
-<div
-  id="slideOver"
-  class="slide-over"
-  x-data="{ open: false, module: '' }"
-  x-show="open"
-  @keydown.window.escape="closeSlideOver()"
-  x-cloak
->
-  <div class="backdrop" @click="closeSlideOver()"></div>
-  <div class="panel"
-       :class="{ 'enter': open, 'leave': !open }"
-  >
-    <button class="close-btn" @click="closeSlideOver()">×</button>
-    <h2 x-text="labels[module]"></h2>
-    <div id="moduleContent"></div>
-  </div>
+        <!-- Main Content Area -->
+        <div class="md:col-span-3">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <% if (module === 'evidence') { %>
+                    <%- include('../partials/evidence-list', { case: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Evidence</h3>
+                    <%- include('../partials/evidence-form', { case: caseData }) %>
+                <% } else if (module === 'investigations') { %>
+                    <%- include('../partials/investigations-list', { case: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Investigation</h3>
+                    <%- include('../partials/investigations-form', { case: caseData }) %>
+                <% } else if (module === 'victims') { %>
+                    <%- include('../partials/victims-list', { case: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Victim</h3>
+                    <%- include('../partials/victim-form', { case: caseData }) %>
+                <% } else if (module === 'witnesses') { %>
+                    <%- include('../partials/witnesses-list', { case: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Witness</h3>
+                    <%- include('../partials/witness-form', { case: caseData }) %>
+                <% } else if (module === 'hearings') { %>
+                    <%- include('../partials/hearings-list', { case: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Hearing</h3>
+                    <%- include('../partials/hearing-form', { case: caseData }) %>
+                <% } else if (module === 'warrants') { %>
+                    <%- include('../partials/warrants-list', { case: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Warrant</h3>
+                    <%- include('../partials/warrants-form', { case: caseData }) %>
+                <% } %>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script src="/js/cards.js"></script>
 <%- include('../partials/footer') %>

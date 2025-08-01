@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const { generateCaseNumber } = require('../utils/caseNumber');
 const prisma = new PrismaClient();
 
-exports.getDashboardData = async (req, res, next) => {
+exports.getPoliceDashboard = async (req, res, next) => {
     try {
         const sessionUser = req.session.user;
         if (!sessionUser || !sessionUser.id) {
@@ -22,10 +22,32 @@ exports.getDashboardData = async (req, res, next) => {
             },
         });
 
+        const recentBookings = await prisma.booking.findMany({
+            where: { arrestingOfficerId: userId },
+            orderBy: { bookingDate: 'desc' },
+            take: 5,
+            include: { person: true, case: true },
+        });
+
+        const now = new Date();
+        const twentyFourHoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        const expiringCustody = await prisma.booking.findMany({
+            where: {
+                arrestingOfficerId: userId,
+                custodyExpiresAt: {
+                    gte: now,
+                    lte: twentyFourHoursFromNow,
+                },
+            },
+            include: { person: true },
+        });
+
         res.render('police/police_dashboard', {
             user: sessionUser,
             caseCount,
             personCount,
+            recentBookings,
+            expiringCustody,
             req: req,
         });
     } catch (err) {
@@ -173,20 +195,27 @@ exports.postNewCaseConfirm = async (req, res, next) => {
         const caseNumber = generateCaseNumber(region.name, city.name);
 
         // --- Find or Create Person Logic ---
-        let person = await prisma.person.findUnique({
+        const { name, email, dob, phone, address, photoUrl } = req.session.caseData;
+        const person = await prisma.person.upsert({
             where: { email: email },
+            update: {
+                name,
+                dob: new Date(dob),
+                phone,
+                address,
+                photoUrl,
+            },
+            create: {
+                name,
+                email,
+                dob: new Date(dob),
+                phone,
+                address,
+                photoUrl,
+            },
         });
-
-        if (!person) {
-            person = await prisma.person.create({
-                data: {
-                    name,
-                    email,
-                    dob: new Date(dob),
-                },
-            });
-        }
         // --- End Find or Create Person Logic ---
+    const { charges, officerNotes, custodyExpiresAt } = req.session.caseData;
     const booking = await prisma.booking.create({
         data: {
             personId: person.id,
@@ -194,6 +223,9 @@ exports.postNewCaseConfirm = async (req, res, next) => {
             bookingDate: new Date(),
             status: 'Open',
             arrestingOfficerId: req.session.user.id,
+            charges,
+            officerNotes,
+            custodyExpiresAt: custodyExpiresAt ? new Date(custodyExpiresAt) : null,
         },
     });
     const createdCase = await prisma.case.create({
@@ -213,6 +245,38 @@ exports.postNewCaseConfirm = async (req, res, next) => {
     });
     delete req.session.caseData;
     res.redirect('/police/management');
+    } catch (error) {
+        next(error);
+    }
+};
+
+// --- Remand Request Handlers ---
+exports.getNewRemandRequest = async (req, res, next) => {
+    try {
+        const booking = await prisma.booking.findUnique({
+            where: { id: parseInt(req.params.bookingId) },
+            include: { person: true },
+        });
+        res.render('police/new-remand', { booking, user: req.session.user, req });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postNewRemandRequest = async (req, res, next) => {
+    try {
+        const { reason, requestedDays } = req.body;
+        await prisma.remandRequest.create({
+            data: {
+                bookingId: parseInt(req.params.bookingId),
+                requestedBy: req.session.user.username,
+                reason,
+                requestedDays: parseInt(requestedDays),
+                status: 'pending',
+            },
+        });
+        req.flash('success', 'Remand request submitted successfully.');
+        res.redirect('/police');
     } catch (error) {
         next(error);
     }
@@ -574,6 +638,7 @@ exports.getCaseDetail = async (req, res, next) => {
             icons,
             user: req.session.user,
             req,
+            module: req.query.module || 'evidence', // Default to evidence
         });
     } catch (error) {
         next(error);
