@@ -82,9 +82,9 @@ server.search(BASE_DN, (req, res, next) => {
   });
 });
 
-// Add
-server.add(BASE_DN, (req, res, next) => {
-  const dn    = req.dn.toString();
+// Add — now accepts any DN
+server.add((req, res, next) => {
+  const dn = req.dn.toString();
   const attrs = req
     .toObject()
     .attributes.reduce((acc, a) => {
