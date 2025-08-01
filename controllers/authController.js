@@ -29,12 +29,14 @@ exports.postRegister = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Default new users to the 'Police' role (roleId: 2 from seed)
+    // Default new users to the 'Police' role
     await prisma.user.create({
       data: {
         username,
         password: hashedPassword,
-        roleId: 2,
+        role: {
+            connect: { name: 'Police' },
+        },
       },
     });
 
