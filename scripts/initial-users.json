@@ -1,0 +1,37 @@
+[
+  {
+    "username": "policetestuser",
+    "cn": "Police Test User",
+    "sn": "User",
+    "userPassword": "test123",
+    "memberOf": "cn=Police,ou=groups,dc=justice,dc=local"
+  },
+  {
+    "username": "superadmin",
+    "cn": "Super Admin",
+    "sn": "Admin",
+    "userPassword": "test123",
+    "memberOf": "cn=SuperAdmin,ou=groups,dc=justice,dc=local"
+  },
+  {
+    "username": "prosecutortestuser",
+    "cn": "Prosecutor Test User",
+    "sn": "User",
+    "userPassword": "test123",
+    "memberOf": "cn=Prosecutor,ou=groups,dc=justice,dc=local"
+  },
+  {
+    "username": "courttestuser",
+    "cn": "Court Test User",
+    "sn": "User",
+    "userPassword": "test123",
+    "memberOf": "cn=Court,ou=groups,dc=justice,dc=local"
+  },
+  {
+    "username": "correctiontestuser",
+    "cn": "Corrections Test User",
+    "sn": "User",
+    "userPassword": "test123",
+    "memberOf": "cn=Corrections,ou=groups,dc=justice,dc=local"
+  }
+]

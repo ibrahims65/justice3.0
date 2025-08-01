@@ -252,16 +252,16 @@ model LegalRepresentation {
   updatedAt       DateTime    @updatedAt
 }
 
-model User {
-  id              Int              @id @default(autoincrement())
-  username        String           @unique
-  password        String
-  roleId          Int
-  role            Role             @relation(fields: [roleId], references: [id])
-}
+// model User {
+//   id              Int              @id @default(autoincrement())
+//   username        String           @unique
+//   password        String
+//   roleId          Int
+//   role            Role             @relation(fields: [roleId], references: [id])
+// }
 
-model Role {
-  id              Int              @id @default(autoincrement())
-  name            String           @unique
-  users           User[]
-}
+// model Role {
+//   id              Int              @id @default(autoincrement())
+//   name            String           @unique
+//   users           User[]
+// }
