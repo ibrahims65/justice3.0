@@ -638,6 +638,42 @@ const caseModules = {
     warrants: { label: 'Warrants', icon: 'fa-file-alt' },
     charges: { label: 'Charges', icon: 'fa-file-invoice-dollar' },
     affiliations: { label: 'Affiliations', icon: 'fa-sitemap' },
+    legalReps: { label: 'Legal Representation', icon: 'fa-balance-scale' },
+};
+
+exports.getLegalRepsList = async (req, res, next) => {
+    try {
+        const legalReps = await prisma.legalRepresentation.findMany({
+            where: { caseId: parseInt(req.params.caseId) },
+        });
+        res.json(legalReps);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postLegalReps = async (req, res, next) => {
+    try {
+        const { lawyerName, firm, roleType, contactInfo, startDate, endDate, documentType, caseOutcome } = req.body;
+        const documentUpload = req.file ? `/uploads/${req.file.filename}` : null;
+        await prisma.legalRepresentation.create({
+            data: {
+                caseId: parseInt(req.params.caseId),
+                lawyerName,
+                firm,
+                roleType,
+                contactInfo,
+                startDate: new Date(startDate),
+                endDate: endDate ? new Date(endDate) : null,
+                documentUpload,
+                documentType,
+                caseOutcome,
+            },
+        });
+        res.redirect(`/police/cases/${req.params.caseId}/view?module=legalReps`);
+    } catch (error) {
+        next(error);
+    }
 };
 
 exports.getChargesList = async (req, res, next) => {

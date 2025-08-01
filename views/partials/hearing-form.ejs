@@ -1,9 +1,12 @@
-<form action="/police/cases/<%= caseData.id %>/hearings" method="POST">
+<div class="subform-section">
+    <h4>Add Hearing</h4>
+    <form action="/police/cases/<%= caseData.id %>/hearings" method="POST" class="space-y-4">
   <input type="datetime-local" name="hearingDate">
   <input type="text" name="verdict" placeholder="Verdict">
   <select name="courtId">
     <!-- This should be populated from the database -->
     <option value="1">Court 1</option>
   </select>
-  <button type="submit">Add Hearing</button>
-</form>
+  <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Add Hearing</button>
+    </form>
+</div>

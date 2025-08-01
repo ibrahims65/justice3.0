@@ -52,3 +52,29 @@
   background: none; border: none; font-size: 1.5rem;
   cursor: pointer;
 }
+
+/* New Styles */
+input, select, textarea {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 4px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+.subform-section {
+  background: #f8f9fa;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.subform-section h4 {
+  margin-top: 0;
+}

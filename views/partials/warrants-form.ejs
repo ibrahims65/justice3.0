@@ -1,6 +1,9 @@
-<form action="/police/cases/<%= caseData.id %>/warrants" method="POST">
+<div class="subform-section">
+    <h4>Add Warrant</h4>
+    <form action="/police/cases/<%= caseData.id %>/warrants" method="POST" class="space-y-4">
   <input type="text" name="status" placeholder="Status">
   <textarea name="details" placeholder="Details"></textarea>
   <input type="datetime-local" name="expiresAt">
-  <button type="submit">Add Warrant</button>
-</form>
+  <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Add Warrant</button>
+    </form>
+</div>
