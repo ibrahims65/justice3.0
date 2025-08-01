@@ -92,6 +92,7 @@ try {
   app.use('/warrants', require('./routes/warrants'));
   app.use('/api/search', require('./routes/api/search.routes'));
   app.use('/api/bookings', require('./routes/api/bookings'));
+  app.use('/api/admin', require('./routes/api/admin'));
   app.use('/admin', require('./routes/admin'));
 
   console.log('✅ Routes registered');
