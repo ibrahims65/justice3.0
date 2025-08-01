@@ -38,7 +38,9 @@ try {
   app.use(express.urlencoded({ extended: false }));
 
   // initialize cookie-parser with your session secret
-  app.use(cookieParser(process.env.SESSION_SECRET || 'justice-secret'));
+  // app.use(cookieParser(process.env.SESSION_SECRET || 'justice-secret'));
+  app.use(cookieParser()); // no secret
+
 
   // session must come before flash
   app.use(session({
@@ -53,6 +55,12 @@ try {
       maxAge: 1000 * 60 * 60  // ⏱️ 1 hour
     }
   }));
+
+  app.get('/test-session', (req, res) => {
+  req.session.foo = 'bar';
+  res.send('Session set');
+});
+
 
   // flash for one-time messages
   app.use(flash());
