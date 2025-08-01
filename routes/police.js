@@ -34,6 +34,7 @@ router.get('/people/:id', ensureAuthenticated, policeController.getPerson);
 router.get('/people/:id/print', ensureAuthenticated, policeController.printPersonRecord);
 
 // Booking
+router.get('/bookings', ensureAuthenticated, policeController.listBookings); // Added index route
 router.get('/bookings/:id', ensureAuthenticated, policeController.getBooking);
 router.get('/bookings/:id/edit', ensureAuthenticated, policeController.getEditBooking);
 router.post('/bookings/:id/edit', ensureAuthenticated, policeController.postEditBooking);

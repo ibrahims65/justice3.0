@@ -1,43 +1,41 @@
-<link rel="stylesheet" href="/node_modules/datatables.net-dt/css/jquery.dataTables.css">
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-  <%- include('../partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
   <div class="px-4 py-6 sm:px-0">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-bold text-gray-800">Bookings</h2>
-      <a href="/people/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create Booking</a>
+      <h2 class="text-2xl font-bold text-gray-800">All Bookings</h2>
+      <a href="/police/cases/new/step1" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create New Case</a>
     </div>
 
     <div class="bg-white rounded-lg shadow-md p-6">
       <% if (bookings.length > 0) { %>
-        <table id="bookingsTable" class="w-full text-left">
-          <thead>
-            <tr>
-              <th class="py-2">Booking ID</th>
-              <th class="py-2">Person</th>
-              <th class="py-2">Booking Date</th>
-              <th class="py-2">Status</th>
-              <th class="py-2">Remand Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% bookings.forEach(booking => { %>
-              <tr class="border-b border-gray-200">
-                <td class="py-2"><%= booking.id %></td>
-                <td class="py-2">
-                  <a href="/police/people/<%= booking.person.id %>" class="text-blue-500 hover:underline"><%= booking.person.name %></a>
-                </td>
-                <td class="py-2"><%= new Date(booking.bookingDate).toLocaleDateString() %></td>
-                <td class="py-2"><%= booking.status %></td>
-                <td class="py-2">
-                  <% if (booking.remandRequests.length > 0) { %>
-                    <%= booking.remandRequests[booking.remandRequests.length - 1].status %>
-                  <% } else { %>
-                    N/A
-                  <% } %>
-                </td>
-              </tr>
-            <% }) %>
-          </tbody>
+        <table class="min-w-full table-auto">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">Case Number</th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">Person</th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">Booking Date</th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300"></th>
+                </tr>
+            </thead>
+            <tbody class="bg-white">
+                <% bookings.forEach(booking => { %>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"><%= booking.case ? booking.case.caseNumber : 'N/A' %></td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <a href="/police/people/<%= booking.person.id %>" class="text-blue-500 hover:underline"><%= booking.person.name %></a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200"><%= new Date(booking.bookingDate).toLocaleDateString() %></td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                <%= booking.status %>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+                            <a href="/police/bookings/<%= booking.id %>" class="text-indigo-600 hover:text-indigo-900">View Details</a>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
         </table>
       <% } else { %>
         <p>No bookings found.</p>
@@ -45,10 +43,3 @@
     </div>
   </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script src="/node_modules/datatables.net-dt/js/jquery.dataTables.js"></script>
-<script>
-  $(document).ready(function() {
-    $('#bookingsTable').DataTable();
-  });
-</script>

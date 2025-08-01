@@ -234,6 +234,28 @@ exports.postNewCaseConfirm = async (req, res) => {
     res.redirect('/police/management');
 };
 
+exports.listBookings = async (req, res) => {
+    try {
+        const bookings = await prisma.booking.findMany({
+            include: {
+                person: true,
+                case: true,
+            },
+            orderBy: {
+                bookingDate: 'desc',
+            },
+        });
+        res.render('police/bookings', {
+            user: req.user,
+            bookings,
+            req: req,
+        });
+    } catch (err) {
+        console.error('Error listing bookings:', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
 exports.getPerson = async (req, res) => {
     const person = await prisma.person.findUnique({
         where: { id: parseInt(req.params.id) },
