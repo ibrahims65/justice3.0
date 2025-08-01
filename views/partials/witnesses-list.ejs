@@ -1,7 +1,7 @@
 <h2>Witnesses</h2>
-<% if (booking.case.witnesses && booking.case.witnesses.length > 0) { %>
+<% if (case.witnesses && case.witnesses.length > 0) { %>
   <ul>
-    <% booking.case.witnesses.forEach(w => { %>
+    <% case.witnesses.forEach(w => { %>
       <li><%= w.name %> — <%= w.statement || 'No statement' %></li>
     <% }) %>
   </ul>

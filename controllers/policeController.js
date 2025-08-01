@@ -406,3 +406,235 @@ exports.postNewPerson = async (req, res) => {
     });
     res.redirect('/police/management');
 };
+
+// --- Case Detail Module Handlers ---
+
+// Evidence
+exports.getEvidenceList = async (req, res, next) => {
+    try {
+        const evidence = await prisma.evidence.findMany({
+            where: { caseId: parseInt(req.params.caseId) },
+        });
+        res.json(evidence);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postEvidence = async (req, res, next) => {
+    try {
+        const { evidenceType, description } = req.body;
+        await prisma.evidence.create({
+            data: {
+                caseId: parseInt(req.params.caseId),
+                evidenceType,
+                description,
+                fileUrl: '', // Placeholder
+            },
+        });
+        res.redirect(`/police/cases/${req.params.caseId}/view`);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Investigations
+exports.getInvestigationsList = async (req, res, next) => {
+    try {
+        const investigations = await prisma.investigation.findMany({
+            where: { caseId: parseInt(req.params.caseId) },
+        });
+        res.json(investigations);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postInvestigations = async (req, res, next) => {
+    try {
+        const { investigatorName, investigatorBadgeNumber, investigatorRank, details } = req.body;
+        await prisma.investigation.create({
+            data: {
+                caseId: parseInt(req.params.caseId),
+                investigatorName,
+                investigatorBadgeNumber,
+                investigatorRank,
+                details,
+            },
+        });
+        res.redirect(`/police/cases/${req.params.caseId}/view`);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Victims
+exports.getVictimsList = async (req, res, next) => {
+    try {
+        const victims = await prisma.victim.findMany({
+            where: { caseId: parseInt(req.params.caseId) },
+        });
+        res.json(victims);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postVictims = async (req, res, next) => {
+    try {
+        const { name, statement } = req.body;
+        await prisma.victim.create({
+            data: {
+                caseId: parseInt(req.params.caseId),
+                name,
+                statement,
+                dob: new Date(), // Placeholder
+            },
+        });
+        res.redirect(`/police/cases/${req.params.caseId}/view`);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Witnesses
+exports.getWitnessesList = async (req, res, next) => {
+    try {
+        const witnesses = await prisma.witness.findMany({
+            where: { caseId: parseInt(req.params.caseId) },
+        });
+        res.json(witnesses);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postWitnesses = async (req, res, next) => {
+    try {
+        const { name, statement } = req.body;
+        await prisma.witness.create({
+            data: {
+                caseId: parseInt(req.params.caseId),
+                name,
+                statement,
+            },
+        });
+        res.redirect(`/police/cases/${req.params.caseId}/view`);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Hearings
+exports.getHearingsList = async (req, res, next) => {
+    try {
+        const hearings = await prisma.hearing.findMany({
+            where: { caseId: parseInt(req.params.caseId) },
+        });
+        res.json(hearings);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postHearings = async (req, res, next) => {
+    try {
+        const { hearingDate, verdict, courtId } = req.body;
+        await prisma.hearing.create({
+            data: {
+                caseId: parseInt(req.params.caseId),
+                hearingDate: new Date(hearingDate),
+                verdict,
+                courtId: parseInt(courtId),
+            },
+        });
+        res.redirect(`/police/cases/${req.params.caseId}/view`);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Warrants
+exports.getWarrantsList = async (req, res, next) => {
+    try {
+        const warrants = await prisma.warrant.findMany({
+            where: { caseId: parseInt(req.params.caseId) },
+        });
+        res.json(warrants);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postWarrants = async (req, res, next) => {
+    try {
+        const { status, details, expiresAt } = req.body;
+        await prisma.warrant.create({
+            data: {
+                caseId: parseInt(req.params.caseId),
+                status,
+                details,
+                expiresAt: new Date(expiresAt),
+            },
+        });
+        res.redirect(`/police/cases/${req.params.caseId}/view`);
+    } catch (error) {
+        next(error);
+    }
+};
+
+const caseModules = {
+    evidence: { label: 'Evidence', icon: 'fa-box' },
+    investigations: { label: 'Investigations', icon: 'fa-search' },
+    victims: { label: 'Victims', icon: 'fa-user-shield' },
+    witnesses: { label: 'Witnesses', icon: 'fa-users' },
+    hearings: { label: 'Hearings', icon: 'fa-gavel' },
+    warrants: { label: 'Warrants', icon: 'fa-file-alt' },
+};
+
+exports.getCaseDetail = async (req, res, next) => {
+    try {
+        const caseId = parseInt(req.params.caseId);
+        const caseData = await prisma.case.findUnique({
+            where: { id: caseId },
+            include: {
+                evidence: true,
+                investigations: true,
+                victims: true,
+                witnesses: true,
+                hearings: true,
+                warrants: true,
+            },
+        });
+
+        if (!caseData) {
+            return res.status(404).send('Case not found');
+        }
+
+        const counts = Object.keys(caseModules).reduce((acc, mod) => {
+            acc[mod] = caseData[mod] ? caseData[mod].length : 0;
+            return acc;
+        }, {});
+
+        const labels = Object.keys(caseModules).reduce((acc, mod) => {
+            acc[mod] = caseModules[mod].label;
+            return acc;
+        }, {});
+
+        const icons = Object.keys(caseModules).reduce((acc, mod) => {
+            acc[mod] = caseModules[mod].icon;
+            return acc;
+        }, {});
+
+        res.render('police/case-detail', {
+            case: caseData,
+            counts,
+            labels,
+            icons,
+            user: req.session.user,
+            req,
+        });
+    } catch (error) {
+        next(error);
+    }
+};

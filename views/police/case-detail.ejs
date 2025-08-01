@@ -1,0 +1,45 @@
+<%- include('../partials/header') %>
+
+<script>const CASE_ID = <%= case.id %>;</script>
+<script>window.labels = <%- JSON.stringify(labels) %>;</script>
+<script>window.icons  = <%- JSON.stringify(icons) %>;</script>
+
+<section class="cards-container">
+  <div class="cards-grid">
+    <% Object.keys(counts).forEach(mod => { %>
+      <div
+        class="card"
+        tabindex="0"
+        x-data
+        @click="openSlideOver('<%= mod %>')"
+        @keydown.enter="openSlideOver('<%= mod %>')"
+      >
+        <i :class="`fas fa-${icons[mod]} fa-2x`"></i>
+        <h3><%= labels[mod] %></h3>
+        <span class="badge"><%= counts[mod] %></span>
+        <button class="manage-btn">Manage</button>
+      </div>
+    <% }) %>
+  </div>
+</section>
+
+<div
+  id="slideOver"
+  class="slide-over"
+  x-data="{ open: false, module: '' }"
+  x-show="open"
+  @keydown.window.escape="closeSlideOver()"
+  x-cloak
+>
+  <div class="backdrop" @click="closeSlideOver()"></div>
+  <div class="panel"
+       :class="{ 'enter': open, 'leave': !open }"
+  >
+    <button class="close-btn" @click="closeSlideOver()">×</button>
+    <h2 x-text="labels[module]"></h2>
+    <div id="moduleContent"></div>
+  </div>
+</div>
+
+<script src="/js/cards.js"></script>
+<%- include('../partials/footer') %>

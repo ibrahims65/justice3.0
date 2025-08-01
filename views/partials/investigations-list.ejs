@@ -1,0 +1,10 @@
+<h2>Investigations</h2>
+<% if (case.investigations && case.investigations.length > 0) { %>
+  <ul>
+    <% case.investigations.forEach(i => { %>
+      <li><%= i.investigatorName %>: <%= i.details %></li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <p>No investigations added yet.</p>
+<% } %>
