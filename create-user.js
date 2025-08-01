@@ -36,9 +36,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var client_1 = require("@prisma/client");
 var bcrypt = require("bcrypt");
-var prisma = new client_1.PrismaClient();
+var prisma = require("../lib/prisma");
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         var hashedPassword;
