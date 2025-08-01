@@ -88,16 +88,24 @@ async function getBookingStatusChart(officerId) {
   };
 }
 
-exports.getDashboardData = async (req, res) => {
+exports.getDashboardData = async (req, res, next) => {
   try {
-    const officer = req.user;
-    const stats = await getDashboardStats(officer.id);
-    const expiringCustody = await getExpiringCustody(officer.id);
-    const userBookings = await getUserBookings(officer.id);
-    const bookingStatusData = await getBookingStatusChart(officer.id);
+    // guard: did we actually log in and set req.session.user?
+    const sessionUser = req.session.user;
+    if (!sessionUser || !sessionUser.id) {
+      req.flash('error', 'Please log in to view the dashboard');
+      return res.redirect('/login');
+    }
+
+    const userId = sessionUser.id;
+
+    const stats = await getDashboardStats(userId);
+    const expiringCustody = await getExpiringCustody(userId);
+    const userBookings = await getUserBookings(userId);
+    const bookingStatusData = await getBookingStatusChart(userId);
 
     res.render('police/police_dashboard', {
-      user: officer,
+      user: sessionUser,
       stats,
       expiringCustody,
       userBookings,
@@ -105,8 +113,7 @@ exports.getDashboardData = async (req, res) => {
       req: req,
     });
   } catch (err) {
-    console.error('Dashboard error:', err);
-    res.status(500).send('Internal Server Error');
+    next(err);
   }
 };
 
