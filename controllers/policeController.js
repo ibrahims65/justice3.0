@@ -164,7 +164,7 @@ exports.getNewCaseStep3 = async (req, res) => {
 
 exports.postNewCaseConfirm = async (req, res, next) => {
     try {
-        const { name, email, dob, status, policeStationId } = req.session.caseData;
+        const { name, email, dob, status, policeStationId, phone, address, photoUrl, charges, officerNotes, custodyExpiresAt } = req.session.caseData;
 
         // --- Refactored Query Start ---
         // 1. Fetch Police Station
@@ -195,7 +195,6 @@ exports.postNewCaseConfirm = async (req, res, next) => {
         const caseNumber = generateCaseNumber(region.name, city.name);
 
         // --- Find or Create Person Logic ---
-        const { name, email, dob, phone, address, photoUrl } = req.session.caseData;
         const person = await prisma.person.upsert({
             where: { email: email },
             update: {
@@ -215,7 +214,6 @@ exports.postNewCaseConfirm = async (req, res, next) => {
             },
         });
         // --- End Find or Create Person Logic ---
-    const { charges, officerNotes, custodyExpiresAt } = req.session.caseData;
     const booking = await prisma.booking.create({
         data: {
             personId: person.id,
