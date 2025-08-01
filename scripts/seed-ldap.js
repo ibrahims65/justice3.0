@@ -14,10 +14,15 @@ function safeAdd(dn, entry) {
   return new Promise((resolve) => {
     client.add(dn, entry, (err) => {
       if (err) {
-        if (err.name === 'EntryAlreadyExistsError') {
-          console.log(`🔁 Already exists: ${dn}`);
+        const name = err.name || '';
+        const msg  = err.message || '';
+
+        if (name === 'EntryAlreadyExistsError' || msg.includes('EntryAlreadyExists')) {
+          console.log(`🔁 Skipping existing entry: ${dn}`);
+        } else if (name === 'OperationsError' && msg.includes('EntryAlreadyExists')) {
+          console.log(`🔁 Skipping existing entry (OperationsError): ${dn}`);
         } else {
-          console.error(`❌ Failed to add ${dn}:`, err.message);
+          console.error(`❌ Failed to add ${dn}:`, msg);
         }
       } else {
         console.log(`✅ Added: ${dn}`);
@@ -54,7 +59,7 @@ client.bind(ADMIN_DN, ADMIN_PW, async (err) => {
       uid: u.username,
       objectClass: ['inetOrgPerson'],
       userPassword: u.userPassword,
-      memberOf: u.memberOf
+      ...(u.memberOf && { memberOf: u.memberOf })
     };
     await safeAdd(dn, entry);
   }
