@@ -81,7 +81,6 @@ try {
   // Other routes
   app.use('/', indexRouter);
   app.use('/users', usersRouter);
-  app.use('/dashboard', dashboardRouter);
   app.use('/police', require('./routes/police'));
   app.use('/cases', require('./routes/cases'));
   app.use('/reports', require('./routes/reports'));
