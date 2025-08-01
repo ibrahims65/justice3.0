@@ -1,10 +1,14 @@
-<h2>Evidence</h2>
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">Evidence</h2>
+</div>
 <% if (caseData.evidence && caseData.evidence.length > 0) { %>
-  <ul>
+  <ul class="divide-y divide-gray-200">
     <% caseData.evidence.forEach(e => { %>
-      <li><%= e.evidenceType %>: <%= e.description %></li>
+      <li class="py-2"><%= e.evidenceType %>: <%= e.description %></li>
     <% }) %>
   </ul>
 <% } else { %>
-  <p>No evidence added yet.</p>
+  <div class="text-center py-8 bg-gray-50 rounded-lg">
+    <p class="text-gray-500">No evidence has been added yet.</p>
+  </div>
 <% } %>

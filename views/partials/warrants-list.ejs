@@ -1,10 +1,14 @@
-<h2>Warrants</h2>
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">Warrants</h2>
+</div>
 <% if (caseData.warrants && caseData.warrants.length > 0) { %>
-  <ul>
+  <ul class="divide-y divide-gray-200">
     <% caseData.warrants.forEach(w => { %>
-      <li><%= w.status %>: <%= w.details %></li>
+      <li class="py-2"><%= w.status %>: <%= w.details %></li>
     <% }) %>
   </ul>
 <% } else { %>
-  <p>No warrants added yet.</p>
+  <div class="text-center py-8 bg-gray-50 rounded-lg">
+    <p class="text-gray-500">No warrants have been issued yet.</p>
+  </div>
 <% } %>

@@ -1,10 +1,14 @@
-<h2>Investigations</h2>
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">Investigations</h2>
+</div>
 <% if (caseData.investigations && caseData.investigations.length > 0) { %>
-  <ul>
+  <ul class="divide-y divide-gray-200">
     <% caseData.investigations.forEach(i => { %>
-      <li><%= i.investigatorName %>: <%= i.details %></li>
+      <li class="py-2"><%= i.investigatorName %>: <%= i.details %></li>
     <% }) %>
   </ul>
 <% } else { %>
-  <p>No investigations added yet.</p>
+  <div class="text-center py-8 bg-gray-50 rounded-lg">
+    <p class="text-gray-500">No investigations have been added yet.</p>
+  </div>
 <% } %>

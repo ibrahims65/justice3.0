@@ -3,17 +3,36 @@
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
   <h1 class="text-2xl font-bold text-gray-800 mb-8">Police Dashboard</h1>
 
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+        <h4 class="text-gray-500 uppercase text-sm">Total Cases</h4>
+        <p class="text-3xl font-bold"><%= metrics.totalCases %></p>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+        <h4 class="text-gray-500 uppercase text-sm">Open Cases</h4>
+        <p class="text-3xl font-bold"><%= metrics.openCases %></p>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+        <h4 class="text-gray-500 uppercase text-sm">Active Remands</h4>
+        <p class="text-3xl font-bold"><%= metrics.activeRemands %></p>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+        <h4 class="text-gray-500 uppercase text-sm">Pending Evidence</h4>
+        <p class="text-3xl font-bold"><%= metrics.pendingEvidence %></p>
+    </div>
+  </section>
+
   <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
     <div class="card bg-white p-6 rounded-lg shadow-md">
       <h3 class="text-xl font-bold mb-4">Navigation</h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <a href="/police/cases" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded text-center">
           <i class="fas fa-folder-open fa-2x mb-2"></i>
-          <p>Manage Cases (<%= caseCount %>)</p>
+          <p>Manage Cases (<%= metrics.totalCases %>)</p>
         </a>
         <a href="/police/people" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded text-center">
           <i class="fas fa-user-friends fa-2x mb-2"></i>
-          <p>Manage People (<%= personCount %>)</p>
+          <p>Manage People</p>
         </a>
       </div>
        <a href="/police/cases/new/step1" class="block mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">Create New Case</a>
@@ -63,5 +82,3 @@
   </section>
 
 </div>
-
-<%- include('../partials/footer') %>
