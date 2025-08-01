@@ -40,7 +40,7 @@ try {
   console.error('❌ Could not read LDAP DB file:', err.message);
 }
 
-// 2. Now load ldapjs and your db module
+// 2. Load ldapjs and db module
 const ldap = require('ldapjs');
 const db   = require('./ldap-db');
 
@@ -87,19 +87,30 @@ server.add('', (req, res, next) => {
   const dn = req.dn.toString();
   console.log(`📥 Incoming ADD request for: ${dn}`);
 
-  const attrs = req
-    .toObject()
-    .attributes.reduce((acc, a) => {
+  let attrs;
+  try {
+    const raw = req.toObject();
+    console.log(`🔍 Raw req.toObject():`, raw);
+
+    attrs = raw.attributes.reduce((acc, a) => {
+      if (!a.type || !a.vals || !Array.isArray(a.vals) || a.vals.length === 0) {
+        console.warn(`⚠️ Malformed attribute:`, a);
+        return acc;
+      }
       acc[a.type] = a.vals[0];
       return acc;
     }, {});
+  } catch (parseErr) {
+    console.error(`❌ Failed to parse attributes for ${dn}:`, parseErr.message);
+    return next(new ldap.OperationsError('Attribute parsing failed'));
+  }
 
-  console.log(`📦 Attributes received:`, attrs);
+  console.log(`📦 Parsed attributes:`, attrs);
 
   db.addEntry(dn, attrs, err => {
     if (err) {
-      console.error(`❌ db.addEntry failed for ${dn}:`, err.message);
-      return next(new ldap.OperationsError(err.message));
+      console.error(`❌ db.addEntry failed for ${dn}:`, err.message || err);
+      return next(new ldap.OperationsError(err.message || 'Unknown error'));
     }
     console.log(`✅ Entry successfully added: ${dn}`);
     res.end();
