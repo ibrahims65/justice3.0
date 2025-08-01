@@ -229,13 +229,14 @@ router.get('/court', checkRole(['Court']), async (req, res) => {
 
 router.get('/', (req, res) => {
   if (!req.session.user) {
-    return res.redirect('/auth/login');
+    return res.redirect('/login');
   }
 
-  const role = req.session.user.role.name;
+  const role = req.session.user.role; // Correctly access the role string
   switch (role) {
     case 'Police':
-      return res.redirect('/police/dashboard');
+      // The police dashboard is at /dashboard/police, not /police/dashboard
+      return res.redirect('/dashboard/police');
     case 'Prosecutor':
       return res.redirect('/prosecutor/dashboard');
     case 'Court':

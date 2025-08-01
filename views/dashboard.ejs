@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/heroicons@1.0.6/dist/outline.min.css" rel="stylesheet">
     <link href="/css/navbar.css" rel="stylesheet">
-    <% if (user.role.name === 'Police') { %>
+    <% if (user.role === 'Police') { %>
         <link href="/css/dashboard.css" rel="stylesheet">
     <% } else { %>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -18,7 +18,7 @@
 <body style="padding-top: 64px;">
     <%- include('./partials/navbar', { user: user, page: page }) %>
 
-    <% if (user.role.name === 'Police') { %>
+    <% if (user.role === 'Police') { %>
         <div class="command-center">
             <div class="column left-column">
                 <div class="card alert-card">
@@ -111,12 +111,12 @@
             </div>
         </div>
         <script src="/js/live-search.js"></script>
-    <% } else if (user.role.name === 'Prosecutor') { %>
+    <% } else if (user.role === 'Prosecutor') { %>
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <%- include('./partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
             <div class="px-4 py-6 sm:px-0">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, <%= user.username %>!</h2>
-                <p class="text-gray-600 mb-8">Your role is: <%= user.role.name %></p>
+                <p class="text-gray-600 mb-8">Your role is: <%= user.role %></p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <h3 class="text-lg font-medium text-gray-800">Assigned Cases</h3>
@@ -188,12 +188,12 @@
                 </div>
             </div>
         </div>
-    <% } else if (user.role.name === 'Court') { %>
+    <% } else if (user.role === 'Court') { %>
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <%- include('./partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
             <div class="px-4 py-6 sm:px-0">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4">Welcome, <%= user.username %>!</h2>
-                <p class="text-gray-600 mb-8">Your role is: <%= user.role.name %></p>
+                <p class="text-gray-600 mb-8">Your role is: <%= user.role %></p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <h3 class="text-lg font-medium text-gray-800">Scheduled Hearings</h3>
