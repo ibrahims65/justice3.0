@@ -82,8 +82,8 @@ server.search(BASE_DN, (req, res, next) => {
   });
 });
 
-// Add — now accepts any DN
-server.add((req, res, next) => {
+// Add — wildcard handler for all DNs
+server.add('', (req, res, next) => {
   const dn = req.dn.toString();
   const attrs = req
     .toObject()
