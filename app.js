@@ -71,8 +71,7 @@ try {
 // 🛣️ Routes
 try {
   const indexRouter     = require('./routes/index');
-  const usersRouter     = require('./routes/users');
-  const authRouter      = require('./routes/auth');
+  const authRouter      =require('./routes/auth');
   const dashboardRouter = require('./routes/dashboard');
 
   // Mount auth routes at root so /login and /logout work
@@ -80,7 +79,6 @@ try {
 
   // Other routes
   app.use('/', indexRouter);
-  app.use('/users', usersRouter);
   app.use('/police', require('./routes/police'));
   app.use('/cases', require('./routes/cases'));
   app.use('/reports', require('./routes/reports'));
