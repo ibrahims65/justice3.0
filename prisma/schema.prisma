@@ -114,16 +114,19 @@ model District {
 }
 
 model City {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
-  district   District @relation(fields: [districtId], references: [id])
+  id         Int           @id @default(autoincrement())
+  name       String        @unique
+  district   District      @relation(fields: [districtId], references: [id])
   districtId Int
+  stations   PoliceStation[]
+  courts     Court[]
 }
 
 model PoliceStation {
   id       Int       @id @default(autoincrement())
   name     String    @unique
   cityId   Int
+  city     City      @relation(fields: [cityId], references: [id])
   bookings Booking[]
 }
 
@@ -131,6 +134,7 @@ model Court {
   id       Int       @id @default(autoincrement())
   name     String    @unique
   cityId   Int
+  city     City      @relation(fields: [cityId], references: [id])
   hearings Hearing[]
 }
 

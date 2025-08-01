@@ -100,3 +100,110 @@ exports.createCourt = async (req, res) => {
   await prisma.court.create({ data: { name, cityId: parseInt(cityId) } });
   res.redirect('/admin/courts');
 };
+
+// --- API Functions ---
+
+// List Regions
+exports.listRegions = async (req, res, next) => {
+  try {
+    const regions = await prisma.region.findMany();
+    res.json(regions);
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Create Region (API)
+exports.createRegionApi = async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    const newRegion = await prisma.region.create({ data: { name } });
+    res.status(201).json(newRegion);
+  } catch (e) {
+    next(e);
+  }
+};
+
+// List Districts
+exports.listDistricts = async (req, res, next) => {
+  try {
+    const districts = await prisma.district.findMany();
+    res.json(districts);
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Create District (API)
+exports.createDistrictApi = async (req, res, next) => {
+  try {
+    const { name, regionId } = req.body;
+    const newDistrict = await prisma.district.create({ data: { name, regionId: parseInt(regionId) } });
+    res.status(201).json(newDistrict);
+  } catch (e) {
+    next(e);
+  }
+};
+
+// List Cities
+exports.listCities = async (req, res, next) => {
+  try {
+    const cities = await prisma.city.findMany();
+    res.json(cities);
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Create City (API)
+exports.createCityApi = async (req, res, next) => {
+  try {
+    const { name, districtId } = req.body;
+    const newCity = await prisma.city.create({ data: { name, districtId: parseInt(districtId) } });
+    res.status(201).json(newCity);
+  } catch (e) {
+    next(e);
+  }
+};
+
+// List Police Stations
+exports.listStations = async (req, res, next) => {
+  try {
+    const stations = await prisma.policeStation.findMany();
+    res.json(stations);
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Create Police Station (API)
+exports.createStationApi = async (req, res, next) => {
+  try {
+    const { name, cityId } = req.body;
+    const newStation = await prisma.policeStation.create({ data: { name, cityId: parseInt(cityId) } });
+    res.status(201).json(newStation);
+  } catch (e) {
+    next(e);
+  }
+};
+
+// List Courts
+exports.listCourts = async (req, res, next) => {
+  try {
+    const courts = await prisma.court.findMany();
+    res.json(courts);
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Create Court (API)
+exports.createCourtApi = async (req, res, next) => {
+  try {
+    const { name, cityId } = req.body;
+    const newCourt = await prisma.court.create({ data: { name, cityId: parseInt(cityId) } });
+    res.status(201).json(newCourt);
+  } catch (e) {
+    next(e);
+  }
+};
