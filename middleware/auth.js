@@ -25,3 +25,19 @@ exports.checkRole = (...allowedRoles) => (req, res, next) => {
 
   next();
 };
+
+// 🔐 ensure user is in the Admin group
+exports.ensureAdmin = (req, res, next) => {
+  if (!req.session.user) {
+    req.flash('error', 'Please log in first');
+    return res.redirect('/login');
+  }
+
+  const group = req.session.user.memberof.split('=')[1];
+  if (group.toLowerCase() !== 'admin') {
+    req.flash('error', 'Admin access required');
+    return res.redirect('/');
+  }
+
+  next();
+};
