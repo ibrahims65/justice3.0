@@ -82,6 +82,13 @@ try {
   app.use('/users', usersRouter);
   app.use('/dashboard', dashboardRouter);
   app.use('/police', require('./routes/police'));
+  app.use('/cases', require('./routes/cases'));
+  app.use('/reports', require('./routes/reports'));
+  app.use('/prosecutor', require('./routes/prosecutor'));
+  app.use('/court', require('./routes/court'));
+  app.use('/corrections', require('./routes/corrections'));
+  app.use('/remand', require('./routes/remand'));
+  app.use('/warrants', require('./routes/warrants'));
   app.use('/api/search', require('./routes/api/search.routes'));
   app.use('/api/bookings', require('./routes/api/bookings'));
   app.use('/admin', require('./routes/admin'));

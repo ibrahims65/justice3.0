@@ -190,6 +190,23 @@ router.post('/:id/submit-to-court', checkRole(['Prosecutor']), async (req, res) 
   res.redirect(`/cases/${caseId}`);
 });
 
+router.post('/:id/assign', checkRole(['Court']), async (req, res) => {
+  const caseId = parseInt(req.params.id);
+  // In a real app, you'd assign to a specific judge. Here, we'll just update status.
+  await prisma.case.update({
+    where: { id: caseId },
+    data: { status: 'Assigned' },
+  });
+  await prisma.actionHistory.create({
+    data: {
+      action: 'Case Assigned',
+      caseId: caseId,
+      userId: req.session.userId,
+    },
+  });
+  res.redirect('/dashboard');
+});
+
 router.post('/:id/send-back', checkRole(['Court']), async (req, res) => {
   const caseId = parseInt(req.params.id);
   const { notes } = req.body;

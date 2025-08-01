@@ -224,7 +224,11 @@
                                     <tr class="border-b border-gray-200">
                                         <td class="py-2"><a href="/cases/<%= caseRecord.id %>" class="text-blue-500 hover:underline"><%= caseRecord.caseNumber %></a></td>
                                         <td class="py-2"><%= caseRecord.status %></td>
-                                        <td class="py-2"><a href="/cases/<%= caseRecord.id %>/assign" class="text-blue-500 hover:underline">Assign</a></td>
+                                        <td class="py-2">
+                                            <form action="/cases/<%= caseRecord.id %>/assign" method="POST" style="display:inline;">
+                                                <button type="submit" class="text-blue-500 hover:underline">Assign</button>
+                                            </form>
+                                        </td>
                                     </tr>
                                 <% }) %>
                             </tbody>
