@@ -1,28 +1,45 @@
 #!/usr/bin/env bash
-# start-all.sh — launches LDAP + main app, then waits for them
+#
+# start-all.sh — find your LDAP server script, launch it + app.js
 
-# — Customize these if your commands differ
-LDAP_CMD="node src/ldap/server.js"
-APP_CMD="node app.js"
+# Potential locations for your LDAP server entrypoint
+CANDIDATES=(
+  "src/ldap/server.js"
+  "src/ldap/ldap-server.js"
+  "src/ldap/index.js"
+  "src/ldap/ldap-server/index.js"
+)
+
+LDAP_CMD=""
+for path in "${CANDIDATES[@]}"; do
+  if [ -f "$path" ]; then
+    LDAP_CMD="node $path"
+    echo "🔍 Found LDAP server at $path"
+    break
+  fi
+done
+
+if [ -z "$LDAP_CMD" ]; then
+  echo "❌ Could not locate your LDAP server script."
+  echo "   Please edit start-all.sh and set LDAP_CMD manually."
+  exit 1
+fi
 
 echo "🚀 Starting LDAP service..."
-# run in background, capture PID
-eval $LDAP_CMD &
+eval "$LDAP_CMD" &
 LDAP_PID=$!
 
-# small pause so LDAP can bind ports before app boots
+# short pause for LDAP to bind
 sleep 2
 
 echo "🚀 Starting main app..."
-eval $APP_CMD &
+node app.js &
 APP_PID=$!
 
-# on CTRL+C, kill both children
-trap "echo; echo '🛑 Shutting down...'; kill $LDAP_PID $APP_PID; exit 0" SIGINT SIGTERM
+# on SIGINT/SIGTERM, kill both
+trap "echo; echo '🛑 Shutting down all…'; kill $LDAP_PID $APP_PID; exit 0" SIGINT SIGTERM
 
 # wait for either to exit
 wait -n
-
-echo "⚠️ One process exited. Killing the other..."
+echo "⚠️ One process exited; shutting down the other…"
 kill $LDAP_PID $APP_PID
-exit 0
