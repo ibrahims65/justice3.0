@@ -1,0 +1,24 @@
+// app.js (inside your “Middleware” section)
+-  app.use(cookieParser());
++  // parse & sign cookies
++  const COOKIE_SECRET = process.env.SESSION_SECRET || 'justice-secret';
++  app.use(cookieParser(COOKIE_SECRET));
+
+-  app.use(session({
+-    secret: process.env.SESSION_SECRET || 'justice-secret',
+-    resave: false,
+-    saveUninitialized: true
+-  }));
++  // configure express-session
++  app.use(session({
++    name: 'justice.sid',
++    secret: COOKIE_SECRET,
++    resave: false,
++    saveUninitialized: false,   // only create session once there's data
++    cookie: {
++      secure: false,            // true if you switch to HTTPS
++      httpOnly: true,
++      sameSite: 'lax',          // protects against CSRF on other domains
++      maxAge: 1000 * 60 * 60    // 1 hour
++    }
++  }));
