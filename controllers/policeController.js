@@ -264,7 +264,11 @@ exports.postNewCaseConfirm = async (req, res, next) => {
     });
     await prisma.booking.update({
         where: { id: booking.id },
-        data: { caseId: createdCase.id },
+        data: {
+            case: {
+                connect: { id: createdCase.id },
+            },
+        },
     });
     delete req.session.caseData;
     res.redirect('/police/management');
