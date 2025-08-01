@@ -199,15 +199,39 @@ exports.getNewCaseStep3 = async (req, res) => {
     });
 };
 
-exports.postNewCaseConfirm = async (req, res) => {
-    const { name, email, dob, status, policeStationId } = req.session.caseData;
-    const policeStation = await prisma.policeStation.findUnique({
-        where: { id: parseInt(policeStationId) },
-        include: { city: { include: { district: { include: { region: true } } } } },
-    });
-    const caseNumber = generateCaseNumber(policeStation.city.district.region.name, policeStation.city.name);
+exports.postNewCaseConfirm = async (req, res, next) => {
+    try {
+        const { name, email, dob, status, policeStationId } = req.session.caseData;
 
-    const person = await prisma.person.create({
+        // --- Refactored Query Start ---
+        // 1. Fetch Police Station
+        const policeStation = await prisma.policeStation.findUnique({
+            where: { id: parseInt(policeStationId) },
+        });
+        if (!policeStation) throw new Error('Police station not found');
+
+        // 2. Fetch City
+        const city = await prisma.city.findUnique({
+            where: { id: policeStation.cityId },
+        });
+        if (!city) throw new Error('City not found');
+
+        // 3. Fetch District
+        const district = await prisma.district.findUnique({
+            where: { id: city.districtId },
+        });
+        if (!district) throw new Error('District not found');
+
+        // 4. Fetch Region
+        const region = await prisma.region.findUnique({
+            where: { id: district.regionId },
+        });
+        if (!region) throw new Error('Region not found');
+        // --- Refactored Query End ---
+
+        const caseNumber = generateCaseNumber(region.name, city.name);
+
+        const person = await prisma.person.create({
         data: {
             name,
             email,
@@ -236,6 +260,9 @@ exports.postNewCaseConfirm = async (req, res) => {
     });
     delete req.session.caseData;
     res.redirect('/police/management');
+    } catch (error) {
+        next(error);
+    }
 };
 
 exports.listBookings = async (req, res) => {
