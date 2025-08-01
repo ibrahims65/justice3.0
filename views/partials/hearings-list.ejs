@@ -1,10 +1,14 @@
-<h2>Hearings</h2>
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">Hearings</h2>
+</div>
 <% if (caseData.hearings && caseData.hearings.length > 0) { %>
-  <ul>
+  <ul class="divide-y divide-gray-200">
     <% caseData.hearings.forEach(h => { %>
-      <li><%= h.hearingDate.toLocaleString() %> — <%= h.verdict || 'No verdict' %></li>
+      <li class="py-2"><%= h.hearingDate.toLocaleString() %> — <%= h.verdict || 'No verdict' %></li>
     <% }) %>
   </ul>
 <% } else { %>
-  <p>No hearings added yet.</p>
+  <div class="text-center py-8 bg-gray-50 rounded-lg">
+    <p class="text-gray-500">No hearings have been scheduled yet.</p>
+  </div>
 <% } %>

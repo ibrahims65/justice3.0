@@ -1,5 +1,23 @@
-<form action="/police/cases/<%= caseData.id %>/witnesses" method="POST">
-  <input type="text" name="name" placeholder="Witness Name">
-  <textarea name="statement" placeholder="Statement"></textarea>
-  <button type="submit">Add Witness</button>
+<form action="/police/cases/<%= caseData.id %>/witnesses" method="POST" class="space-y-4">
+    <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+        <input type="text" name="name" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+    </div>
+    <div>
+        <label for="relationshipToCase" class="block text-sm font-medium text-gray-700">Relationship to Case</label>
+        <input type="text" name="relationshipToCase" id="relationshipToCase" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+    </div>
+    <div>
+        <label for="dateInterviewed" class="block text-sm font-medium text-gray-700">Date Interviewed</label>
+        <input type="date" name="dateInterviewed" id="dateInterviewed" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+    </div>
+    <div>
+        <label for="statement" class="block text-sm font-medium text-gray-700">Statement</label>
+        <textarea name="statement" id="statement" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+    </div>
+    <div class="flex items-center">
+        <input type="checkbox" name="isAnonymous" id="isAnonymous" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+        <label for="isAnonymous" class="ml-2 block text-sm text-gray-900">Anonymous Witness</label>
+    </div>
+    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Add Witness</button>
 </form>

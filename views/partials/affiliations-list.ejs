@@ -1,0 +1,14 @@
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">Affiliations</h2>
+</div>
+<% if (caseData.booking.person.affiliations && caseData.booking.person.affiliations.length > 0) { %>
+  <ul class="divide-y divide-gray-200">
+    <% caseData.booking.person.affiliations.forEach(a => { %>
+      <li class="py-2"><%= a.organization %> (<%= a.status %>)</li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <div class="text-center py-8 bg-gray-50 rounded-lg">
+    <p class="text-gray-500">No affiliations have been recorded.</p>
+  </div>
+<% } %>

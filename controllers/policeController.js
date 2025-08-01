@@ -2,6 +2,8 @@ const { PrismaClient } = require('@prisma/client');
 const { generateCaseNumber } = require('../utils/caseNumber');
 const prisma = new PrismaClient();
 
+const policeMetricsService = require('../services/policeMetricsService');
+
 exports.getPoliceDashboard = async (req, res, next) => {
     try {
         const sessionUser = req.session.user;
@@ -12,15 +14,7 @@ exports.getPoliceDashboard = async (req, res, next) => {
 
         const userId = sessionUser.id;
 
-        const caseCount = await prisma.case.count({
-            where: { booking: { arrestingOfficerId: userId } },
-        });
-
-        const personCount = await prisma.person.count({
-            where: {
-                bookings: { some: { arrestingOfficerId: userId } },
-            },
-        });
+        const metrics = await policeMetricsService.getDashboardMetrics(userId);
 
         const recentBookings = await prisma.booking.findMany({
             where: { arrestingOfficerId: userId },
@@ -44,8 +38,7 @@ exports.getPoliceDashboard = async (req, res, next) => {
 
         res.render('police/police_dashboard', {
             user: sessionUser,
-            caseCount,
-            personCount,
+            metrics,
             recentBookings,
             expiringCustody,
             req: req,
@@ -263,7 +256,27 @@ exports.getNewRemandRequest = async (req, res, next) => {
 
 exports.postNewRemandRequest = async (req, res, next) => {
     try {
-        const { reason, requestedDays } = req.body;
+        const {
+            decisionType,
+            decisionDate,
+            bailAmount,
+            bailConditions,
+            remandStart,
+            remandEnd,
+            reason,
+            requestedDays,
+            courtApproval,
+            nextHearingDate
+        } = req.body;
+
+        let remandDuration = null;
+        if (remandStart && remandEnd) {
+            const start = new Date(remandStart);
+            const end = new Date(remandEnd);
+            const diffTime = Math.abs(end - start);
+            remandDuration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
         await prisma.remandRequest.create({
             data: {
                 bookingId: parseInt(req.params.bookingId),
@@ -271,9 +284,21 @@ exports.postNewRemandRequest = async (req, res, next) => {
                 reason,
                 requestedDays: parseInt(requestedDays),
                 status: 'pending',
+                decisionDate: new Date(decisionDate),
+                bailAmount: bailAmount ? parseFloat(bailAmount) : null,
+                bailConditions,
+                remandStart: remandStart ? new Date(remandStart) : null,
+                remandEnd: remandEnd ? new Date(remandEnd) : null,
+                courtApproval: courtApproval === 'on',
+                nextHearingDate: nextHearingDate ? new Date(nextHearingDate) : null,
+                remandDuration,
             },
         });
-        req.flash('success', 'Remand request submitted successfully.');
+
+        // Placeholder for audit log
+        console.log(`Remand/Bail request created for booking ${req.params.bookingId} by ${req.session.user.username}`);
+
+        req.flash('success', 'Remand/Bail request submitted successfully.');
         res.redirect('/police');
     } catch (error) {
         next(error);
@@ -426,16 +451,22 @@ exports.getEvidenceList = async (req, res, next) => {
 
 exports.postEvidence = async (req, res, next) => {
     try {
-        const { evidenceType, description } = req.body;
+        const { evidenceType, description, storageLocation, chainOfCustodyStatus, evidenceValue, notes } = req.body;
         await prisma.evidence.create({
             data: {
                 caseId: parseInt(req.params.caseId),
                 evidenceType,
                 description,
-                fileUrl: '', // Placeholder
+                storageLocation,
+                chainOfCustodyStatus,
+                evidenceValue: evidenceValue ? parseFloat(evidenceValue) : null,
+                notes,
+                fileUrl: '', // Placeholder for now
+                receivedFrom: req.session.user.username,
+                dateReceived: new Date(),
             },
         });
-        res.redirect(`/police/cases/${req.params.caseId}/view`);
+        res.redirect(`/police/cases/${req.params.caseId}/view?module=evidence`);
     } catch (error) {
         next(error);
     }
@@ -455,7 +486,7 @@ exports.getInvestigationsList = async (req, res, next) => {
 
 exports.postInvestigations = async (req, res, next) => {
     try {
-        const { investigatorName, investigatorBadgeNumber, investigatorRank, details } = req.body;
+        const { investigatorName, investigatorBadgeNumber, investigatorRank, details, startDate, endDate, status } = req.body;
         await prisma.investigation.create({
             data: {
                 caseId: parseInt(req.params.caseId),
@@ -463,9 +494,12 @@ exports.postInvestigations = async (req, res, next) => {
                 investigatorBadgeNumber,
                 investigatorRank,
                 details,
+                startDate: startDate ? new Date(startDate) : null,
+                endDate: endDate ? new Date(endDate) : null,
+                status,
             },
         });
-        res.redirect(`/police/cases/${req.params.caseId}/view`);
+        res.redirect(`/police/cases/${req.params.caseId}/view?module=investigations`);
     } catch (error) {
         next(error);
     }
@@ -485,16 +519,22 @@ exports.getVictimsList = async (req, res, next) => {
 
 exports.postVictims = async (req, res, next) => {
     try {
-        const { name, statement } = req.body;
+        const { name, dob, gender, nationality, address, contact, statement } = req.body;
+        const photoUrl = req.file ? `/uploads/${req.file.filename}` : null;
         await prisma.victim.create({
             data: {
                 caseId: parseInt(req.params.caseId),
                 name,
+                dob: new Date(dob),
+                gender,
+                nationality,
+                address,
+                phone: contact, // Assuming contact is phone for now
                 statement,
-                dob: new Date(), // Placeholder
+                photoUrl,
             },
         });
-        res.redirect(`/police/cases/${req.params.caseId}/view`);
+        res.redirect(`/police/cases/${req.params.caseId}/view?module=victims`);
     } catch (error) {
         next(error);
     }
@@ -514,15 +554,18 @@ exports.getWitnessesList = async (req, res, next) => {
 
 exports.postWitnesses = async (req, res, next) => {
     try {
-        const { name, statement } = req.body;
+        const { name, statement, relationshipToCase, dateInterviewed, isAnonymous } = req.body;
         await prisma.witness.create({
             data: {
                 caseId: parseInt(req.params.caseId),
                 name,
                 statement,
+                relationshipToCase,
+                dateInterviewed: dateInterviewed ? new Date(dateInterviewed) : null,
+                isAnonymous: isAnonymous === 'on', // Checkbox value is 'on' if checked
             },
         });
-        res.redirect(`/police/cases/${req.params.caseId}/view`);
+        res.redirect(`/police/cases/${req.params.caseId}/view?module=witnesses`);
     } catch (error) {
         next(error);
     }
@@ -593,6 +636,8 @@ const caseModules = {
     witnesses: { label: 'Witnesses', icon: 'fa-users' },
     hearings: { label: 'Hearings', icon: 'fa-gavel' },
     warrants: { label: 'Warrants', icon: 'fa-file-alt' },
+    charges: { label: 'Charges', icon: 'fa-file-invoice-dollar' },
+    affiliations: { label: 'Affiliations', icon: 'fa-sitemap' },
 };
 
 exports.getCaseDetail = async (req, res, next) => {

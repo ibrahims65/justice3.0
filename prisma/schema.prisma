@@ -97,6 +97,7 @@ model Case {
   deletedAt              DateTime?
   createdAt              DateTime         @default(now())
   updatedAt              DateTime         @updatedAt
+  charges                Charge[]
 }
 
 model Region {
@@ -152,6 +153,9 @@ model Evidence {
   evidenceType    String?
   serialNumber    String?
   ballisticsInfo  String?
+  evidenceValue   Float?
+  notes           String?
+  chainOfCustodyStatus String?
 }
 
 model Witness {
@@ -162,6 +166,9 @@ model Witness {
   caseId        Int
   testimonyType String?
   testimonyUrl  String?
+  isAnonymous   Boolean?
+  relationshipToCase String?
+  dateInterviewed DateTime?
 }
 
 model Hearing {
@@ -190,7 +197,11 @@ model Affiliation {
   personId     Int
   person       Person @relation(fields: [personId], references: [id])
   organization String
-  type         String // gang, extremist, terrorist
+  role         String
+  startDate    DateTime?
+  endDate      DateTime?
+  evidenceLink String?
+  status       String?
 }
 
 model RemandRequest {
@@ -203,6 +214,12 @@ model RemandRequest {
   status        String // pending, approved, rejected
   judgeId       Int?
   decisionDate  DateTime?
+  bailConditions String?
+  remandStart   DateTime?
+  remandEnd     DateTime?
+  courtApproval Boolean?
+  nextHearingDate DateTime?
+  remandDuration Int?
 }
 
 model ReleaseRecord {
@@ -275,14 +292,17 @@ model PleaBargain {
 }
 
 model Investigation {
-  id                      Int     @id @default(autoincrement())
+  id                      Int       @id @default(autoincrement())
   caseId                  Int
-  case                    Case    @relation(fields: [caseId], references: [id])
+  case                    Case      @relation(fields: [caseId], references: [id])
   investigatorName        String
   investigatorBadgeNumber String
   investigatorRank        String
   details                 String?
   media                   Media[]
+  startDate               DateTime?
+  endDate                 DateTime?
+  status                  String?
 }
 
 model Media {
@@ -296,11 +316,11 @@ model Media {
 model BailDecision {
   id         Int      @id @default(autoincrement())
   caseId     Int
-  amount     Float
+  amount     Float?
   status     String // e.g., "Granted", "Denied", "Revoked"
   conditions String?
   decidedAt  DateTime @default(now())
-  judgeName  String
+  judgeName  String?
   case       Case     @relation(fields: [caseId], references: [id])
 }
 
@@ -313,6 +333,9 @@ model MedicalRecord {
   case        Case                 @relation(fields: [caseId], references: [id])
   caseId      Int
   medications MedicationSchedule[]
+  severity    String?
+  treatmentPlan String?
+  observationNotes String?
 }
 
 model MedicationSchedule {
@@ -379,4 +402,19 @@ model Victim {
   statement String?
   case      Case     @relation(fields: [caseId], references: [id])
   caseId    Int
+  gender    String?
+  nationality String?
+  injuryDescription String?
+}
+
+model Charge {
+    id          Int @id @default(autoincrement())
+    caseId      Int
+    case        Case @relation(fields: [caseId], references: [id])
+    statute     String
+    section     String
+    description String
+    allegedDate DateTime?
+    countNumber Int?
+    degree      String? // felony, misdemeanor
 }

@@ -1,0 +1,14 @@
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">Charges</h2>
+</div>
+<% if (caseData.charges && caseData.charges.length > 0) { %>
+  <ul class="divide-y divide-gray-200">
+    <% caseData.charges.forEach(c => { %>
+      <li class="py-2"><%= c.degree %>: <%= c.description %> (<%= c.statute %> <%= c.section %>)</li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <div class="text-center py-8 bg-gray-50 rounded-lg">
+    <p class="text-gray-500">No charges have been filed yet.</p>
+  </div>
+<% } %>

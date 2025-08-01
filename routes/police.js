@@ -52,7 +52,7 @@ router.post('/remand/new/:bookingId', ensureAuthenticated, policeController.post
 router.get('/cases/:caseId/view', ensureAuthenticated, policeController.getCaseDetail);
 
 // Dynamic module routes
-const caseModules = ['evidence', 'investigations', 'victims', 'witnesses', 'hearings', 'warrants'];
+const caseModules = ['evidence', 'investigations', 'victims', 'witnesses', 'hearings', 'warrants', 'charges'];
 caseModules.forEach(mod => {
     const controllerName = mod.charAt(0).toUpperCase() + mod.slice(1);
     router.get(
@@ -60,11 +60,12 @@ caseModules.forEach(mod => {
         ensureAuthenticated,
         policeController[`get${controllerName}List`]
     );
-    router.post(
-        `/cases/:caseId/${mod}`,
-        ensureAuthenticated,
-        policeController[`post${controllerName}`]
-    );
+    const handler = policeController[`post${controllerName}`];
+    if (mod === 'victims' || mod === 'evidence' || mod === 'documents' || mod === 'media') {
+        router.post(`/cases/:caseId/${mod}`, ensureAuthenticated, upload.single('photo'), handler);
+    } else {
+        router.post(`/cases/:caseId/${mod}`, ensureAuthenticated, handler);
+    }
 });
 
 module.exports = router;

@@ -1,0 +1,30 @@
+<form action="/police/cases/<%= caseData.id %>/charges" method="POST" class="space-y-4">
+    <div>
+        <label for="statute" class="block text-sm font-medium text-gray-700">Statute</label>
+        <input type="text" name="statute" id="statute" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+    </div>
+    <div>
+        <label for="section" class="block text-sm font-medium text-gray-700">Section</label>
+        <input type="text" name="section" id="section" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+    </div>
+    <div>
+        <label for="degree" class="block text-sm font-medium text-gray-700">Degree</label>
+        <select name="degree" id="degree" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+            <option>Felony</option>
+            <option>Misdemeanor</option>
+        </select>
+    </div>
+    <div>
+        <label for="countNumber" class="block text-sm font-medium text-gray-700">Count Number</label>
+        <input type="number" name="countNumber" id="countNumber" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+    </div>
+    <div>
+        <label for="allegedDate" class="block text-sm font-medium text-gray-700">Alleged Date</label>
+        <input type="date" name="allegedDate" id="allegedDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+    </div>
+    <div>
+        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea name="description" id="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+    </div>
+    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Add Charge</button>
+</form>

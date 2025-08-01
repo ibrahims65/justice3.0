@@ -1,12 +1,56 @@
 <%- include('../partials/header') %>
 
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <h2 class="text-2xl font-bold text-gray-800 mb-8">New Remand Request for <%= booking.person.name %></h2>
+    <h2 class="text-2xl font-bold text-gray-800 mb-8">New Remand/Bail Request for <%= booking.person.name %></h2>
 
-    <form action="/police/remand/new/<%= booking.id %>" method="POST">
+    <form action="/police/remand/new/<%= booking.id %>" method="POST" class="space-y-6">
         <div class="bg-white shadow overflow-hidden sm:rounded-lg p-8">
-            <div class="grid grid-cols-1 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Decision Type -->
                 <div>
+                    <label class="block text-sm font-medium text-gray-700">Decision Type</label>
+                    <div class="mt-2 flex space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="decisionType" value="Remand" class="form-radio" checked>
+                            <span class="ml-2">Remand</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="decisionType" value="Bail" class="form-radio">
+                            <span class="ml-2">Bail</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Decision Date -->
+                <div>
+                    <label for="decisionDate" class="block text-sm font-medium text-gray-700">Decision Date</label>
+                    <input type="datetime-local" name="decisionDate" id="decisionDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                </div>
+
+                <!-- Bail Amount -->
+                <div id="bailFields">
+                    <label for="bailAmount" class="block text-sm font-medium text-gray-700">Bail Amount</label>
+                    <input type="number" step="0.01" name="bailAmount" id="bailAmount" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+
+                <!-- Bail Conditions -->
+                <div class="md:col-span-2" id="bailConditionsFields">
+                    <label for="bailConditions" class="block text-sm font-medium text-gray-700">Bail Conditions</label>
+                    <textarea name="bailConditions" id="bailConditions" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                </div>
+
+                <!-- Remand Fields -->
+                <div id="remandFields" class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="remandStart" class="block text-sm font-medium text-gray-700">Remand Start Date</label>
+                        <input type="datetime-local" name="remandStart" id="remandStart" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div>
+                        <label for="remandEnd" class="block text-sm font-medium text-gray-700">Remand End Date</label>
+                        <input type="datetime-local" name="remandEnd" id="remandEnd" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                </div>
+                 <div>
                     <label for="reason" class="block text-sm font-medium text-gray-700">Reason for Request</label>
                     <textarea name="reason" id="reason" rows="4" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required></textarea>
                 </div>
@@ -14,7 +58,20 @@
                     <label for="requestedDays" class="block text-sm font-medium text-gray-700">Days Requested</label>
                     <input type="number" name="requestedDays" id="requestedDays" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
                 </div>
+
+                <!-- Court Approval -->
+                <div class="flex items-center">
+                    <input type="checkbox" name="courtApproval" id="courtApproval" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                    <label for="courtApproval" class="ml-2 block text-sm text-gray-900">Court Approval Received</label>
+                </div>
+
+                <!-- Next Hearing Date -->
+                <div>
+                    <label for="nextHearingDate" class="block text-sm font-medium text-gray-700">Next Hearing Date</label>
+                    <input type="datetime-local" name="nextHearingDate" id="nextHearingDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
             </div>
+
             <div class="mt-8 flex justify-end">
                 <a href="/police" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-4">Cancel</a>
                 <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit Request</button>
@@ -22,5 +79,29 @@
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const decisionTypeRadios = document.querySelectorAll('input[name="decisionType"]');
+        const bailFields = document.getElementById('bailFields');
+        const bailConditionsFields = document.getElementById('bailConditionsFields');
+        const remandFields = document.getElementById('remandFields');
+
+        function toggleFields() {
+            if (document.querySelector('input[name="decisionType"]:checked').value === 'Bail') {
+                bailFields.style.display = 'block';
+                bailConditionsFields.style.display = 'block';
+                remandFields.style.display = 'none';
+            } else {
+                bailFields.style.display = 'none';
+                bailConditionsFields.style.display = 'none';
+                remandFields.style.display = 'block';
+            }
+        }
+
+        decisionTypeRadios.forEach(radio => radio.addEventListener('change', toggleFields));
+        toggleFields(); // Initial check
+    });
+</script>
 
 <%- include('../partials/footer') %>
