@@ -32,8 +32,9 @@ router.post('/:id/approve', checkRole(['Court']), async (req, res) => {
     where: { id: requestId },
     include: { booking: true },
   });
-  const newExpiryDate = new Date(request.booking.custodyExpiresAt);
-  newExpiryDate.setDate(newExpiryDate.getDate() + request.requestedDays);
+  const oldExpiryDate = request.booking.custodyExpiresAt ? new Date(request.booking.custodyExpiresAt) : new Date();
+  const newExpiryDate = new Date(oldExpiryDate);
+  newExpiryDate.setDate(newExpiryDate.getDate() + (request.requestedDays - 1));
   await prisma.booking.update({
     where: { id: request.bookingId },
     data: { custodyExpiresAt: newExpiryDate },

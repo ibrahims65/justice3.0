@@ -194,6 +194,11 @@ router.get('/court', checkRole(['Court']), async (req, res) => {
   const user = req.session.user;
 
   const hearings = await prisma.hearing.findMany({
+    where: {
+      hearingDate: {
+        gte: new Date(),
+      },
+    },
     include: {
       case: true,
       court: true,
@@ -242,7 +247,7 @@ router.get('/', (req, res) => {
     case 'Prosecutor':
       return res.redirect('/prosecutor/dashboard');
     case 'Court':
-      return res.redirect('/court/dashboard');
+      return res.redirect('/dashboard/court');
     case 'Corrections':
       return res.redirect('/corrections/dashboard');
     default:

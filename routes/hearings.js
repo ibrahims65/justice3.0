@@ -12,6 +12,15 @@ router.get('/new/:caseId', checkRole(['Court']), async (req, res) => {
 router.post('/', checkRole(['Court']), async (req, res) => {
   const { courtId, hearingDate, caseId } = req.body;
   try {
+    const caseRecord = await prisma.case.findUnique({
+      where: { id: parseInt(caseId) },
+    });
+
+    if (caseRecord.status !== 'Accepted') {
+      req.flash('error', 'Cannot schedule a hearing until the charge-sheet has been approved by the prosecutor.');
+      return res.redirect(`/cases/${caseId}`);
+    }
+
     await prisma.hearing.create({
       data: {
         courtId: parseInt(courtId),

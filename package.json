@@ -6,7 +6,9 @@
   "scripts": {
     "test": "export DATABASE_URL=\"postgresql://postgres:password@localhost:5432/justice3.0?schema=public\" && jest",
     "migrate": "npx cross-env NODE_OPTIONS='-r dotenv/config' prisma migrate dev",
-    "build:css": "tailwindcss -i ./public/css/input.css -o ./public/css/style.css",
+    "dev": "node -r dotenv/config app.js",
+    "start": "node app.js",
+    "build:css": "npx tailwindcss -i ./public/css/input.css -o ./public/css/style.css",
     "seed": "export DATABASE_URL=\"postgresql://postgres:password@localhost:5432/justice3.0?schema=public\" && node prisma/seed.js"
   },
   "repository": {

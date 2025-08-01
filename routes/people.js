@@ -3,6 +3,7 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
+const { check, validationResult } = require('express-validator');
 const upload = require('../middleware/upload');
 const { customAlphabet } = require('nanoid');
 const nanoid = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
@@ -93,7 +94,7 @@ router.post('/:id/bookings', checkRole(['Police']), [
     });
   }
 
-  const { status, charges, policeStationId, arrestingOfficerName, arrestingOfficerRank } = req.body;
+  const { status, charges, policeStationId, arrestingOfficerName, arrestingOfficerRank, incarcerationStartDate, custodyExpiresAt } = req.body;
   try {
     const newBooking = await prisma.booking.create({
       data: {
@@ -103,7 +104,8 @@ router.post('/:id/bookings', checkRole(['Police']), [
         policeStationId: parseInt(policeStationId),
         arrestingOfficerName,
         arrestingOfficerRank,
-        custodyExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        incarcerationStartDate: incarcerationStartDate ? new Date(incarcerationStartDate) : null,
+        custodyExpiresAt: custodyExpiresAt ? new Date(custodyExpiresAt) : null,
       },
     });
     await prisma.person.update({
@@ -122,6 +124,7 @@ router.post('/:id/bookings', checkRole(['Police']), [
         action: 'Case Created',
         caseId: newCase.id,
         userId: req.session.userId,
+        notes: `Person ID: ${personId}`,
       },
     });
     res.redirect(`/cases/${newCase.id}`);

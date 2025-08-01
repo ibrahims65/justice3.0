@@ -8,6 +8,7 @@ router.post('/', checkRole(['Police']), async (req, res) => {
   const { bookingId, reason, notes } = req.body;
   const booking = await prisma.booking.update({
     where: { id: parseInt(bookingId) },
+    include: { person: true },
     data: {
       status: 'Released',
       custodyExpiresAt: null,

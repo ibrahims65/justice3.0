@@ -107,6 +107,7 @@ router.post('/inmates/:bookingId', checkRole(['Corrections']), async (req, res) 
   try {
     const booking = await prisma.booking.update({
       where: { id: bookingId },
+      include: { case: true },
       data: {
         incarcerationStartDate: new Date(incarcerationStartDate),
         facilityName,
