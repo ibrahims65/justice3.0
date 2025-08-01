@@ -640,6 +640,67 @@ const caseModules = {
     affiliations: { label: 'Affiliations', icon: 'fa-sitemap' },
 };
 
+exports.getChargesList = async (req, res, next) => {
+    try {
+        const charges = await prisma.charge.findMany({
+            where: { caseId: parseInt(req.params.caseId) },
+        });
+        res.json(charges);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postCharges = async (req, res, next) => {
+    try {
+        const { statute, section, description, allegedDate, countNumber, degree } = req.body;
+        await prisma.charge.create({
+            data: {
+                caseId: parseInt(req.params.caseId),
+                statute,
+                section,
+                description,
+                allegedDate: allegedDate ? new Date(allegedDate) : null,
+                countNumber: countNumber ? parseInt(countNumber) : null,
+                degree,
+            },
+        });
+        res.redirect(`/police/cases/${req.params.caseId}/view?module=charges`);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getAffiliationsList = async (req, res, next) => {
+    try {
+        const caseData = await prisma.case.findUnique({ where: { id: parseInt(req.params.caseId) }, include: { booking: { include: { person: { include: { affiliations: true } } } } } });
+        res.json(caseData.booking.person.affiliations);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.postAffiliations = async (req, res, next) => {
+    try {
+        const { organization, role, startDate, endDate, evidenceLink, status } = req.body;
+        const caseData = await prisma.case.findUnique({ where: { id: parseInt(req.params.caseId) }, include: { booking: true } });
+        await prisma.affiliation.create({
+            data: {
+                personId: caseData.booking.personId,
+                organization,
+                role,
+                startDate: startDate ? new Date(startDate) : null,
+                endDate: endDate ? new Date(endDate) : null,
+                evidenceLink,
+                status,
+            },
+        });
+        res.redirect(`/police/cases/${req.params.caseId}/view?module=affiliations`);
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.getCaseDetail = async (req, res, next) => {
     try {
         const caseId = parseInt(req.params.caseId);
