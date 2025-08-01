@@ -82,7 +82,7 @@ exports.postLogin = async (req, res) => {
     };
 
     req.flash('success', 'You are now logged in.');
-    res.redirect('/dashboard');
+    res.redirect('/police');
   } catch (error) {
     console.error('Login error:', error);
     req.flash('error', 'An error occurred during login.');
