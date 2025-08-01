@@ -5,12 +5,26 @@ async function main() {
     console.log('Start reseeding ...');
 
     // Clear existing data
+    await prisma.user.deleteMany({});
+    await prisma.role.deleteMany({});
     await prisma.policeStation.deleteMany({});
     await prisma.court.deleteMany({});
     await prisma.city.deleteMany({});
     await prisma.district.deleteMany({});
     await prisma.region.deleteMany({});
     console.log('Cleared existing core data.');
+
+    // Create Roles
+    await prisma.role.createMany({
+        data: [
+            { id: 1, name: 'Admin' },
+            { id: 2, name: 'Police' },
+            { id: 3, name: 'Prosecutor' },
+            { id: 4, name: 'Court' },
+            { id: 5, name: 'Corrections' },
+        ],
+    });
+    console.log('Created roles.');
 
     // Create Regions
     const region1 = await prisma.region.create({ data: { name: 'Banaadir' } });
