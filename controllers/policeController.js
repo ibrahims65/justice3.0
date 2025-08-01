@@ -1,6 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../lib/prisma');
 const { generateCaseNumber } = require('../utils/caseNumber');
-const prisma = new PrismaClient();
 
 const policeMetricsService = require('../services/policeMetricsService');
 
