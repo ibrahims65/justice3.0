@@ -3,32 +3,42 @@ const router  = express.Router();
 const { ensureAuthenticated, ensureAdmin } = require('../middleware/auth');
 const adminController = require('../controllers/adminController');
 
-// Register the handler without invoking it
-router.get('/', ensureAuthenticated, ensureAdmin, adminController.getDashboard);
+// 🛡️ Defensive wrapper to catch missing handlers
+const safe = (handlerName) => {
+  const fn = adminController[handlerName];
+  if (typeof fn !== 'function') {
+    console.error(`❌ Missing adminController.${handlerName}`);
+    return (req, res) => res.status(500).send(`Handler "${handlerName}" not implemented`);
+  }
+  return fn;
+};
+
+// Dashboard
+router.get('/', ensureAuthenticated, ensureAdmin, safe('getDashboard'));
 
 // Regions
-router.get('/regions', adminController.getRegions);
-router.get('/regions/new', adminController.getNewRegion);
-router.post('/regions', adminController.createRegion);
+router.get('/regions', safe('getRegions'));
+router.get('/regions/new', safe('getNewRegion'));
+router.post('/regions', safe('createRegion'));
 
 // Districts
-router.get('/districts', adminController.getDistricts);
-router.get('/districts/new', adminController.getNewDistrict);
-router.post('/districts', adminController.createDistrict);
+router.get('/districts', safe('getDistricts'));
+router.get('/districts/new', safe('getNewDistrict'));
+router.post('/districts', safe('createDistrict'));
 
 // Cities
-router.get('/cities', adminController.getCities);
-router.get('/cities/new', adminController.getNewCity);
-router.post('/cities', adminController.createCity);
+router.get('/cities', safe('getCities'));
+router.get('/cities/new', safe('getNewCity'));
+router.post('/cities', safe('createCity'));
 
 // Police Stations
-router.get('/police-stations', adminController.getPoliceStations);
-router.get('/police-stations/new', adminController.getNewPoliceStation);
-router.post('/police-stations', adminController.createPoliceStation);
+router.get('/police-stations', safe('getPoliceStations'));
+router.get('/police-stations/new', safe('getNewPoliceStation'));
+router.post('/police-stations', safe('createPoliceStation'));
 
 // Courts
-router.get('/courts', adminController.getCourts);
-router.get('/courts/new', adminController.getNewCourt);
-router.post('/courts', adminController.createCourt);
+router.get('/courts', safe('getCourts'));
+router.get('/courts/new', safe('getNewCourt'));
+router.post('/courts', safe('createCourt'));
 
 module.exports = router;
