@@ -417,7 +417,7 @@ exports.printPersonRecord = async (req, res) => {
             },
         },
     });
-    res.render('police/print-record', { person, layout: false });
+    res.render('police/print-record', { person, layout: 'layouts/print' });
 };
 
 exports.getNewPerson = (req, res) => {
