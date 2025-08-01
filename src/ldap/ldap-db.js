@@ -1,4 +1,3 @@
-// src/ldap/ldap-db.js
 const Datastore = require('nedb');
 const bcrypt    = require('bcryptjs');
 const path      = process.env.LDAP_DB_FILE;
@@ -27,6 +26,12 @@ function addEntry(dn, attrs, cb) {
     return cb(new Error('Invalid attributes'));
   }
 
+  // Normalize attribute keys to lowercase
+  const normalizedAttrs = Object.entries(attrs).reduce((acc, [key, val]) => {
+    acc[key.toLowerCase()] = val;
+    return acc;
+  }, {});
+
   db.findOne({ dn }, (err, existing) => {
     if (err) {
       console.error(`❌ DB lookup failed for ${dn}:`, err.message);
@@ -40,11 +45,11 @@ function addEntry(dn, attrs, cb) {
 
     let hashedPassword;
     try {
-      if (attrs.userPassword) {
-        hashedPassword = bcrypt.hashSync(attrs.userPassword, 10);
+      if (normalizedAttrs.userpassword) {
+        hashedPassword = bcrypt.hashSync(normalizedAttrs.userpassword, 10);
         console.log(`🔐 Password hashed for ${dn}`);
       } else {
-        console.warn(`⚠️ No userPassword provided for ${dn}`);
+        console.warn(`⚠️ No userpassword provided for ${dn}`);
       }
     } catch (hashErr) {
       console.error(`❌ Password hashing failed for ${dn}:`, hashErr.message);
@@ -53,7 +58,7 @@ function addEntry(dn, attrs, cb) {
 
     const entry = {
       dn,
-      attributes: attrs,
+      attributes: normalizedAttrs,
       ...(hashedPassword && { userPassword: hashedPassword })
     };
 
