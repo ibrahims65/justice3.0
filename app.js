@@ -9,23 +9,21 @@ const logger        = require('morgan');
 
 console.log('🚀 Justice 3.0 booting...');
 
-// 🔒 Error guards
+// 🔒 Global error guards
 process.on('uncaughtException', (err) => {
   console.error('🧨 Uncaught Exception:', err);
 });
-
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason) => {
   console.error('🧨 Unhandled Rejection:', reason);
 });
 
-// 🔧 Initialize app FIRST
 const app = express();
 
 // 🧱 View engine setup
 try {
   const expressLayouts = require('express-ejs-layouts');
   app.use(expressLayouts);
-  app.set('layout', 'layout'); // This looks for views/layout.ejs
+  app.set('layout', 'layout');
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'ejs');
   console.log('✅ View engine configured');
@@ -38,26 +36,33 @@ try {
   app.use(logger('dev'));
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
-  app.use(cookieParser());
 
-  // Session must come before flash
+  // initialize cookie-parser with your session secret
+  app.use(cookieParser(process.env.SESSION_SECRET || 'justice-secret'));
+
+  // session must come before flash
   app.use(session({
     secret: process.env.SESSION_SECRET || 'justice-secret',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false,
+    cookie: {
+      secure: false,
+      maxAge: 1000 * 60 * 60  // 1 hour
+    }
   }));
 
-  // Flash for one-time messages
+  // flash for one-time messages
   app.use(flash());
 
-  // Make session user + flash messages available in all views
+  // make session + flash available in views
   app.use((req, res, next) => {
-    res.locals.user             = req.session.user;
-    res.locals.successMessages  = req.flash('success');
-    res.locals.errorMessages    = req.flash('error');
+    res.locals.user            = req.session.user || null;
+    res.locals.successMessages = req.flash('success');
+    res.locals.errorMessages   = req.flash('error');
     next();
   });
 
+  // breadcrumbs util
   const { getBreadcrumbs } = require('./utils/breadcrumbs');
   app.locals.getBreadcrumbs = getBreadcrumbs;
 
@@ -70,14 +75,13 @@ try {
 
 // 🛣️ Routes
 try {
-  const indexRouter     = require('./routes/index');
-  const authRouter      =require('./routes/auth');
-  const dashboardRouter = require('./routes/dashboard');
+  const indexRouter = require('./routes/index');
+  const authRouter  = require('./routes/auth');
 
-  // Mount auth routes at root so /login and /logout work
+  // auth (login, logout)
   app.use('/', authRouter);
 
-  // Other routes
+  // public home, dashboard, etc.
   app.use('/', indexRouter);
   app.use('/police', require('./routes/police'));
   app.use('/cases', require('./routes/cases'));
@@ -115,8 +119,8 @@ app.use((err, req, res, next) => {
     .status(err.status || 500)
     .render('error', {
       message: err.message,
-      error: app.get('env') === 'development' ? err : {},
-      req: req
+      error:   app.get('env') === 'development' ? err : {},
+      req
     });
 });
 
