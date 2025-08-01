@@ -1,11 +1,31 @@
 // src/ldap/ldap-server.js
-const ldap   = require('ldapjs');
-const db     = require('./ldap-db');
-require('dotenv').config();
 
-const BASE_DN      = process.env.LDAP_BASE_DN;
-const ADMIN_DN     = process.env.LDAP_BIND_DN;
-const ADMIN_PW     = process.env.LDAP_BIND_PW;
+// 1. Load environment and introspect the JSON file
+require('dotenv').config();
+const fs   = require('fs');
+const path = require('path');
+
+const dataFile = process.env.LDAP_DB_FILE || './data/ldap-db.json';
+const absPath  = path.resolve(dataFile);
+
+console.log('⚙️  LDAP will use data file:', absPath);
+console.log('📂  File exists?', fs.existsSync(absPath));
+
+try {
+  const raw  = fs.readFileSync(absPath, 'utf8');
+  const docs = JSON.parse(raw);
+  console.log('✅  Loaded DNs:', docs.map(d => d.dn));
+} catch (err) {
+  console.error('❌  Could not read/parse LDAP DB file:', err.message);
+}
+
+// 2. Now load ldapjs and your db module
+const ldap = require('ldapjs');
+const db   = require('./ldap-db');
+
+const BASE_DN  = process.env.LDAP_BASE_DN;
+const ADMIN_DN = process.env.LDAP_BIND_DN;
+const ADMIN_PW = process.env.LDAP_BIND_PW;
 
 const server = ldap.createServer();
 
@@ -14,10 +34,11 @@ server.bind(ADMIN_DN, (req, res, next) => {
   if (req.credentials !== ADMIN_PW) {
     return next(new ldap.InvalidCredentialsError());
   }
-  res.end(); return next();
+  res.end();
+  return next();
 });
 
-// User bind (authentication)
+// User bind
 server.bind(BASE_DN, (req, res, next) => {
   const dn       = req.dn.toString();
   const password = req.credentials;
@@ -25,7 +46,8 @@ server.bind(BASE_DN, (req, res, next) => {
     if (err || !entry || !db.verifyPassword(entry, password)) {
       return next(new ldap.InvalidCredentialsError());
     }
-    res.end(); return next();
+    res.end();
+    return next();
   });
 });
 
@@ -34,24 +56,30 @@ server.search(BASE_DN, (req, res, next) => {
   db.search(req.dn.toString(), req.filter, (err, entries) => {
     if (err) return next(err);
     entries.forEach(e => res.send({ dn: e.dn, attributes: e.attributes }));
-    res.end(); return next();
+    res.end();
+    return next();
   });
 });
 
-// Add (for admin UI/scripts)
+// Add
 server.add(BASE_DN, (req, res, next) => {
   const dn    = req.dn.toString();
-  const attrs = req.toObject().attributes.reduce((acc, a) => {
-    acc[a.type] = a.vals[0]; return acc;
-  }, {});
+  const attrs = req
+    .toObject()
+    .attributes.reduce((acc, a) => {
+      acc[a.type] = a.vals[0];
+      return acc;
+    }, {});
+
   db.addEntry(dn, attrs, err => {
     if (err) return next(new ldap.EntryAlreadyExistsError(dn));
-    res.end(); return next();
+    res.end();
+    return next();
   });
 });
 
 // Start listening
-const port = parseInt(process.env.LDAP_PORT, 10);
+const port = parseInt(process.env.LDAP_PORT, 10) || 1389;
 server.listen(port, '0.0.0.0', () => {
   console.log(`Embedded LDAP running at ldap://0.0.0.0:${port}`);
 });
