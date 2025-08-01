@@ -52,7 +52,7 @@ router.post('/remand/new/:bookingId', ensureAuthenticated, policeController.post
 router.get('/cases/:caseId/view', ensureAuthenticated, policeController.getCaseDetail);
 
 // Dynamic module routes
-const caseModules = ['evidence', 'investigations', 'victims', 'witnesses', 'hearings', 'warrants', 'charges'];
+const caseModules = ['evidence', 'investigations', 'victims', 'witnesses', 'hearings', 'warrants', 'charges', 'affiliations', 'legalReps'];
 caseModules.forEach(mod => {
     const controllerName = mod.charAt(0).toUpperCase() + mod.slice(1);
     router.get(

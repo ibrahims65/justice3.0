@@ -1,4 +1,6 @@
-<form action="/police/cases/<%= caseData.id %>/investigations" method="POST" class="space-y-4">
+<div class="subform-section">
+    <h4>Add Investigation</h4>
+    <form action="/police/cases/<%= caseData.id %>/investigations" method="POST" class="space-y-4">
     <div>
         <label for="investigatorName" class="block text-sm font-medium text-gray-700">Investigator Name</label>
         <input type="text" name="investigatorName" id="investigatorName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
@@ -32,4 +34,5 @@
         <textarea name="details" id="details" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
     </div>
     <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">Add Investigation</button>
-</form>
+    </form>
+</div>

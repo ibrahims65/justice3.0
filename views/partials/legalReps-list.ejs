@@ -1,0 +1,14 @@
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold">Legal Representation</h2>
+</div>
+<% if (caseData.legalReps && caseData.legalReps.length > 0) { %>
+  <ul class="divide-y divide-gray-200">
+    <% caseData.legalReps.forEach(l => { %>
+      <li class="py-2"><%= l.lawyerName %> (<%= l.roleType %>) - <%= l.firm %></li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <div class="text-center py-8 bg-gray-50 rounded-lg">
+    <p class="text-gray-500">No legal representation has been added yet.</p>
+  </div>
+<% } %>
