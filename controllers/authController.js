@@ -51,18 +51,28 @@ exports.postLogin = (req, res, next) => {
     };
     console.log('🔍 [DEBUG] session after assignment:', req.session);
 
-    // Let express-session handle saving automatically on redirect.
-    const rawDN = Array.isArray(entry.attributes.memberof)
-      ? entry.attributes.memberof[0]
-      : entry.attributes.memberof;
+    req.session.save(saveErr => {
+      if (saveErr) {
+        console.error('🔍 [ERROR] session.save failed:', saveErr);
+        return next(saveErr);
+      }
 
-    const group = rawDN
-      .split(',')[0]
-      .split('=')[1]
-      .toLowerCase();
+      // debug cookie header
+      console.log('🔍 [DEBUG] Set-Cookie header:', res.getHeader('Set-Cookie'));
 
-    // The redirect will trigger the session save and Set-Cookie header.
-    res.redirect(`/${group}`);
+      // extract the "cn" portion of the first DN in memberof
+      const rawDN = Array.isArray(entry.attributes.memberof)
+        ? entry.attributes.memberof[0]
+        : entry.attributes.memberof;
+
+      // rawDN looks like "cn=Police,ou=groups,dc=justice,dc=local"
+      const group = rawDN
+        .split(',')[0]   // ["cn=Police", ...]
+        .split('=')[1]   // "Police"
+        .toLowerCase();  // "police"
+
+      res.redirect(`/${group}`);
+    });
   });
 };
 
