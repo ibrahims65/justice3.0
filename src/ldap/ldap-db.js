@@ -14,8 +14,8 @@ function verifyPassword(entry, pwd) {
 }
 
 function addEntry(dn, attrs, cb) {
-  console.log(`🧪 Attempting to add entry: ${dn}`);
-  console.log(`📦 Attributes:`, attrs);
+  console.log(`🧪 db.addEntry called for: ${dn}`);
+  console.log(`📦 Raw attrs:`, attrs);
 
   if (!dn || typeof dn !== 'string') {
     console.error('❌ Invalid DN');
@@ -38,22 +38,33 @@ function addEntry(dn, attrs, cb) {
       return cb(new Error('EntryAlreadyExists'));
     }
 
-    const hashedPassword = attrs.userPassword
-      ? bcrypt.hashSync(attrs.userPassword, 10)
-      : undefined;
+    let hashedPassword;
+    try {
+      if (attrs.userPassword) {
+        hashedPassword = bcrypt.hashSync(attrs.userPassword, 10);
+        console.log(`🔐 Password hashed for ${dn}`);
+      } else {
+        console.warn(`⚠️ No userPassword provided for ${dn}`);
+      }
+    } catch (hashErr) {
+      console.error(`❌ Password hashing failed for ${dn}:`, hashErr.message);
+      return cb(new Error('PasswordHashingFailed'));
+    }
 
     const entry = {
       dn,
       attributes: attrs,
-      userPassword: hashedPassword
+      ...(hashedPassword && { userPassword: hashedPassword })
     };
+
+    console.log(`📄 Final entry to insert:`, entry);
 
     db.insert(entry, (err, newDoc) => {
       if (err) {
-        console.error(`❌ Failed to insert ${dn}:`, err.message);
+        console.error(`❌ Insert failed for ${dn}:`, err.message);
         return cb(err);
       }
-      console.log(`✅ Entry added: ${dn}`);
+      console.log(`✅ Insert succeeded for ${dn}`);
       return cb(null);
     });
   });
