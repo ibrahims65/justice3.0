@@ -31,35 +31,35 @@
         <div class="md:col-span-3">
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <% if (module === 'evidence') { %>
-                    <%- include('../partials/evidence-list', { case: caseData }) %>
+                    <%- include('../partials/evidence-list', { caseData: caseData }) %>
                     <hr class="my-6">
                     <h3 class="text-lg font-bold mb-4">Add Evidence</h3>
-                    <%- include('../partials/evidence-form', { case: caseData }) %>
+                    <%- include('../partials/evidence-form', { caseData: caseData }) %>
                 <% } else if (module === 'investigations') { %>
-                    <%- include('../partials/investigations-list', { case: caseData }) %>
+                    <%- include('../partials/investigations-list', { caseData: caseData }) %>
                     <hr class="my-6">
                     <h3 class="text-lg font-bold mb-4">Add Investigation</h3>
-                    <%- include('../partials/investigations-form', { case: caseData }) %>
+                    <%- include('../partials/investigations-form', { caseData: caseData }) %>
                 <% } else if (module === 'victims') { %>
-                    <%- include('../partials/victims-list', { case: caseData }) %>
+                    <%- include('../partials/victims-list', { caseData: caseData }) %>
                     <hr class="my-6">
                     <h3 class="text-lg font-bold mb-4">Add Victim</h3>
-                    <%- include('../partials/victim-form', { case: caseData }) %>
+                    <%- include('../partials/victim-form', { caseData: caseData }) %>
                 <% } else if (module === 'witnesses') { %>
-                    <%- include('../partials/witnesses-list', { case: caseData }) %>
+                    <%- include('../partials/witnesses-list', { caseData: caseData }) %>
                     <hr class="my-6">
                     <h3 class="text-lg font-bold mb-4">Add Witness</h3>
-                    <%- include('../partials/witness-form', { case: caseData }) %>
+                    <%- include('../partials/witness-form', { caseData: caseData }) %>
                 <% } else if (module === 'hearings') { %>
-                    <%- include('../partials/hearings-list', { case: caseData }) %>
+                    <%- include('../partials/hearings-list', { caseData: caseData }) %>
                     <hr class="my-6">
                     <h3 class="text-lg font-bold mb-4">Add Hearing</h3>
-                    <%- include('../partials/hearing-form', { case: caseData }) %>
+                    <%- include('../partials/hearing-form', { caseData: caseData }) %>
                 <% } else if (module === 'warrants') { %>
-                    <%- include('../partials/warrants-list', { case: caseData }) %>
+                    <%- include('../partials/warrants-list', { caseData: caseData }) %>
                     <hr class="my-6">
                     <h3 class="text-lg font-bold mb-4">Add Warrant</h3>
-                    <%- include('../partials/warrants-form', { case: caseData }) %>
+                    <%- include('../partials/warrants-form', { caseData: caseData }) %>
                 <% } %>
             </div>
         </div>

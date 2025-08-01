@@ -1,7 +1,7 @@
 <h2>Evidence</h2>
-<% if (case.evidence && case.evidence.length > 0) { %>
+<% if (caseData.evidence && caseData.evidence.length > 0) { %>
   <ul>
-    <% case.evidence.forEach(e => { %>
+    <% caseData.evidence.forEach(e => { %>
       <li><%= e.evidenceType %>: <%= e.description %></li>
     <% }) %>
   </ul>

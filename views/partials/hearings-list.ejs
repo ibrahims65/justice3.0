@@ -1,7 +1,7 @@
 <h2>Hearings</h2>
-<% if (case.hearings && case.hearings.length > 0) { %>
+<% if (caseData.hearings && caseData.hearings.length > 0) { %>
   <ul>
-    <% case.hearings.forEach(h => { %>
+    <% caseData.hearings.forEach(h => { %>
       <li><%= h.hearingDate.toLocaleString() %> — <%= h.verdict || 'No verdict' %></li>
     <% }) %>
   </ul>

@@ -1,7 +1,7 @@
 <h2>Investigations</h2>
-<% if (case.investigations && case.investigations.length > 0) { %>
+<% if (caseData.investigations && caseData.investigations.length > 0) { %>
   <ul>
-    <% case.investigations.forEach(i => { %>
+    <% caseData.investigations.forEach(i => { %>
       <li><%= i.investigatorName %>: <%= i.details %></li>
     <% }) %>
   </ul>

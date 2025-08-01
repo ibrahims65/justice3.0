@@ -1,7 +1,7 @@
 <h2>Warrants</h2>
-<% if (case.warrants && case.warrants.length > 0) { %>
+<% if (caseData.warrants && caseData.warrants.length > 0) { %>
   <ul>
-    <% case.warrants.forEach(w => { %>
+    <% caseData.warrants.forEach(w => { %>
       <li><%= w.status %>: <%= w.details %></li>
     <% }) %>
   </ul>
