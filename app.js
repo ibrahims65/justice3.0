@@ -19,20 +19,16 @@ process.on('unhandledRejection', (reason) => {
 
 const app = express();
 
-// 🧱 View engine setup
+// 🧩 Middleware
 try {
+  // 🧱 View engine setup
   const expressLayouts = require('express-ejs-layouts');
   app.use(expressLayouts);
   app.set('layout', 'layout');
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'ejs');
   console.log('✅ View engine configured');
-} catch (err) {
-  console.error('❌ View engine setup failed:', err);
-}
 
-// 🧩 Middleware
-try {
   app.use(logger('dev'));
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
