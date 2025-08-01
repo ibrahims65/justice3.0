@@ -44,6 +44,16 @@
           <label for="arrestingOfficerRank" class="block text-gray-700 text-sm font-bold mb-2">Arresting Officer Rank</label>
           <input type="text" name="arrestingOfficerRank" id="arrestingOfficerRank" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="<%= typeof arrestingOfficerRank !== 'undefined' ? arrestingOfficerRank : '' %>">
         </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div>
+            <label for="incarcerationStartDate" class="block text-sm font-medium text-gray-700">Custody Start Date</label>
+            <input type="datetime-local" name="incarcerationStartDate" id="incarcerationStartDate" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+          </div>
+          <div>
+            <label for="custodyExpiresAt" class="block text-sm font-medium text-gray-700">Custody End Date</label>
+            <input type="datetime-local" name="custodyExpiresAt" id="custodyExpiresAt" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+          </div>
+        </div>
         <div class="mt-8 flex justify-end">
           <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
             Create Booking

@@ -62,6 +62,7 @@ try {
   app.locals.getBreadcrumbs = getBreadcrumbs;
 
   app.use(express.static(path.join(__dirname, 'public')));
+  app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
   console.log('✅ Middleware configured');
 } catch (err) {
   console.error('❌ Middleware setup failed:', err);
