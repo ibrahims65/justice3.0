@@ -42,12 +42,15 @@ try {
 
   // session must come before flash
   app.use(session({
+    name: 'justice.sid',
     secret: process.env.SESSION_SECRET || 'justice-secret',
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false,
-      maxAge: 1000 * 60 * 60  // 1 hour
+      httpOnly: true,         // 🔒 ensures cookie is not accessible via JS
+      secure: false,          // 🔐 set to true if using HTTPS
+      sameSite: 'lax',        // 🛡️ protects against CSRF
+      maxAge: 1000 * 60 * 60  // ⏱️ 1 hour
     }
   }));
 
@@ -106,12 +109,6 @@ app.get('/health', (req, res) => {
   res.send('Justice 3.0 is alive');
 });
 
-// 🚦 Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on port ${PORT}`);
-});
-
 // ❗️ Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -122,6 +119,12 @@ app.use((err, req, res, next) => {
       error:   app.get('env') === 'development' ? err : {},
       req
     });
+});
+
+// 🚦 Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`✅ Server is running on port ${PORT}`);
 });
 
 module.exports = app;
