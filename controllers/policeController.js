@@ -1,6 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../lib/prisma');
 const { generateCaseNumber } = require('../utils/caseNumber');
-const prisma = new PrismaClient();
 
 const policeMetricsService = require('../services/policeMetricsService');
 
@@ -16,6 +15,8 @@ exports.getPoliceDashboard = async (req, res, next) => {
 
         const metrics = await policeMetricsService.getDashboardMetrics(userId);
 
+        console.log('--- Prisma Object Keys ---');
+        console.log(Object.keys(prisma));
         const recentBookings = await prisma.booking.findMany({
             where: { arrestingOfficerId: userId },
             orderBy: { bookingDate: 'desc' },
