@@ -8,8 +8,8 @@ router.get('/dashboard', ensureAuthenticated, policeController.getDashboardData)
 
 // Management
 router.get('/management', ensureAuthenticated, policeController.getManagementData);
-router.get('/cases', ensureAuthenticated, (req, res) => res.redirect('/police/management'));
-router.get('/people', ensureAuthenticated, (req, res) => res.redirect('/police/management'));
+router.get('/cases', ensureAuthenticated, policeController.getCaseList);
+router.get('/people', ensureAuthenticated, policeController.getPersonList);
 
 const checkStep = (step) => (req, res, next) => {
     if (req.session.caseData && req.session.caseData.step >= step) {

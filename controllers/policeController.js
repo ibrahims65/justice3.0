@@ -2,119 +2,60 @@ const { PrismaClient } = require('@prisma/client');
 const { generateCaseNumber } = require('../utils/caseNumber');
 const prisma = new PrismaClient();
 
-async function getDashboardStats(officerId) {
-  const activeCases = await prisma.case.count({
-    where: {
-      booking: {
-        arrestingOfficerId: officerId,
-      },
-      status: 'Open',
-    },
-  });
-
-  const totalCases = await prisma.case.count({
-    where: {
-      booking: {
-        arrestingOfficerId: officerId,
-      },
-    },
-  });
-
-  const registeredPersons = await prisma.person.count({
-    where: {
-      bookings: {
-        some: {
-          arrestingOfficerId: officerId,
-        },
-      },
-    },
-  });
-
-  return {
-    active: activeCases,
-    total: totalCases,
-    registered: registeredPersons,
-  };
-}
-
-async function getExpiringCustody(officerId) {
-  const now = new Date();
-  const twentyFourHoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-
-  return prisma.booking.findMany({
-    where: {
-      arrestingOfficerId: officerId,
-      custodyExpiresAt: {
-        gte: now,
-        lte: twentyFourHoursFromNow,
-      },
-    },
-    include: {
-      person: true,
-    },
-  });
-}
-
-async function getUserBookings(officerId) {
-  return prisma.booking.findMany({
-    where: {
-      arrestingOfficerId: officerId,
-    },
-    include: {
-      person: true,
-      case: true,
-    },
-    orderBy: {
-      bookingDate: 'desc',
-    },
-    take: 10,
-  });
-}
-
-async function getBookingStatusChart(officerId) {
-  const statuses = await prisma.booking.groupBy({
-    by: ['status'],
-    where: {
-      arrestingOfficerId: officerId,
-    },
-    _count: {
-      status: true,
-    },
-  });
-
-  return {
-    labels: statuses.map(s => s.status),
-    data: statuses.map(s => s._count.status),
-  };
-}
-
 exports.getDashboardData = async (req, res, next) => {
-  try {
-    // guard: did we actually log in and set req.session.user?
-    const sessionUser = req.session.user;
-    if (!sessionUser || !sessionUser.id) {
-      req.flash('error', 'Please log in to view the dashboard');
-      return res.redirect('/login');
+    try {
+        const sessionUser = req.session.user;
+        if (!sessionUser || !sessionUser.id) {
+            req.flash('error', 'Please log in to view the dashboard');
+            return res.redirect('/login');
+        }
+
+        const userId = sessionUser.id;
+
+        const caseCount = await prisma.case.count({
+            where: { booking: { arrestingOfficerId: userId } },
+        });
+
+        const personCount = await prisma.person.count({
+            where: {
+                bookings: { some: { arrestingOfficerId: userId } },
+            },
+        });
+
+        res.render('police/police_dashboard', {
+            user: sessionUser,
+            caseCount,
+            personCount,
+            req: req,
+        });
+    } catch (err) {
+        next(err);
     }
+};
 
-    const userId = sessionUser.id;
+exports.getCaseList = async (req, res, next) => {
+    try {
+        const cases = await prisma.case.findMany({
+            where: { booking: { arrestingOfficerId: req.session.user.id } },
+            include: { booking: true },
+        });
+        res.render('police/case-list', { cases, user: req.session.user, req });
+    } catch (err) {
+        next(err);
+    }
+};
 
-    const stats = await getDashboardStats(userId);
-    const expiringCustody = await getExpiringCustody(userId);
-    const userBookings = await getUserBookings(userId);
-    const bookingStatusData = await getBookingStatusChart(userId);
-
-    res.render('police/police_dashboard', {
-      user: sessionUser,
-      stats,
-      expiringCustody,
-      userBookings,
-      bookingStatusData,
-      req: req,
-    });
-  } catch (err) {
-    next(err);
-  }
+exports.getPersonList = async (req, res, next) => {
+    try {
+        const people = await prisma.person.findMany({
+            where: {
+                bookings: { some: { arrestingOfficerId: req.session.user.id } },
+            },
+        });
+        res.render('police/person-list', { people, user: req.session.user, req });
+    } catch (err) {
+        next(err);
+    }
 };
 
 exports.getManagementData = async (req, res) => {
