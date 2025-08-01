@@ -1,24 +1,34 @@
 const router = require('express').Router();
 const adminCtrl = require('../../controllers/adminController');
 
+// 🛡️ Defensive wrapper to catch missing handlers
+const safe = (handlerName) => {
+  const fn = adminCtrl[handlerName];
+  if (typeof fn !== 'function') {
+    console.error(`❌ Missing adminController.${handlerName}`);
+    return (req, res) => res.status(500).json({ error: `Handler "${handlerName}" not implemented` });
+  }
+  return fn;
+};
+
 // Regions
-router.get('/regions',    adminCtrl.listRegions);
-router.post('/regions',   adminCtrl.createRegionApi);
+router.get('/regions',    safe('listRegions'));
+router.post('/regions',   safe('createRegionApi'));
 
 // Districts
-router.get('/districts',  adminCtrl.listDistricts);
-router.post('/districts', adminCtrl.createDistrictApi);
+router.get('/districts',  safe('listDistricts'));
+router.post('/districts', safe('createDistrictApi'));
 
 // Cities
-router.get('/cities',     adminCtrl.listCities);
-router.post('/cities',    adminCtrl.createCityApi);
+router.get('/cities',     safe('listCities'));
+router.post('/cities',    safe('createCityApi'));
 
 // Police Stations
-router.get('/stations',   adminCtrl.listStations);
-router.post('/stations',  adminCtrl.createStationApi);
+router.get('/stations',   safe('listStations'));
+router.post('/stations',  safe('createStationApi'));
 
 // Courts
-router.get('/courts',     adminCtrl.listCourts);
-router.post('/courts',    adminCtrl.createCourtApi);
+router.get('/courts',     safe('listCourts'));
+router.post('/courts',    safe('createCourtApi'));
 
 module.exports = router;
