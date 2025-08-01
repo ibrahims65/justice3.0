@@ -1,10 +1,11 @@
 // app.js
 require('dotenv').config();
-const express = require('express');
-const path = require('path');
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const express       = require('express');
+const path          = require('path');
+const session       = require('express-session');
+const flash         = require('connect-flash');
+const cookieParser  = require('cookie-parser');
+const logger        = require('morgan');
 
 console.log('🚀 Justice 3.0 booting...');
 
@@ -38,21 +39,29 @@ try {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
-  app.use(express.static(path.join(__dirname, 'public')));
+
+  // Session must come before flash
   app.use(session({
-    secret: 'justice-secret',
+    secret: process.env.SESSION_SECRET || 'justice-secret',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: true
   }));
 
+  // Flash for one-time messages
+  app.use(flash());
+
+  // Make session user + flash messages available in all views
   app.use((req, res, next) => {
-    res.locals.user = req.session.user;
+    res.locals.user             = req.session.user;
+    res.locals.successMessages  = req.flash('success');
+    res.locals.errorMessages    = req.flash('error');
     next();
   });
 
   const { getBreadcrumbs } = require('./utils/breadcrumbs');
   app.locals.getBreadcrumbs = getBreadcrumbs;
 
+  app.use(express.static(path.join(__dirname, 'public')));
   console.log('✅ Middleware configured');
 } catch (err) {
   console.error('❌ Middleware setup failed:', err);
@@ -60,9 +69,9 @@ try {
 
 // 🛣️ Routes
 try {
-  const indexRouter = require('./routes/index');
-  const usersRouter = require('./routes/users');
-  const authRouter = require('./routes/auth');
+  const indexRouter     = require('./routes/index');
+  const usersRouter     = require('./routes/users');
+  const authRouter      = require('./routes/auth');
   const dashboardRouter = require('./routes/dashboard');
 
   app.use('/', indexRouter);
@@ -89,13 +98,16 @@ app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`);
 });
 
+// ❗️ Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(err.status || 500).render('error', {
-    message: err.message,
-    error: app.get('env') === 'development' ? err : {},
-    req: req,
-  });
+  res
+    .status(err.status || 500)
+    .render('error', {
+      message: err.message,
+      error: app.get('env') === 'development' ? err : {},
+      req: req
+    });
 });
 
 module.exports = app;
