@@ -3,29 +3,31 @@ const prisma = new PrismaClient();
 
 async function getDashboardMetrics(userId) {
     const totalCases = await prisma.case.count({
-        where: { booking: { arrestingOfficerId: userId } },
+        where: { arrests: { some: { officerId: userId } } },
     });
 
     const openCases = await prisma.case.count({
         where: {
             status: 'Open',
-            booking: { arrestingOfficerId: userId },
+            arrests: { some: { officerId: userId } },
         },
     });
 
-    const activeRemands = await prisma.remandRequest.count({
+    const activeRemands = await prisma.bailRemand.count({
         where: {
-            status: 'approved',
-            booking: { arrestingOfficerId: userId },
+            case: {
+                arrests: { some: { officerId: userId } },
+            },
+            remandEndDate: null,
         },
     });
 
     const pendingEvidence = await prisma.evidence.count({
         where: {
             case: {
-                booking: { arrestingOfficerId: userId },
+                arrests: { some: { officerId: userId } },
             },
-            storageLocation: null, // Example criteria for pending
+            chainOfCustodyStatus: 'Pending',
         },
     });
 
