@@ -13,8 +13,11 @@ exports.postLogin = async (req, res) => {
     });
 
     if (user && bcrypt.compareSync(password, user.password)) {
-        req.session.userId = user.id;
-        req.session.user = user;
+        // store a minimal user object so we can read .id and .username everywhere
+        req.session.user = {
+            id: user.id,
+            username: user.username
+        };
         return res.redirect('/dashboard');
     } else {
         req.flash('error', 'Invalid username or password');
