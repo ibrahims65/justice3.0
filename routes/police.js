@@ -19,9 +19,11 @@ const checkStep = (step) => (req, res, next) => {
     }
 };
 
+const upload = require('../middleware/upload');
+
 // Case Creation
 router.get('/cases/new/step1', ensureAuthenticated, policeController.getNewCaseStep1);
-router.post('/cases/new/step1', ensureAuthenticated, policeController.postNewCaseStep1);
+router.post('/cases/new/step1', ensureAuthenticated, upload.single('photo'), policeController.postNewCaseStep1);
 router.get('/cases/new/step2', ensureAuthenticated, checkStep(2), policeController.getNewCaseStep2);
 router.post('/cases/new/step2', ensureAuthenticated, checkStep(2), policeController.postNewCaseStep2);
 router.get('/cases/new/step3', ensureAuthenticated, checkStep(3), policeController.getNewCaseStep3);

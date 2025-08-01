@@ -8,7 +8,7 @@
       <div class="bg-blue-600 h-2.5 rounded-full" style="width: 33%"></div>
     </div>
 
-    <form action="/police/cases/new/step1" method="POST">
+    <form action="/police/cases/new/step1" method="POST" enctype="multipart/form-data">
       <div class="bg-white shadow overflow-hidden sm:rounded-lg p-8 mt-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
@@ -32,8 +32,8 @@
             <input type="text" name="address" id="address" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
           </div>
           <div>
-            <label for="photoUrl" class="block text-sm font-medium text-gray-700">Photo URL</label>
-            <input type="text" name="photoUrl" id="photoUrl" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+            <label for="photo" class="block text-sm font-medium text-gray-700">Photo</label>
+            <input type="file" name="photo" id="photo" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
           </div>
         </div>
         <div class="mt-8 flex justify-end">
