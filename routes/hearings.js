@@ -17,7 +17,7 @@ router.post('/', checkRole(['Court']), async (req, res) => {
     });
 
     if (caseRecord.status !== 'Accepted') {
-      req.flash('error', 'Cannot schedule a hearing until the charge-sheet has been approved by the prosecutor.');
+      // req.flash('error', 'Cannot schedule a hearing until the charge-sheet has been approved by the prosecutor.');
       return res.redirect(`/cases/${caseId}`);
     }
 

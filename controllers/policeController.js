@@ -7,7 +7,7 @@ exports.getPoliceDashboard = async (req, res, next) => {
     try {
         const sessionUser = req.session.user;
         if (!sessionUser || !sessionUser.id) {
-            req.flash('error', 'Please log in to view the dashboard');
+            // req.flash('error', 'Please log in to view the dashboard');
             return res.redirect('/login');
         }
 
@@ -77,7 +77,7 @@ exports.getPersonList = async (req, res, next) => {
 exports.getManagementData = async (req, res) => {
     try {
         if (!req.session.user) {
-            req.flash('error', 'You must be logged in to view this page.');
+            // req.flash('error', 'You must be logged in to view this page.');
             return res.redirect('/login');
         }
         const officerId = req.session.user.id;
@@ -299,7 +299,7 @@ exports.postNewRemandRequest = async (req, res, next) => {
         // Placeholder for audit log
         console.log(`Remand/Bail request created for booking ${req.params.bookingId} by ${req.session.user.username}`);
 
-        req.flash('success', 'Remand/Bail request submitted successfully.');
+        // req.flash('success', 'Remand/Bail request submitted successfully.');
         res.redirect('/police');
     } catch (error) {
         next(error);
