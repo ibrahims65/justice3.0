@@ -1,7 +1,7 @@
 <h2>Evidence</h2>
-<% if (booking.evidence && booking.evidence.length > 0) { %>
+<% if (case.evidence && case.evidence.length > 0) { %>
   <ul>
-    <% booking.evidence.forEach(e => { %>
+    <% case.evidence.forEach(e => { %>
       <li><%= e.evidenceType %>: <%= e.description %></li>
     <% }) %>
   </ul>

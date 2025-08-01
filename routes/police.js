@@ -42,4 +42,23 @@ router.post('/bookings/:id/edit', ensureAuthenticated, policeController.postEdit
 // Search
 router.get('/search', ensureAuthenticated, policeController.search);
 
+// Case Detail View
+router.get('/cases/:caseId/view', ensureAuthenticated, policeController.getCaseDetail);
+
+// Dynamic module routes
+const caseModules = ['evidence', 'investigations', 'victims', 'witnesses', 'hearings', 'warrants'];
+caseModules.forEach(mod => {
+    const controllerName = mod.charAt(0).toUpperCase() + mod.slice(1);
+    router.get(
+        `/cases/:caseId/${mod}`,
+        ensureAuthenticated,
+        policeController[`get${controllerName}List`]
+    );
+    router.post(
+        `/cases/:caseId/${mod}`,
+        ensureAuthenticated,
+        policeController[`post${controllerName}`]
+    );
+});
+
 module.exports = router;
