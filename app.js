@@ -74,14 +74,18 @@ try {
   const authRouter      = require('./routes/auth');
   const dashboardRouter = require('./routes/dashboard');
 
+  // Mount auth routes at root so /login and /logout work
+  app.use('/', authRouter);
+
+  // Other routes
   app.use('/', indexRouter);
   app.use('/users', usersRouter);
-  app.use('/auth', authRouter);
   app.use('/dashboard', dashboardRouter);
   app.use('/police', require('./routes/police'));
   app.use('/api/search', require('./routes/api/search.routes'));
   app.use('/api/bookings', require('./routes/api/bookings'));
   app.use('/admin', require('./routes/admin'));
+
   console.log('✅ Routes registered');
 } catch (err) {
   console.error('❌ Route registration failed:', err);
