@@ -89,10 +89,9 @@ server.add('', (req, res, next) => {
 
   let attrs;
   try {
-    const raw = req.toObject();
-    console.log(`🔍 Raw req.toObject():`, raw);
+    console.log(`🔍 Raw req.attributes:`, req.attributes);
 
-    attrs = raw.attributes.reduce((acc, a) => {
+    attrs = req.attributes.reduce((acc, a) => {
       if (!a.type || !a.vals || !Array.isArray(a.vals) || a.vals.length === 0) {
         console.warn(`⚠️ Malformed attribute:`, a);
         return acc;
@@ -106,6 +105,14 @@ server.add('', (req, res, next) => {
   }
 
   console.log(`📦 Parsed attributes:`, attrs);
+
+  // 🔐 Minimal schema validation
+  const REQUIRED_FIELDS = ['objectClass'];
+  REQUIRED_FIELDS.forEach(field => {
+    if (!attrs[field]) {
+      console.warn(`⚠️ Missing required field: ${field} for ${dn}`);
+    }
+  });
 
   db.addEntry(dn, attrs, err => {
     if (err) {
