@@ -127,8 +127,8 @@ exports.getNewCaseStep1 = (req, res) => {
 };
 
 exports.postNewCaseStep1 = (req, res) => {
-    console.log('Session caseData:', req.session.caseData);
-    req.session.caseData = { ...req.session.caseData, ...req.body, step: 2 };
+    const photoUrl = req.file ? `/uploads/${req.file.filename}` : null;
+    req.session.caseData = { ...req.session.caseData, ...req.body, photoUrl, step: 2 };
     res.redirect('/police/cases/new/step2');
 };
 
@@ -607,6 +607,11 @@ exports.getCaseDetail = async (req, res, next) => {
                 witnesses: true,
                 hearings: true,
                 warrants: true,
+                booking: {
+                    include: {
+                        person: true,
+                    },
+                },
             },
         });
 
