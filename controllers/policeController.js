@@ -627,7 +627,7 @@ exports.getCaseDetail = async (req, res, next) => {
         }, {});
 
         res.render('police/case-detail', {
-            case: caseData,
+            caseData: caseData,
             counts,
             labels,
             icons,
