@@ -14,7 +14,7 @@ exports.postLogin = (req, res, next) => {
 
   if (!uid || !pwd) {
     console.warn('🔍 [DEBUG] Missing credentials:', { uid, pwd });
-    req.flash('error', 'Invalid credentials');
+      // req.flash('error', 'Invalid credentials');
     return res.redirect('/login');
   }
 
@@ -31,7 +31,7 @@ exports.postLogin = (req, res, next) => {
 
     if (!entry) {
       console.warn('🔍 [DEBUG] No entry for DN:', dn);
-      req.flash('error', 'Invalid credentials');
+      // req.flash('error', 'Invalid credentials');
       return res.redirect('/login');
     }
 
@@ -39,7 +39,7 @@ exports.postLogin = (req, res, next) => {
     console.log(`🔍 [DEBUG] password verify for "${uid}":`, ok);
     if (!ok) {
       console.warn('🔍 [DEBUG] Password mismatch for UID:', uid);
-      req.flash('error', 'Invalid credentials');
+      // req.flash('error', 'Invalid credentials');
       return res.redirect('/login');
     }
 

@@ -3,7 +3,6 @@ require('dotenv').config();
 const express       = require('express');
 const path          = require('path');
 const session       = require('express-session');
-const flash         = require('connect-flash');
 const cookieParser  = require('cookie-parser');
 const logger        = require('morgan');
 
@@ -58,14 +57,9 @@ try {
 });
 
 
-  // flash for one-time messages
-  app.use(flash());
-
-  // make session + flash available in views
+  // make session available in views
   app.use((req, res, next) => {
     res.locals.user            = req.session.user || null;
-    res.locals.successMessages = req.flash('success');
-    res.locals.errorMessages   = req.flash('error');
     next();
   });
 
