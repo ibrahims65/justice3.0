@@ -9,8 +9,8 @@ exports.postLogin = (req, res, next) => {
   console.log('🔍 [DEBUG] postLogin invoked, body:', req.body);
 
   // support form fields named "uid" or "username"
-  const uid   = req.body.uid || req.body.username;
-  const pwd   = req.body.password;
+  const uid = req.body.uid || req.body.username;
+  const pwd = req.body.password;
 
   if (!uid || !pwd) {
     console.warn('🔍 [DEBUG] Missing credentials:', { uid, pwd });
@@ -38,6 +38,7 @@ exports.postLogin = (req, res, next) => {
     const ok = ldap.verifyPassword(entry, pwd);
     console.log(`🔍 [DEBUG] password verify for "${uid}":`, ok);
     if (!ok) {
+      console.warn('🔍 [DEBUG] Password mismatch for UID:', uid);
       req.flash('error', 'Invalid credentials');
       return res.redirect('/login');
     }
@@ -56,11 +57,20 @@ exports.postLogin = (req, res, next) => {
         return next(saveErr);
       }
 
-      // should now show your cookie header
+      // debug cookie header
       console.log('🔍 [DEBUG] Set-Cookie header:', res.getHeader('Set-Cookie'));
 
-      // redirect by group
-      const group = entry.attributes.memberof.split('=')[1].toLowerCase();
+      // extract the "cn" portion of the first DN in memberof
+      const rawDN = Array.isArray(entry.attributes.memberof)
+        ? entry.attributes.memberof[0]
+        : entry.attributes.memberof;
+
+      // rawDN looks like "cn=Police,ou=groups,dc=justice,dc=local"
+      const group = rawDN
+        .split(',')[0]   // ["cn=Police", ...]
+        .split('=')[1]   // "Police"
+        .toLowerCase();  // "police"
+
       res.redirect(`/${group}`);
     });
   });
