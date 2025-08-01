@@ -1,2 +1,29 @@
-<h1>Welcome, <%= user.username %></h1>
-<p>Role: <%= user.role.name %></p>
+<h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold text-gray-800">Regions</h2>
+    <p class="mt-2">Manage the regions in the system.</p>
+    <a href="/admin/regions" class="text-blue-500 hover:underline mt-4 inline-block">Manage Regions</a>
+  </div>
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold text-gray-800">Districts</h2>
+    <p class="mt-2">Manage the districts in the system.</p>
+    <a href="/admin/districts" class="text-blue-500 hover:underline mt-4 inline-block">Manage Districts</a>
+  </div>
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold text-gray-800">Cities</h2>
+    <p class="mt-2">Manage the cities in the system.</p>
+    <a href="/admin/cities" class="text-blue-500 hover:underline mt-4 inline-block">Manage Cities</a>
+  </div>
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold text-gray-800">Police Stations</h2>
+    <p class="mt-2">Manage the police stations in the system.</p>
+    <a href="/admin/police-stations" class="text-blue-500 hover:underline mt-4 inline-block">Manage Police Stations</a>
+  </div>
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold text-gray-800">Courts</h2>
+    <p class="mt-2">Manage the courts in the system.</p>
+    <a href="/admin/courts" class="text-blue-500 hover:underline mt-4 inline-block">Manage Courts</a>
+  </div>
+</div>
