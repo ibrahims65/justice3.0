@@ -1,49 +1,39 @@
-const prisma = require('../lib/prisma');
-const bcrypt = require('bcryptjs');
+// controllers/authController.js
+
+// roles you want to spoof
+const ALLOWED_ROLES = ['admin', 'officer', 'user'];
 
 exports.getLogin = (req, res) => {
-    res.render('login', { message: req.flash('error') });
+  // render login.ejs with the roles list
+  res.render('login', { roles: ALLOWED_ROLES });
 };
 
-exports.postLogin = async (req, res) => {
-    const { username, password } = req.body;
-    const user = await prisma.user.findUnique({
-        where: { username },
-        include: { role: true }
-    });
+exports.postLogin = (req, res) => {
+  const { username, role } = req.body;
 
-    if (user && bcrypt.compareSync(password, user.password)) {
-        // store a minimal user object so we can read .id and .username everywhere
-        req.session.user = {
-            id: user.id,
-            username: user.username
-        };
-        return res.redirect('/dashboard');
-    } else {
-        req.flash('error', 'Invalid username or password');
-        return res.redirect('/login');
-    }
+  if (!username) {
+    req.flash('error', 'Username is required');
+    return res.redirect('/login');
+  }
+  if (!ALLOWED_ROLES.includes(role)) {
+    req.flash('error', 'Invalid role selected');
+    return res.redirect('/login');
+  }
+
+  // fake login: stash a minimal user object
+  req.session.user = {
+    id:       username,   // use username as ID
+    username,
+    role
+  };
+
+  req.flash('success', `Logged in as ${role}`);
+  return res.redirect('/dashboard');
 };
 
-exports.getLogout = (req, res) => {
-    req.session.destroy(() => {
-        res.redirect('/login');
-    });
-};
-
-exports.getRegister = (req, res) => {
-    res.render('register');
-};
-
-exports.postRegister = async (req, res) => {
-    const { username, password } = req.body;
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    await prisma.user.create({
-        data: {
-            username,
-            password: hashedPassword,
-            roleId: 2 // default to user role
-        }
-    });
+exports.getLogout = (req, res, next) => {
+  req.session.destroy(err => {
+    if (err) return next(err);
     res.redirect('/login');
+  });
 };

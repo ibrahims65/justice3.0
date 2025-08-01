@@ -5,7 +5,8 @@ module.exports = {
         if (req.session.user && req.session.user.id) {
             return next();
         }
-        res.redirect('/auth/login');
+        req.flash('error', 'Please log in first');
+        res.redirect('/login');
     },
     ensureAdmin: async function(req, res, next) {
         if (req.session.userId) {

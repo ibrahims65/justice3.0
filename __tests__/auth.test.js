@@ -1,6 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const session = require('express-session');
+const flash = require('connect-flash');
 const { mockDeep, mockReset } = require('jest-mock-extended');
 const { ensureAuthenticated, checkRole } = require('../middleware/auth');
 const prisma = require('../lib/prisma');
@@ -20,6 +21,7 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use(flash());
 
 app.get('/test/protected', ensureAuthenticated, (req, res) => {
   res.send('Protected Route');
@@ -33,7 +35,7 @@ describe('Auth Middleware', () => {
   it('should redirect to login if not authenticated', async () => {
     const res = await request(app).get('/test/protected');
     expect(res.statusCode).toEqual(302);
-    expect(res.headers.location).toBe('/auth/login');
+    expect(res.headers.location).toBe('/login');
   });
 
   it('should return 403 if user does not have the correct role', async () => {
