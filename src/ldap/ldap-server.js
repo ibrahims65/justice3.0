@@ -12,11 +12,32 @@ console.log('⚙️  LDAP will use data file:', absPath);
 console.log('📂  File exists?', fs.existsSync(absPath));
 
 try {
-  const raw  = fs.readFileSync(absPath, 'utf8');
-  const docs = JSON.parse(raw);
-  console.log('✅  Loaded DNs:', docs.map(d => d.dn));
+  const lines = fs.readFileSync(absPath, 'utf8')
+    .split('\n')
+    .filter(Boolean);
+
+  const dns = lines.map((line, i) => {
+    try {
+      const entry = JSON.parse(line);
+      return entry.dn;
+    } catch (err) {
+      console.warn(`⚠️  Line ${i + 1} is malformed and will be skipped.`);
+      return null;
+    }
+  }).filter(Boolean);
+
+  console.log('✅ Loaded DNs:', dns);
+
+  const dnCounts = dns.reduce((acc, dn) => {
+    acc[dn] = (acc[dn] || 0) + 1;
+    return acc;
+  }, {});
+  const duplicates = Object.entries(dnCounts).filter(([_, count]) => count > 1);
+  if (duplicates.length) {
+    console.warn('🚨 Duplicate DNs found:', duplicates);
+  }
 } catch (err) {
-  console.error('❌  Could not read/parse LDAP DB file:', err.message);
+  console.error('❌ Could not read LDAP DB file:', err.message);
 }
 
 // 2. Now load ldapjs and your db module
