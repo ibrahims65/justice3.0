@@ -23,8 +23,10 @@ app.set('layout', 'layouts/main');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
-// const authRoutes = require('./routes/auth');
-// app.use('/', authRoutes);
+const authRoutes = require('./routes/auth');
+app.use('/', authRoutes);
+const dashboardRoutes = require('./routes/dashboard');
+app.use('/', dashboardRoutes);
 
 app.get('/', (req, res) => {
     res.render('index', { title: 'Justice 4.0' });
