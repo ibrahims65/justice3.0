@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { checkRole } = require('../middleware/auth');
+const { checkRole } = require('../middleware/authJwt');
 const { createNotification } = require('./notifications');
 
 router.get('/new/:arrestId', checkRole(['Police']), async (req, res) => {
