@@ -1,5 +1,5 @@
 const express = require('express');
-const verifyToken = require('../middleware/authJwt');
+const { verifyToken } = require('../middleware/authJwt');
 const router = express.Router();
 
 router.get('/dashboard-jwt', verifyToken, (req, res) => {
