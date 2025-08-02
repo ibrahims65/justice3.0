@@ -7,137 +7,105 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Case {
-  id             Int                   @id @default(autoincrement())
-  title          String
-  description    String?
-  status         String
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
-
-  evidences      Evidence[]
-  victims        Victim[]
-  witnesses      Witness[]
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      Role     @relation(fields: [roleId], references: [id])
+  roleId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  arrests   ArrestEvent[]
   investigations Investigation[]
-  charges        Charge[]
-  arrests        ArrestEvent[]
-  remands        BailRemand[]
-  courtEvents    CourtEvent[]
-  documents      Document[]
-  mediaUploads   MediaUpload[]
-  affiliations   Affiliation[]
-  healthRecords  HealthRecord[]
   assignments    Assignment[]
   auditTrails    AuditTrail[]
-  legalReps      LegalRepresentation[]
+}
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
+}
+
+model Case {
+  id             Int      @id @default(autoincrement())
+  title          String
+  description    String?
+  status         String   @default("New Arrest")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  arrests        ArrestEvent[]
+  evidences      Evidence[]
+  investigations Investigation[]
+  victims        Victim[]
+  witnesses      Witness[]
+  courtEvents    CourtEvent[]
+  assignments    Assignment[]
+  auditTrails    AuditTrail[]
+}
+
+model ArrestEvent {
+  id          Int      @id @default(autoincrement())
+  case        Case     @relation(fields: [caseId], references: [id])
+  caseId      Int
+  officer     User     @relation(fields: [officerId], references: [id])
+  officerId   Int
+  person      Person   @relation(fields: [personId], references: [id])
+  personId    Int
+  arrestedAt  DateTime @default(now())
+  location    String
+  notes       String?
+}
+
+model Person {
+  id        Int      @id @default(autoincrement())
+  name      String
+  dob       DateTime
+  address   String?
+  phone     String?
+  email     String?  @unique
+  photoUrl  String?
+  arrests   ArrestEvent[]
 }
 
 model Evidence {
-  id                    Int      @id @default(autoincrement())
-  case                  Case     @relation(fields: [caseId], references: [id])
-  caseId                Int
-  type                  String
-  description           String
-  collectedAt           DateTime
-  fileUpload            String
-  chainOfCustodyStatus  String
-  storageLocation       String
-  value                 Float?
-  notes                 String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-}
-
-model Victim {
-  id            Int      @id @default(autoincrement())
-  case          Case     @relation(fields: [caseId], references: [id])
-  caseId        Int
-  name          String
-  contactInfo   String
-  dateOfBirth   DateTime
-  gender        String
-  nationality   String?
-  address       String
-  photoUpload   String?
-  statement     String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
-
-model Witness {
-  id                   Int      @id @default(autoincrement())
-  case                 Case     @relation(fields: [caseId], references: [id])
-  caseId               Int
-  name                 String
-  contactInfo          String
-  anonymityFlag        Boolean
-  relationshipToCase   String?
-  dateInterviewed      DateTime
-  testimony            String?
-  mediaUpload          String?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  case        Case     @relation(fields: [caseId], references: [id])
+  caseId      Int
+  type        String
+  description String
+  collectedAt DateTime @default(now())
+  fileUrl     String?
 }
 
 model Investigation {
-  id                  Int      @id @default(autoincrement())
-  case                Case     @relation(fields: [caseId], references: [id])
-  caseId              Int
-  investigatorId      Int
-  startDate           DateTime
-  endDate             DateTime?
-  summary             String
-  status              String
-  relatedEvidenceLink String?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-}
-
-model Charge {
   id             Int      @id @default(autoincrement())
   case           Case     @relation(fields: [caseId], references: [id])
   caseId         Int
-  statute        String
-  description    String
-  allegedDate    DateTime
-  countNumber    Int
-  degree         String
-  statuteSection String?
+  assignedTo     User     @relation(fields: [assignedToId], references: [id])
+  assignedToId   Int
+  summary        String?
+  status         String   @default("Open")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
 
-model ArrestEvent {
-  id                  Int      @id @default(autoincrement())
-  case                Case     @relation(fields: [caseId], references: [id])
-  caseId              Int
-  officerId           Int
-  arrestedAt          DateTime
-  location            String
-  arrestType          String
-  notes               String?
-  relatedCaseFileLink String?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+model Victim {
+  id          Int      @id @default(autoincrement())
+  case        Case     @relation(fields: [caseId], references: [id])
+  caseId      Int
+  name        String
+  contactInfo String?
+  statement   String?
 }
 
-model BailRemand {
-  id                  Int      @id @default(autoincrement())
-  case                Case     @relation(fields: [caseId], references: [id])
-  caseId              Int
-  decisionType        String
-  decisionDate        DateTime
-  bailAmount          Float?
-  bailConditions      String
-  remandStartDate     DateTime
-  remandEndDate       DateTime?
-  courtApprovalFlag   Boolean
-  approvedBy          String?
-  approvalDate        DateTime?
-  nextHearingDate     DateTime?
-  duration            Int?     // computed days/hours
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+model Witness {
+  id          Int      @id @default(autoincrement())
+  case        Case     @relation(fields: [caseId], references: [id])
+  caseId      Int
+  name        String
+  contactInfo String?
+  statement   String?
 }
 
 model CourtEvent {
@@ -146,122 +114,67 @@ model CourtEvent {
   caseId         Int
   eventType      String
   dateTime       DateTime
-  courtLocation  String
-  presidingJudge String
-  outcome        String
+  court          Court    @relation(fields: [courtId], references: [id])
+  courtId        Int
+  presidingJudge String?
+  outcome        String?
   notes          String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-model Document {
-  id          Int      @id @default(autoincrement())
-  case        Case     @relation(fields: [caseId], references: [id])
-  caseId      Int
-  docType     String
-  title       String
-  fileUpload  String
-  description String?
-  uploadedBy  String?
-  uploadDate  DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model MediaUpload {
-  id          Int      @id @default(autoincrement())
-  case        Case     @relation(fields: [caseId], references: [id])
-  caseId      Int
-  mediaType   String
-  caption     String?
-  fileUpload  String
-  resolution  String?
-  duration    Int?     // in seconds
-  uploadedBy  String?
-  timestamp   DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Affiliation {
-  id             Int      @id @default(autoincrement())
-  case           Case     @relation(fields: [caseId], references: [id])
-  caseId         Int
-  organization   String
-  role           String
-  startDate      DateTime
-  endDate        DateTime?
-  evidenceLink   String?
-  status         String?  // active | inactive
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-model HealthRecord {
-  id               Int      @id @default(autoincrement())
-  case             Case     @relation(fields: [caseId], references: [id])
-  caseId           Int
-  condition        String
-  diagnosisDate    DateTime
-  severity         String
-  treatmentPlan    String?
-  observationNotes String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
 }
 
 model Assignment {
   id           Int      @id @default(autoincrement())
   case         Case     @relation(fields: [caseId], references: [id])
   caseId       Int
-  officerId    Int
+  user         User     @relation(fields: [userId], references: [id])
+  userId       Int
   role         String
-  assignedDate DateTime
-  dueDate      DateTime?
-  priority     String?
-  status       String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  assignedDate DateTime @default(now())
 }
 
 model AuditTrail {
-  id         Int      @id @default(autoincrement())
-  timestamp  DateTime @default(now())
-  actorId    Int
-  action     String
-  entityType String
-  entityId   Int
-  caseId     Int
-  case       Case     @relation(fields: [caseId], references: [id])
+  id        Int      @id @default(autoincrement())
+  case      Case     @relation(fields: [caseId], references: [id])
+  caseId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  action    String
+  timestamp DateTime @default(now())
 }
 
-model LegalRepresentation {
-  id              Int      @id @default(autoincrement())
-  case            Case     @relation(fields: [caseId], references: [id])
-  caseId          Int
-  lawyerName      String
-  firm            String
-  roleType        String      // defense | prosecution
-  contactInfo     String
-  startDate       DateTime
-  endDate         DateTime?
-  documentUpload  String?
-  documentType    String?
-  caseOutcome     String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+model Region {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  districts District[]
 }
 
-// model User {
-//   id              Int              @id @default(autoincrement())
-//   username        String           @unique
-//   password        String
-//   roleId          Int
-//   role            Role             @relation(fields: [roleId], references: [id])
-// }
+model District {
+  id       Int      @id @default(autoincrement())
+  name     String   @unique
+  region   Region   @relation(fields: [regionId], references: [id])
+  regionId Int
+  cities   City[]
+}
 
-// model Role {
-//   id              Int              @id @default(autoincrement())
-//   name            String           @unique
-//   users           User[]
-// }
+model City {
+  id             Int             @id @default(autoincrement())
+  name           String          @unique
+  district       District        @relation(fields: [districtId], references: [id])
+  districtId     Int
+  policeStations PoliceStation[]
+  courts         Court[]
+}
+
+model PoliceStation {
+  id     Int    @id @default(autoincrement())
+  name   String @unique
+  city   City   @relation(fields: [cityId], references: [id])
+  cityId Int
+}
+
+model Court {
+  id     Int         @id @default(autoincrement())
+  name   String      @unique
+  city   City        @relation(fields: [cityId], references: [id])
+  cityId Int
+  events CourtEvent[]
+}
