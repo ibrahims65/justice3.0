@@ -56,6 +56,16 @@ try {
   res.send('Session set');
 });
 
+  // Temporary "Force-Login" Middleware for Debugging
+  app.use((req, res, next) => {
+    // To enable, you would set an environment variable, e.g., DEBUG_AUTH=true
+    // For this test, we will force it on.
+    if (true) {
+      req.session.user = { id: 1, name: 'DevOverride', uid: 'dev', cn: 'Dev Override', memberof: 'cn=Police,ou=groups,dc=justice,dc=local' };
+    }
+    next();
+  });
+
 
   // make session available in views
   app.use((req, res, next) => {
