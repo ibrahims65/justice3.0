@@ -2,7 +2,6 @@
 require('dotenv').config();
 const express       = require('express');
 const path          = require('path');
-const session       = require('express-session');
 const cookieParser  = require('cookie-parser');
 const logger        = require('morgan');
 
@@ -37,39 +36,11 @@ try {
   app.use(cookieParser()); // no secret
 
 
-  // session must come before flash
-  app.use(session({
-    name: 'justice.sid',
-    secret: process.env.SESSION_SECRET || 'justice-secret',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,         // 🔒 ensures cookie is not accessible via JS
-      secure: false,          // 🔐 set to true if using HTTPS
-      sameSite: 'lax',        // 🛡️ protects against CSRF
-      maxAge: 1000 * 60 * 60  // ⏱️ 1 hour
-    }
-  }));
 
-  app.get('/test-session', (req, res) => {
-  req.session.foo = 'bar';
-  res.send('Session set');
-});
 
-  // Temporary "Force-Login" Middleware for Debugging
+  // make user available in views
   app.use((req, res, next) => {
-    // To enable, you would set an environment variable, e.g., DEBUG_AUTH=true
-    // For this test, we will force it on.
-    if (true) {
-      req.session.user = { id: 1, name: 'DevOverride', uid: 'dev', cn: 'Dev Override', memberof: 'cn=Police,ou=groups,dc=justice,dc=local' };
-    }
-    next();
-  });
-
-
-  // make session available in views
-  app.use((req, res, next) => {
-    res.locals.user            = req.session.user || null;
+    res.locals.user = req.user || null;
     next();
   });
 

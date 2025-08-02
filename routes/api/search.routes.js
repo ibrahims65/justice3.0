@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { ensureAuthenticated } = require('../../middleware/auth');
+const { verifyToken } = require('../../middleware/authJwt');
 
-router.get('/search', ensureAuthenticated, async (req, res) => {
+router.get('/search', verifyToken, async (req, res) => {
   const { q } = req.query;
 
   if (!q) {
