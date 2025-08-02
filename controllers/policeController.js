@@ -1,9 +1,9 @@
-const prisma = require('../lib/prisma');
 const { generateCaseNumber } = require('../utils/caseNumber');
 
 const policeMetricsService = require('../services/policeMetricsService');
 
 exports.getPoliceDashboard = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const sessionUser = req.session.user;
         if (!sessionUser || !sessionUser.id) {
@@ -50,6 +50,7 @@ exports.getPoliceDashboard = async (req, res, next) => {
 };
 
 exports.getCaseList = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const cases = await prisma.case.findMany({
             where: { booking: { arrestingOfficerId: req.session.user.id } },
@@ -62,6 +63,7 @@ exports.getCaseList = async (req, res, next) => {
 };
 
 exports.getPersonList = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const people = await prisma.person.findMany({
             where: {
@@ -75,6 +77,7 @@ exports.getPersonList = async (req, res, next) => {
 };
 
 exports.getManagementData = async (req, res) => {
+    const prisma = require('../lib/prisma');
     try {
         if (!req.session.user) {
             // req.flash('error', 'You must be logged in to view this page.');
@@ -127,6 +130,7 @@ exports.postNewCaseStep1 = (req, res) => {
 };
 
 exports.getNewCaseStep2 = async (req, res) => {
+    const prisma = require('../lib/prisma');
     console.log('Session caseData:', req.session.caseData);
     const policeStations = await prisma.policeStation.findMany();
     res.render('police/case/step2', {
@@ -144,6 +148,7 @@ exports.postNewCaseStep2 = async (req, res) => {
 };
 
 exports.getNewCaseStep3 = async (req, res) => {
+    const prisma = require('../lib/prisma');
     console.log('Session caseData:', req.session.caseData);
     const { name, email, dob, caseNumber, status, policeStationId } = req.session.caseData;
     const policeStation = await prisma.policeStation.findUnique({ where: { id: parseInt(policeStationId) } });
@@ -157,6 +162,7 @@ exports.getNewCaseStep3 = async (req, res) => {
 };
 
 exports.postNewCaseConfirm = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const { name, email, dob, status, policeStationId, phone, address, photoUrl, charges, officerNotes, custodyExpiresAt } = req.session.caseData;
 
@@ -244,6 +250,7 @@ exports.postNewCaseConfirm = async (req, res, next) => {
 
 // --- Remand Request Handlers ---
 exports.getNewRemandRequest = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const booking = await prisma.booking.findUnique({
             where: { id: parseInt(req.params.bookingId) },
@@ -256,6 +263,7 @@ exports.getNewRemandRequest = async (req, res, next) => {
 };
 
 exports.postNewRemandRequest = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const {
             decisionType,
@@ -307,6 +315,7 @@ exports.postNewRemandRequest = async (req, res, next) => {
 };
 
 exports.listBookings = async (req, res) => {
+    const prisma = require('../lib/prisma');
     try {
         const bookings = await prisma.booking.findMany({
             include: {
@@ -329,6 +338,7 @@ exports.listBookings = async (req, res) => {
 };
 
 exports.getPerson = async (req, res) => {
+    const prisma = require('../lib/prisma');
     const person = await prisma.person.findUnique({
         where: { id: parseInt(req.params.id) },
         include: {
@@ -343,6 +353,7 @@ exports.getPerson = async (req, res) => {
 };
 
 exports.getBooking = async (req, res) => {
+    const prisma = require('../lib/prisma');
     const booking = await prisma.booking.findUnique({
         where: { id: parseInt(req.params.id) },
         include: {
@@ -355,6 +366,7 @@ exports.getBooking = async (req, res) => {
 };
 
 exports.getEditBooking = async (req, res) => {
+    const prisma = require('../lib/prisma');
     const booking = await prisma.booking.findUnique({
         where: { id: parseInt(req.params.id) },
         include: {
@@ -368,6 +380,7 @@ exports.getEditBooking = async (req, res) => {
 };
 
 exports.postEditBooking = async (req, res) => {
+    const prisma = require('../lib/prisma');
     const { caseNumber, status, policeStationId } = req.body;
     await prisma.case.update({
         where: { id: parseInt(req.params.id) },
@@ -386,6 +399,7 @@ exports.postEditBooking = async (req, res) => {
 };
 
 exports.search = async (req, res) => {
+    const prisma = require('../lib/prisma');
     const { q } = req.query;
     const cases = await prisma.case.findMany({
         where: {
@@ -406,6 +420,7 @@ exports.search = async (req, res) => {
 };
 
 exports.printPersonRecord = async (req, res) => {
+    const prisma = require('../lib/prisma');
     const person = await prisma.person.findUnique({
         where: { id: parseInt(req.params.id) },
         include: {
@@ -425,6 +440,7 @@ exports.getNewPerson = (req, res) => {
 };
 
 exports.postNewPerson = async (req, res) => {
+    const prisma = require('../lib/prisma');
     const { name, email, dob } = req.body;
     const person = await prisma.person.create({
         data: {
@@ -440,6 +456,7 @@ exports.postNewPerson = async (req, res) => {
 
 // Evidence
 exports.getEvidenceList = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const evidence = await prisma.evidence.findMany({
             where: { caseId: parseInt(req.params.caseId) },
@@ -451,6 +468,7 @@ exports.getEvidenceList = async (req, res, next) => {
 };
 
 exports.postEvidence = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const { evidenceType, description, storageLocation, chainOfCustodyStatus, evidenceValue, notes } = req.body;
         await prisma.evidence.create({
@@ -475,6 +493,7 @@ exports.postEvidence = async (req, res, next) => {
 
 // Investigations
 exports.getInvestigationsList = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const investigations = await prisma.investigation.findMany({
             where: { caseId: parseInt(req.params.caseId) },
@@ -486,6 +505,7 @@ exports.getInvestigationsList = async (req, res, next) => {
 };
 
 exports.postInvestigations = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const { investigatorName, investigatorBadgeNumber, investigatorRank, details, startDate, endDate, status } = req.body;
         await prisma.investigation.create({
@@ -508,6 +528,7 @@ exports.postInvestigations = async (req, res, next) => {
 
 // Victims
 exports.getVictimsList = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const victims = await prisma.victim.findMany({
             where: { caseId: parseInt(req.params.caseId) },
@@ -519,6 +540,7 @@ exports.getVictimsList = async (req, res, next) => {
 };
 
 exports.postVictims = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const { name, dob, gender, nationality, address, contact, statement } = req.body;
         const photoUrl = req.file ? `/uploads/${req.file.filename}` : null;
@@ -543,6 +565,7 @@ exports.postVictims = async (req, res, next) => {
 
 // Witnesses
 exports.getWitnessesList = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const witnesses = await prisma.witness.findMany({
             where: { caseId: parseInt(req.params.caseId) },
@@ -554,6 +577,7 @@ exports.getWitnessesList = async (req, res, next) => {
 };
 
 exports.postWitnesses = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const { name, statement, relationshipToCase, dateInterviewed, isAnonymous } = req.body;
         await prisma.witness.create({
@@ -574,6 +598,7 @@ exports.postWitnesses = async (req, res, next) => {
 
 // Hearings
 exports.getHearingsList = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const hearings = await prisma.hearing.findMany({
             where: { caseId: parseInt(req.params.caseId) },
@@ -585,6 +610,7 @@ exports.getHearingsList = async (req, res, next) => {
 };
 
 exports.postHearings = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const { hearingDate, verdict, courtId } = req.body;
         await prisma.hearing.create({
@@ -603,6 +629,7 @@ exports.postHearings = async (req, res, next) => {
 
 // Warrants
 exports.getWarrantsList = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const warrants = await prisma.warrant.findMany({
             where: { caseId: parseInt(req.params.caseId) },
@@ -614,6 +641,7 @@ exports.getWarrantsList = async (req, res, next) => {
 };
 
 exports.postWarrants = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const { status, details, expiresAt } = req.body;
         await prisma.warrant.create({
@@ -643,6 +671,7 @@ const caseModules = {
 };
 
 exports.getLegalRepsList = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const legalReps = await prisma.legalRepresentation.findMany({
             where: { caseId: parseInt(req.params.caseId) },
@@ -654,6 +683,7 @@ exports.getLegalRepsList = async (req, res, next) => {
 };
 
 exports.postLegalReps = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const { lawyerName, firm, roleType, contactInfo, startDate, endDate, documentType, caseOutcome } = req.body;
         const documentUpload = req.file ? `/uploads/${req.file.filename}` : null;
@@ -678,6 +708,7 @@ exports.postLegalReps = async (req, res, next) => {
 };
 
 exports.getChargesList = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const charges = await prisma.charge.findMany({
             where: { caseId: parseInt(req.params.caseId) },
@@ -689,6 +720,7 @@ exports.getChargesList = async (req, res, next) => {
 };
 
 exports.postCharges = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const { statute, section, description, allegedDate, countNumber, degree } = req.body;
         await prisma.charge.create({
@@ -709,6 +741,7 @@ exports.postCharges = async (req, res, next) => {
 };
 
 exports.getAffiliationsList = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const caseData = await prisma.case.findUnique({ where: { id: parseInt(req.params.caseId) }, include: { booking: { include: { person: { include: { affiliations: true } } } } } });
         res.json(caseData.booking.person.affiliations);
@@ -718,6 +751,7 @@ exports.getAffiliationsList = async (req, res, next) => {
 };
 
 exports.postAffiliations = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const { organization, role, startDate, endDate, evidenceLink, status } = req.body;
         const caseData = await prisma.case.findUnique({ where: { id: parseInt(req.params.caseId) }, include: { booking: true } });
@@ -739,6 +773,7 @@ exports.postAffiliations = async (req, res, next) => {
 };
 
 exports.getCaseDetail = async (req, res, next) => {
+    const prisma = require('../lib/prisma');
     try {
         const caseId = parseInt(req.params.caseId);
         const caseData = await prisma.case.findUnique({
