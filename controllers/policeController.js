@@ -17,30 +17,20 @@ exports.getPoliceDashboard = async (req, res, next) => {
 
         console.log('--- Prisma Object Keys ---');
         console.log(Object.keys(prisma));
-        const recentBookings = await prisma.booking.findMany({
-            where: { arrestingOfficerId: userId },
-            orderBy: { bookingDate: 'desc' },
+        const recentArrests = await prisma.arrestEvent.findMany({
+            where: { officerId: userId },
+            orderBy: { arrestedAt: 'desc' },
             take: 5,
-            include: { person: true, case: true },
+            include: { case: true },
         });
 
-        const now = new Date();
-        const twentyFourHoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-        const expiringCustody = await prisma.booking.findMany({
-            where: {
-                arrestingOfficerId: userId,
-                custodyExpiresAt: {
-                    gte: now,
-                    lte: twentyFourHoursFromNow,
-                },
-            },
-            include: { person: true },
-        });
+        // There is no equivalent for "expiring custody" in the ArrestEvent model.
+        const expiringCustody = [];
 
         res.render('police/police_dashboard', {
             user: sessionUser,
             metrics,
-            recentBookings,
+            recentBookings: recentArrests, // Use recentArrests here
             expiringCustody,
             req: req,
         });
