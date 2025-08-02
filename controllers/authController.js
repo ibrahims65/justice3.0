@@ -44,10 +44,12 @@ exports.postLogin = (req, res, next) => {
     }
 
     // success: stash user
+    // Sanitize the user data by converting it to a plain object with strings.
+    // This prevents session serialization errors from complex LDAP objects.
     req.session.user = {
-      uid:      entry.attributes.uid,
-      cn:       entry.attributes.cn,
-      memberof: entry.attributes.memberof
+      uid:      String(entry.attributes.uid || ''),
+      cn:       String(entry.attributes.cn || ''),
+      memberof: String(entry.attributes.memberof || '')
     };
     console.log('🔍 [DEBUG] session after assignment:', req.session);
 
