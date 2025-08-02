@@ -68,16 +68,16 @@ exports.getManagementData = async (req, res) => {
         }
         const officerId = req.session.user.id;
 
-        const bookings = await prisma.booking.findMany({
-            where: { arrestingOfficerId: officerId },
+        const arrests = await prisma.arrestEvent.findMany({
+            where: { officerId: officerId },
             include: {
                 case: true,
-                person: true
             },
         });
 
-        const cases = bookings.map(b => b.case).filter(Boolean);
-        const people = [...new Map(bookings.map(b => [b.person.id, b.person])).values()];
+        const cases = arrests.map(a => a.case).filter(Boolean);
+        // The Person model does not exist.
+        const people = [];
 
 
         res.render('police/management', {
@@ -374,18 +374,10 @@ exports.search = async (req, res) => {
 
 exports.printPersonRecord = async (req, res) => {
     const prisma = require('../lib/prisma');
-    const person = await prisma.person.findUnique({
-        where: { id: parseInt(req.params.id) },
-        include: {
-            bookings: {
-                include: {
-                    case: true,
-                    policeStation: true,
-                },
-            },
-        },
-    });
-    res.render('police/print-record', { person, layout: 'layouts/print' });
+    // The Person model does not exist in the schema.
+    // This function needs to be re-evaluated.
+    console.log(`Request to print record for person ${req.params.id}, but Person model does not exist.`);
+    res.send("This feature is temporarily disabled.");
 };
 
 exports.getNewPerson = (req, res) => {
@@ -732,17 +724,12 @@ exports.getCaseDetail = async (req, res, next) => {
         const caseData = await prisma.case.findUnique({
             where: { id: caseId },
             include: {
-                evidence: true,
+                evidences: true,
                 investigations: true,
                 victims: true,
                 witnesses: true,
-                hearings: true,
-                warrants: true,
-                booking: {
-                    include: {
-                        person: true,
-                    },
-                },
+                courtEvents: true,
+                arrests: true,
             },
         });
 
