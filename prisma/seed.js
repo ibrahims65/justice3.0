@@ -1,57 +1,59 @@
 const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
+const bcrypt = require('bcryptjs');
 
 async function main() {
-  console.log('Start seeding ...');
+    const hashedPassword = bcrypt.hashSync('password', 10);
+    await prisma.role.createMany({
+        data: [
+            { name: 'Admin' },
+            { name: 'Police' },
+            { name: 'Prosecutor' },
+            { name: 'Court' },
+            { name: 'Corrections' }
+        ]
+    });
+    await prisma.user.create({
+        data: {
+            username: 'admin',
+            password: hashedPassword,
+            roleId: 1
+        }
+    });
+    await prisma.user.create({
+        data: {
+            username: 'police',
+            password: hashedPassword,
+            roleId: 2
+        }
+    });
 
-  const hashedPassword = await bcrypt.hash('password123', 10);
+    // Seed Regions
+    const region1 = await prisma.region.create({ data: { name: 'North' } });
+    const region2 = await prisma.region.create({ data: { name: 'South' } });
 
-  // Create Roles
-  const adminRole = await prisma.role.create({ data: { name: 'Admin' } });
-  const policeRole = await prisma.role.create({ data: { name: 'Police' } });
-  const prosecutorRole = await prisma.role.create({ data: { name: 'Prosecutor' } });
-  const courtRole = await prisma.role.create({ data: { name: 'Court' } });
-  const correctionsRole = await prisma.role.create({ data: { name: 'Corrections' } });
+    // Seed Districts
+    const district1 = await prisma.district.create({ data: { name: 'Northland', regionId: region1.id } });
+    const district2 = await prisma.district.create({ data: { name: 'Southland', regionId: region2.id } });
 
-  console.log('Roles created.');
+    // Seed Cities
+    const city1 = await prisma.city.create({ data: { name: 'Northville', districtId: district1.id } });
+    const city2 = await prisma.city.create({ data: { name: 'Southville', districtId: district2.id } });
 
-  // Create Users
-  await prisma.user.create({
-    data: {
-      username: 'admin',
-      password: hashedPassword,
-      roleId: adminRole.id,
-    },
-  });
+    // Seed Police Stations
+    await prisma.policeStation.create({ data: { name: 'Northville PD', cityId: city1.id } });
+    await prisma.policeStation.create({ data: { name: 'Southville PD', cityId: city2.id } });
 
-  await prisma.user.create({
-    data: {
-      username: 'police_officer_1',
-      password: hashedPassword,
-      roleId: policeRole.id,
-    },
-  });
-
-  console.log('Users created.');
-
-  // Create Geographic Data
-  const northRegion = await prisma.region.create({ data: { name: 'North' } });
-  const northlandDistrict = await prisma.district.create({ data: { name: 'Northland', regionId: northRegion.id } });
-  const northvilleCity = await prisma.city.create({ data: { name: 'Northville', districtId: northlandDistrict.id } });
-  await prisma.policeStation.create({ data: { name: 'Northville PD', cityId: northvilleCity.id } });
-  await prisma.court.create({ data: { name: 'Northville High Court', cityId: northvilleCity.id } });
-
-  console.log('Geographic data created.');
-
-  console.log('Seeding finished.');
+    // Seed Courts
+    await prisma.court.create({ data: { name: 'Northville Court', cityId: city1.id } });
+    await prisma.court.create({ data: { name: 'Southville Court', cityId: city2.id } });
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+    .catch(e => {
+        console.error(e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });

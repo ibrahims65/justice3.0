@@ -1,25 +1,43 @@
-const jwt = require('jsonwebtoken');
+// middleware/auth.js
 
-exports.verifyToken = (req, res, next) => {
-    const token = req.cookies.auth_token;
-    if (!token) {
-        return res.status(401).redirect('/login');
-    }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        return res.status(401).redirect('/login');
-    }
+// ensure user is logged in
+exports.ensureAuthenticated = (req, res, next) => {
+  if (req.session.user) {
+    return next();
+  }
+  req.flash('error', 'Please log in first');
+  res.redirect('/login');
 };
 
-exports.checkRole = (roles) => {
-    return (req, res, next) => {
-        if (!req.user || !roles.includes(req.user.role)) {
-            return res.status(403).send('Forbidden');
-        }
-        next();
-    };
+// check that session.user.memberof matches one of the allowed roles
+exports.checkRole = (...allowedRoles) => (req, res, next) => {
+  if (!req.session.user) {
+    req.flash('error', 'Please log in first');
+    return res.redirect('/login');
+  }
+
+  // memberof is like "cn=Police,ou=groups,dc=justice,dc=local"
+  const group = req.session.user.memberof.split('=')[1];
+  if (!allowedRoles.includes(group)) {
+    req.flash('error', 'Permission denied');
+    return res.redirect('/');
+  }
+
+  next();
+};
+
+// 🔐 ensure user is in the Admin group
+exports.ensureAdmin = (req, res, next) => {
+  if (!req.session.user) {
+    req.flash('error', 'Please log in first');
+    return res.redirect('/login');
+  }
+
+  const group = req.session.user.memberof.split('=')[1];
+  if (group.toLowerCase() !== 'admin') {
+    req.flash('error', 'Admin access required');
+    return res.redirect('/');
+  }
+
+  next();
 };

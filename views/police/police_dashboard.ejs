@@ -30,10 +30,10 @@
           <i class="fas fa-folder-open fa-2x mb-2"></i>
           <p>Manage Cases (<%= metrics.totalCases %>)</p>
         </a>
-        <!-- <a href="/police/people" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded text-center">
+        <a href="/police/people" class="block bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded text-center">
           <i class="fas fa-user-friends fa-2x mb-2"></i>
           <p>Manage People</p>
-        </a> -->
+        </a>
       </div>
        <a href="/police/cases/new/step1" class="block mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center">Create New Case</a>
     </div>
@@ -56,22 +56,24 @@
   </section>
 
   <section class="card bg-white p-6 rounded-lg shadow-md">
-    <h3 class="text-xl font-bold mb-4">Recent Arrests</h3>
+    <h3 class="text-xl font-bold mb-4">Recent Bookings</h3>
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Case Title</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Arrest Date</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Person</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Case Number</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booking Date</th>
           <th class="relative px-6 py-3"><span class="sr-only">View</span></th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <% recentBookings.forEach(arrest => { %>
+        <% recentBookings.forEach(booking => { %>
           <tr>
-            <td class="px-6 py-4 whitespace-nowrap"><%= arrest.case ? arrest.case.title : 'N/A' %></td>
-            <td class="px-6 py-4 whitespace-nowrap"><%= new Date(arrest.arrestedAt).toLocaleString() %></td>
+            <td class="px-6 py-4 whitespace-nowrap"><%= booking.person.name %></td>
+            <td class="px-6 py-4 whitespace-nowrap"><%= booking.case ? booking.case.caseNumber : 'N/A' %></td>
+            <td class="px-6 py-4 whitespace-nowrap"><%= new Date(booking.bookingDate).toLocaleString() %></td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <a href="/police/cases/<%= arrest.case.id %>/view" class="text-indigo-600 hover:text-indigo-900">View Case</a>
+              <a href="/police/cases/<%= booking.case.id %>/view" class="text-indigo-600 hover:text-indigo-900">View Case</a>
             </td>
           </tr>
         <% }) %>

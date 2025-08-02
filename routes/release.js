@@ -5,18 +5,25 @@ const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 
 router.post('/', checkRole(['Police']), async (req, res) => {
-  const { caseId, reason, notes } = req.body;
-  await prisma.case.update({
-    where: { id: parseInt(caseId) },
+  const { bookingId, reason, notes } = req.body;
+  const booking = await prisma.booking.update({
+    where: { id: parseInt(bookingId) },
+    include: { person: true },
     data: {
       status: 'Released',
-      description: `Released for: ${reason}. Notes: ${notes}`,
+      custodyExpiresAt: null,
     },
   });
-  // The schema does not have a ReleaseRecord model.
-  // This functionality needs to be re-evaluated.
-  console.log(`Case ${caseId} marked as released.`);
-  res.redirect(`/cases/${caseId}`);
+  await prisma.releaseRecord.create({
+    data: {
+      bookingId: parseInt(bookingId),
+      releasedBy: req.session.userId.toString(),
+      releaseDate: new Date(),
+      reason,
+      notes,
+    },
+  });
+  res.redirect(`/people/${booking.personId}`);
 });
 
 module.exports = router;

@@ -17,7 +17,7 @@ router.post('/', checkRole(['Court']), async (req, res) => {
     });
 
     if (caseRecord.status !== 'Accepted') {
-      // req.flash('error', 'Cannot schedule a hearing until the charge-sheet has been approved by the prosecutor.');
+      req.flash('error', 'Cannot schedule a hearing until the charge-sheet has been approved by the prosecutor.');
       return res.redirect(`/cases/${caseId}`);
     }
 
@@ -44,31 +44,38 @@ router.post('/', checkRole(['Court']), async (req, res) => {
 router.post('/:id/verdict', checkRole(['Court']), async (req, res) => {
   const { verdict } = req.body;
   const hearingId = parseInt(req.params.id);
-  const courtEvent = await prisma.courtEvent.findUnique({
+  const hearing = await prisma.hearing.findUnique({
     where: { id: hearingId },
   });
-  await prisma.courtEvent.update({
+  await prisma.hearing.update({
     where: { id: hearingId },
-    data: { outcome: verdict },
+    data: { verdict },
   });
-  await prisma.auditTrail.create({
+  await prisma.actionHistory.create({
     data: {
       action: `Verdict Recorded: ${verdict}`,
-      caseId: courtEvent.caseId,
-      actorId: req.session.userId,
-      entityType: 'CourtEvent',
-      entityId: hearingId,
+      caseId: hearing.caseId,
+      userId: req.session.userId,
     },
   });
 
   if (verdict === 'Guilty') {
-    await prisma.case.update({
-      where: { id: courtEvent.caseId },
+    const updatedCase = await prisma.case.update({
+      where: { id: hearing.caseId },
       data: { status: 'Convicted' },
+      include: { booking: true },
+    });
+
+    await prisma.booking.update({
+      where: { id: updatedCase.booking.id },
+      data: {
+        incarcerationStartDate: new Date(),
+        facilityName: 'Unassigned',
+      },
     });
   }
 
-  res.redirect(`/cases/${courtEvent.caseId}`);
+  res.redirect(`/cases/${hearing.caseId}`);
 });
 
 module.exports = router;

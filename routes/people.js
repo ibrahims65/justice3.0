@@ -35,94 +35,121 @@ router.get('/:id', async (req, res) => {
   const person = await prisma.person.findFirst({
     where: { id: parseInt(req.params.id) },
     include: {
-      arrests: {
+      bookings: {
         include: {
-          case: true,
+          case: {
+            include: {
+              lawyers: {
+                include: {
+                  visits: true,
+                },
+              },
+              medicalRecords: {
+                include: {
+                  medications: true,
+                },
+              },
+            },
+          },
         },
       },
+      nextOfKin: true,
     },
   });
-  res.render('people/show', { person });
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
+  });
+  res.render('people/show', { person, user });
 });
 
 router.post('/:id/delete', checkRole(['Police']), async (req, res) => {
-  // Soft delete is not in the schema for Person. This needs re-evaluation.
-  console.log(`Request to delete person ${req.params.id}, but soft delete is not implemented.`);
+  await prisma.person.update({
+    where: { id: parseInt(req.params.id) },
+    data: { deletedAt: new Date() },
+  });
   res.redirect('/dashboard');
 });
 
-router.get('/:id/arrests/new', checkRole(['Police']), async (req, res) => {
-  res.render('arrests/new', { personId: req.params.id });
+router.get('/:id/bookings/new', checkRole(['Police']), async (req, res) => {
+  const policeStations = await prisma.policeStation.findMany();
+  res.render('bookings/new', { personId: req.params.id, policeStations });
 });
 
-router.post('/:id/arrests', checkRole(['Police']), [
-  check('location').notEmpty().withMessage('Location is required.'),
-  check('arrestType').notEmpty().withMessage('Arrest type is required.'),
+router.post('/:id/bookings', checkRole(['Police']), [
+  check('charges').notEmpty().withMessage('Charges are required.'),
+  check('policeStationId').notEmpty().withMessage('Police station is required.'),
+  check('arrestingOfficerName').notEmpty().withMessage('Arresting officer name is required.'),
+  check('arrestingOfficerRank').notEmpty().withMessage('Arresting officer rank is required.'),
 ], async (req, res) => {
   const errors = validationResult(req);
   const personId = parseInt(req.params.id);
   if (!errors.isEmpty()) {
-    return res.status(400).render('arrests/new', {
+    const policeStations = await prisma.policeStation.findMany();
+    return res.status(400).render('bookings/new', {
       errors: errors.array(),
       personId,
+      policeStations,
       ...req.body,
     });
   }
 
-  const { location, arrestType, notes, title, description } = req.body;
+  const { status, charges, policeStationId, arrestingOfficerName, arrestingOfficerRank, incarcerationStartDate, custodyExpiresAt } = req.body;
   try {
-    const newArrest = await prisma.arrestEvent.create({
+    const newBooking = await prisma.booking.create({
       data: {
-        officerId: req.session.userId,
-        arrestedAt: new Date(),
-        location,
-        arrestType,
-        notes,
-        case: {
-          create: {
-            title: title || `Arrest of Person #${personId}`,
-            description: description,
-            status: 'New Arrest',
-          }
-        }
+        personId,
+        status: 'New Booking',
+        charges,
+        policeStationId: parseInt(policeStationId),
+        arrestingOfficerName,
+        arrestingOfficerRank,
+        incarcerationStartDate: incarcerationStartDate ? new Date(incarcerationStartDate) : null,
+        custodyExpiresAt: custodyExpiresAt ? new Date(custodyExpiresAt) : null,
       },
-      include: {
-        case: true
-      }
     });
     await prisma.person.update({
-        where: { id: personId },
-        data: {
-            arrests: {
-                connect: { id: newArrest.id }
-            }
-        }
+      where: { id: personId },
+      data: { rebookedAt: new Date() },
     });
-    res.redirect(`/cases/${newArrest.case.id}`);
+    const newCase = await prisma.case.create({
+      data: {
+        caseNumber: `CASE-${nanoid()}`,
+        status: 'New Arrest',
+        bookingId: newBooking.id,
+      },
+    });
+    await prisma.actionHistory.create({
+      data: {
+        action: 'Case Created',
+        caseId: newCase.id,
+        userId: req.session.userId,
+        notes: `Person ID: ${personId}`,
+      },
+    });
+    res.redirect(`/cases/${newCase.id}`);
   } catch (error) {
     res.redirect(`/people/${personId}`);
   }
 });
 
 router.get('/:id/remand/new', checkRole(['Police']), (req, res) => {
-  // This route seems incorrect. Remand should be against a case or arrest.
-  res.redirect(`/people/${req.params.id}`);
+  res.render('remand/new', { bookingId: req.params.id });
 });
 
 router.get('/:id/release/new', checkRole(['Police']), (req, res) => {
-  // This route seems incorrect. Release should be against a case or arrest.
-  res.redirect(`/people/${req.params.id}`);
+  res.render('release/new', { bookingId: req.params.id });
 });
 
 router.get('/:id/cases', async (req, res) => {
   const cases = await prisma.case.findMany({
     where: {
-      arrests: {
-        some: {
-          // There is no direct link from ArrestEvent to Person in the schema
-          // This requires a more complex query or schema change.
-        },
+      booking: {
+        personId: parseInt(req.params.id),
       },
+    },
+    include: {
+      booking: true,
     },
   });
   res.json(cases);

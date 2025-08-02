@@ -7,100 +7,158 @@ const { checkRole } = require('../middleware/auth');
 router.get('/', checkRole(['Corrections']), async (req, res) => {
   const { search, facility } = req.query;
   let where = {
-    status: 'Convicted',
+    bookings: {
+      some: {
+        case: {
+          status: 'Convicted',
+        },
+      },
+    },
   };
 
   if (search) {
     where.OR = [
-      { title: { contains: search, mode: 'insensitive' } },
-      { description: { contains: search, mode: 'insensitive' } },
+      { name: { contains: search, mode: 'insensitive' } },
+      { bookings: { some: { case: { caseNumber: { contains: search, mode: 'insensitive' } } } } },
     ];
   }
 
-  // Facility search is not directly supported by the new schema in this context.
-  // This would require a more complex query joining through ArrestEvent and Person.
-  // For now, we will omit this functionality.
+  if (facility) {
+    where.bookings.some.facilityName = { contains: facility, mode: 'insensitive' };
+  }
 
-  const cases = await prisma.case.findMany({
+  const people = await prisma.person.findMany({
     where,
-  });
-
-  res.render('corrections/index', { cases });
-});
-
-router.get('/inmates/:caseId', checkRole(['Corrections']), async (req, res) => {
-  const caseRecord = await prisma.case.findUnique({
-    where: { id: parseInt(req.params.caseId) },
     include: {
-      arrests: true,
-      healthRecords: true,
+      bookings: {
+        include: {
+          case: true,
+        },
+      },
     },
   });
-  res.render('corrections/inmateProfile', { caseRecord });
+
+  res.render('corrections/index', { people });
 });
 
-router.get('/disciplinary/new/:caseId', checkRole(['Corrections']), (req, res) => {
-  res.render('corrections/disciplinary/new', { caseId: req.params.caseId });
+router.get('/inmates/:personId', checkRole(['Corrections']), async (req, res) => {
+  const person = await prisma.person.findUnique({
+    where: { id: parseInt(req.params.personId) },
+    include: {
+      bookings: {
+        include: {
+          case: {
+            include: {
+              hearings: true,
+              lawyers: { include: { visits: true } },
+            },
+          },
+          medicalRecords: { include: { medications: true } },
+        },
+      },
+      nextOfKin: true,
+    },
+  });
+  res.render('corrections/inmateProfile', { person });
 });
 
-router.post('/disciplinary/:caseId', checkRole(['Corrections']), async (req, res) => {
-  const { action, reason, date } = req.body;
-  const caseId = parseInt(req.params.caseId);
-  // The schema does not have a DisciplinaryAction model.
-  // This functionality needs to be re-evaluated against the new schema.
-  console.log('Disciplinary action submitted, but no model exists to store it.');
-  res.redirect(`/corrections/inmates/${caseId}`);
+router.get('/disciplinary/new/:bookingId', checkRole(['Corrections']), (req, res) => {
+  res.render('corrections/disciplinary/new', { bookingId: req.params.bookingId });
 });
 
-router.get('/visitation/new/:caseId', checkRole(['Corrections']), (req, res) => {
-  res.render('corrections/visitation/new', { caseId: req.params.caseId });
+router.post('/disciplinary/:bookingId', checkRole(['Corrections']), async (req, res) => {
+  const { date, infraction, sanction, notes } = req.body;
+  const bookingId = parseInt(req.params.bookingId);
+  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+  await prisma.disciplinaryAction.create({
+    data: {
+      bookingId,
+      date: new Date(date),
+      infraction,
+      sanction,
+      notes,
+    },
+  });
+  res.redirect(`/corrections/inmates/${booking.personId}`);
 });
 
-router.post('/visitation/:caseId', checkRole(['Corrections']), async (req, res) => {
-  const { visitorName, visitDate, notes } = req.body;
-  const caseId = parseInt(req.params.caseId);
-  // The schema does not have a VisitationLog model.
-  // This functionality needs to be re-evaluated against the new schema.
-  console.log('Visitation log submitted, but no model exists to store it.');
-  res.redirect(`/corrections/inmates/${caseId}`);
+router.get('/visitation/new/:bookingId', checkRole(['Corrections']), (req, res) => {
+  res.render('corrections/visitation/new', { bookingId: req.params.bookingId });
 });
 
-router.post('/inmates/:caseId', checkRole(['Corrections']), async (req, res) => {
-  const { status, notes } = req.body;
-  const caseId = parseInt(req.params.caseId);
+router.post('/visitation/:bookingId', checkRole(['Corrections']), async (req, res) => {
+  const { date, visitorName, notes } = req.body;
+  const bookingId = parseInt(req.params.bookingId);
+  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+  await prisma.visitationLog.create({
+    data: {
+      bookingId,
+      date: new Date(date),
+      visitorName,
+      notes,
+    },
+  });
+  res.redirect(`/corrections/inmates/${booking.personId}`);
+});
+
+router.post('/inmates/:bookingId', checkRole(['Corrections']), async (req, res) => {
+  const { incarcerationStartDate, facilityName, rehabilitationPrograms, releaseDate, paroleEligibility } = req.body;
+  const bookingId = parseInt(req.params.bookingId);
   try {
-    await prisma.case.update({
-      where: { id: caseId },
+    const booking = await prisma.booking.update({
+      where: { id: bookingId },
+      include: { case: true },
       data: {
-        status: status,
-        description: notes, // Using description for notes for now
+        incarcerationStartDate: new Date(incarcerationStartDate),
+        facilityName,
+        rehabilitationPrograms,
+        releaseDate: releaseDate ? new Date(releaseDate) : null,
+        paroleEligibility: paroleEligibility ? new Date(paroleEligibility) : null,
+        releasedAt: releaseDate ? new Date(releaseDate) : null,
       },
     });
-    res.redirect(`/corrections/inmates/${caseId}`);
+    await prisma.actionHistory.create({
+      data: {
+        action: 'Inmate Status Updated',
+        caseId: booking.case.id,
+        userId: req.session.userId,
+      },
+    });
+    res.redirect(`/corrections/inmates/${booking.personId}`);
   } catch (error) {
-    res.redirect(`/corrections/inmates/${caseId}`);
+    const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+    res.redirect(`/corrections/inmates/${booking.personId}`);
   }
 });
 
 router.get('/dashboard', checkRole(['Corrections']), async (req, res) => {
-  const totalInmates = await prisma.case.count({
-    where: { status: 'Convicted' },
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    include: { role: true },
   });
 
-  const recentReleases = await prisma.case.findMany({
+  const inmates = await prisma.person.findMany({
     where: {
-      status: 'Released',
-      updatedAt: {
-        gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+      bookings: {
+        some: {
+          status: 'In-Custody',
+        },
       },
     },
-    take: 5,
+    include: {
+      bookings: true,
+    },
   });
 
+  // These are not yet implemented in the schema
+  const transferRequests = [];
+  const remandOutcomes = [];
+
   res.render('corrections/dashboard', {
-    user: req.session.user,
-    totalInmates,
-    recentReleases,
+    user,
+    inmates,
+    transferRequests,
+    remandOutcomes,
     page: '/corrections/dashboard',
   });
 });

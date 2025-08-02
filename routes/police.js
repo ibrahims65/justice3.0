@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { verifyToken } = require('../middleware/authJwt');
+const { ensureAuthenticated } = require('../middleware/auth');
 const policeController = require('../controllers/policeController');
 
 // Dashboard
-router.get('/', verifyToken, policeController.getPoliceDashboard);
+router.get('/', ensureAuthenticated, policeController.getPoliceDashboard);
 
 // Management
-router.get('/management', verifyToken, policeController.getManagementData);
-router.get('/cases', verifyToken, policeController.getCaseList);
-// router.get('/people', verifyToken, policeController.getPersonList); // Removed as Person model does not exist
+router.get('/management', ensureAuthenticated, policeController.getManagementData);
+router.get('/cases', ensureAuthenticated, policeController.getCaseList);
+router.get('/people', ensureAuthenticated, policeController.getPersonList);
 
 const checkStep = (step) => (req, res, next) => {
     if (req.session.caseData && req.session.caseData.step >= step) {
@@ -22,34 +22,34 @@ const checkStep = (step) => (req, res, next) => {
 const upload = require('../middleware/upload');
 
 // Case Creation
-router.get('/cases/new/step1', verifyToken, policeController.getNewCaseStep1);
-router.post('/cases/new/step1', verifyToken, upload.single('photo'), policeController.postNewCaseStep1);
-router.get('/cases/new/step2', verifyToken, checkStep(2), policeController.getNewCaseStep2);
-router.post('/cases/new/step2', verifyToken, checkStep(2), policeController.postNewCaseStep2);
-router.get('/cases/new/step3', verifyToken, checkStep(3), policeController.getNewCaseStep3);
-router.post('/cases/new/confirm', verifyToken, checkStep(3), policeController.postNewCaseConfirm);
+router.get('/cases/new/step1', ensureAuthenticated, policeController.getNewCaseStep1);
+router.post('/cases/new/step1', ensureAuthenticated, upload.single('photo'), policeController.postNewCaseStep1);
+router.get('/cases/new/step2', ensureAuthenticated, checkStep(2), policeController.getNewCaseStep2);
+router.post('/cases/new/step2', ensureAuthenticated, checkStep(2), policeController.postNewCaseStep2);
+router.get('/cases/new/step3', ensureAuthenticated, checkStep(3), policeController.getNewCaseStep3);
+router.post('/cases/new/confirm', ensureAuthenticated, checkStep(3), policeController.postNewCaseConfirm);
 
 // Person
-router.get('/people/new', verifyToken, policeController.getNewPerson);
-router.post('/people/new', verifyToken, policeController.postNewPerson);
-router.get('/people/:id', verifyToken, policeController.getPerson);
-router.get('/people/:id/print', verifyToken, policeController.printPersonRecord);
+router.get('/people/new', ensureAuthenticated, policeController.getNewPerson);
+router.post('/people/new', ensureAuthenticated, policeController.postNewPerson);
+router.get('/people/:id', ensureAuthenticated, policeController.getPerson);
+router.get('/people/:id/print', ensureAuthenticated, policeController.printPersonRecord);
 
-// ArrestEvent
-router.get('/bookings', verifyToken, policeController.listBookings); // View is named bookings, controller is listBookings
-router.get('/arrests/:id', verifyToken, policeController.getArrestEvent);
-router.get('/arrests/:id/edit', verifyToken, policeController.getEditArrestEvent);
-router.post('/arrests/:id/edit', verifyToken, policeController.postEditArrestEvent);
+// Booking
+router.get('/bookings', ensureAuthenticated, policeController.listBookings); // Added index route
+router.get('/bookings/:id', ensureAuthenticated, policeController.getBooking);
+router.get('/bookings/:id/edit', ensureAuthenticated, policeController.getEditBooking);
+router.post('/bookings/:id/edit', ensureAuthenticated, policeController.postEditBooking);
 
 // Search
-router.get('/search', verifyToken, policeController.search);
+router.get('/search', ensureAuthenticated, policeController.search);
 
 // Remand Request
-router.get('/remand/new/:bookingId', verifyToken, policeController.getNewRemandRequest);
-router.post('/remand/new/:bookingId', verifyToken, policeController.postNewRemandRequest);
+router.get('/remand/new/:bookingId', ensureAuthenticated, policeController.getNewRemandRequest);
+router.post('/remand/new/:bookingId', ensureAuthenticated, policeController.postNewRemandRequest);
 
 // Case Detail View
-router.get('/cases/:caseId/view', verifyToken, policeController.getCaseDetail);
+router.get('/cases/:caseId/view', ensureAuthenticated, policeController.getCaseDetail);
 
 // Dynamic module routes
 const caseModules = ['evidence', 'investigations', 'victims', 'witnesses', 'hearings', 'warrants', 'charges', 'affiliations', 'legalReps'];
@@ -57,14 +57,14 @@ caseModules.forEach(mod => {
     const controllerName = mod.charAt(0).toUpperCase() + mod.slice(1);
     router.get(
         `/cases/:caseId/${mod}`,
-        verifyToken,
+        ensureAuthenticated,
         policeController[`get${controllerName}List`]
     );
     const handler = policeController[`post${controllerName}`];
     if (mod === 'victims' || mod === 'evidence' || mod === 'documents' || mod === 'media') {
-        router.post(`/cases/:caseId/${mod}`, verifyToken, upload.single('photo'), handler);
+        router.post(`/cases/:caseId/${mod}`, ensureAuthenticated, upload.single('photo'), handler);
     } else {
-        router.post(`/cases/:caseId/${mod}`, verifyToken, handler);
+        router.post(`/cases/:caseId/${mod}`, ensureAuthenticated, handler);
     }
 });
 

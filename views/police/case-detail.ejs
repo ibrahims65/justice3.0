@@ -1,43 +1,82 @@
-<div class="container mx-auto p-4" x-data="{ tab: 'arrests' }">
-    <h1 class="text-4xl font-bold"><%= caseRecord.title %></h1>
-    <p class="mt-2 text-lg text-gray-600"><%= caseRecord.description %></p>
-    <p class="mt-2 text-sm text-gray-500">Status: <%= caseRecord.status %></p>
+<%- include('../partials/header') %>
 
-    <div class="mt-8">
-        <div class="border-b border-gray-200">
-            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                <a href="#" @click.prevent="tab = 'arrests'" :class="{ 'border-indigo-500 text-indigo-600': tab === 'arrests', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': tab !== 'arrests' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                    Arrests
-                </a>
-                <a href="#" @click.prevent="tab = 'evidence'" :class="{ 'border-indigo-500 text-indigo-600': tab === 'evidence', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': tab !== 'evidence' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                    Evidence
-                </a>
-                <!-- Add other tabs here -->
-            </nav>
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="flex items-center mb-8">
+        <img src="<%= caseData.booking.person.photoUrl || '/images/logo.svg' %>" alt="Person Photo" class="w-24 h-24 rounded-full mr-6 object-cover">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Case #<%= caseData.caseNumber %></h1>
+            <p class="text-xl text-gray-600">Subject: <%= caseData.booking.person.name %></p>
+            <p class="text-gray-600">Status: <%= caseData.status %></p>
         </div>
     </div>
 
-    <div class="mt-8">
-        <div x-show="tab === 'arrests'">
-            <h2 class="text-2xl font-bold">Arrest Details</h2>
-            <% caseRecord.arrests.forEach(arrest => { %>
-                <div class="mt-4 p-4 bg-white rounded-lg shadow">
-                    <p><strong>Officer ID:</strong> <%= arrest.officerId %></p>
-                    <p><strong>Person ID:</strong> <%= arrest.personId %></p>
-                    <p><strong>Date:</strong> <%= new Date(arrest.arrestedAt).toLocaleString() %></p>
-                    <p><strong>Location:</strong> <%= arrest.location %></p>
-                    <p><strong>Notes:</strong> <%= arrest.notes %></p>
-                </div>
-            <% }) %>
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        <% Object.keys(counts).forEach(mod => { %>
+            <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                <h4 class="text-gray-500 uppercase text-sm"><%= labels[mod] %></h4>
+                <p class="text-3xl font-bold"><%= counts[mod] %></p>
+            </div>
+        <% }) %>
+    </section>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Sidebar with Navigation Cards -->
+        <div class="md:col-span-1">
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <h3 class="text-lg font-bold mb-4">Case Modules</h3>
+                <nav class="space-y-2">
+                    <% Object.keys(counts).forEach(mod => { %>
+                        <a href="/police/cases/<%= caseData.id %>/view?module=<%= mod %>"
+                           class="flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium
+                                  <%= module === mod ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-gray-100' %>">
+                            <span class="flex items-center">
+                                <i class="fas <%= icons[mod] %> w-6 text-center mr-3"></i>
+                                <%= labels[mod] %>
+                            </span>
+                            <span class="px-2 py-1 text-xs font-bold leading-none text-white <%= module === mod ? 'bg-blue-600' : 'bg-gray-400' %> rounded-full">
+                                <%= counts[mod] %>
+                            </span>
+                        </a>
+                    <% }) %>
+                </nav>
+            </div>
         </div>
 
-        <div x-show="tab === 'evidence'">
-            <h2 class="text-2xl font-bold mb-4">Evidence</h2>
-            <div class="mb-8">
-                <%- include('../partials/evidence-list', { caseRecord: caseRecord }) %>
+        <!-- Main Content Area -->
+        <div class="md:col-span-3">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <% if (module === 'evidence') { %>
+                    <%- include('../partials/evidence-list', { caseData: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Evidence</h3>
+                    <%- include('../partials/evidence-form', { caseData: caseData }) %>
+                <% } else if (module === 'investigations') { %>
+                    <%- include('../partials/investigations-list', { caseData: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Investigation</h3>
+                    <%- include('../partials/investigations-form', { caseData: caseData }) %>
+                <% } else if (module === 'victims') { %>
+                    <%- include('../partials/victims-list', { caseData: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Victim</h3>
+                    <%- include('../partials/victim-form', { caseData: caseData }) %>
+                <% } else if (module === 'witnesses') { %>
+                    <%- include('../partials/witnesses-list', { caseData: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Witness</h3>
+                    <%- include('../partials/witness-form', { caseData: caseData }) %>
+                <% } else if (module === 'hearings') { %>
+                    <%- include('../partials/hearings-list', { caseData: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Hearing</h3>
+                    <%- include('../partials/hearing-form', { caseData: caseData }) %>
+                <% } else if (module === 'warrants') { %>
+                    <%- include('../partials/warrants-list', { caseData: caseData }) %>
+                    <hr class="my-6">
+                    <h3 class="text-lg font-bold mb-4">Add Warrant</h3>
+                    <%- include('../partials/warrants-form', { caseData: caseData }) %>
+                <% } %>
             </div>
-            <h3 class="text-xl font-bold mb-4">Add New Evidence</h3>
-            <%- include('../partials/evidence-form', { caseRecord: caseRecord }) %>
         </div>
     </div>
 </div>
