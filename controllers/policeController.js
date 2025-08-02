@@ -52,10 +52,18 @@ exports.getPoliceDashboard = async (req, res, next) => {
 exports.getCaseList = async (req, res, next) => {
     const prisma = require('../lib/prisma');
     try {
-        const cases = await prisma.case.findMany({
-            where: { booking: { arrestingOfficerId: req.session.user.id } },
-            include: { booking: true },
+        const userId = req.session.user.id;
+        // 1. Get all bookings for this officer, including their case
+        const bookings = await prisma.booking.findMany({
+            where: { arrestingOfficerId: userId },
+            include: { case: true }
         });
+
+        // 2. Extract cases from those bookings
+        const cases = bookings
+            .map((b) => b.case)
+            .filter(Boolean);  // drop any nulls
+
         res.render('police/case-list', { cases, user: req.session.user, req });
     } catch (err) {
         next(err);
@@ -65,11 +73,15 @@ exports.getCaseList = async (req, res, next) => {
 exports.getPersonList = async (req, res, next) => {
     const prisma = require('../lib/prisma');
     try {
-        const people = await prisma.person.findMany({
-            where: {
-                bookings: { some: { arrestingOfficerId: req.session.user.id } },
-            },
+        const userId = req.session.user.id;
+        const bookings = await prisma.booking.findMany({
+            where: { arrestingOfficerId: userId },
+            include: { person: true },
+            distinct: ['personId']
         });
+
+        const people = bookings.map(b => b.person).filter(Boolean);
+
         res.render('police/person-list', { people, user: req.session.user, req });
     } catch (err) {
         next(err);
@@ -84,26 +96,18 @@ exports.getManagementData = async (req, res) => {
             return res.redirect('/login');
         }
         const officerId = req.session.user.id;
-        const cases = await prisma.case.findMany({
-            where: {
-                booking: {
-                    arrestingOfficerId: officerId,
-                },
-            },
+
+        const bookings = await prisma.booking.findMany({
+            where: { arrestingOfficerId: officerId },
             include: {
-                booking: true,
+                case: true,
+                person: true
             },
         });
 
-        const people = await prisma.person.findMany({
-            where: {
-                bookings: {
-                    some: {
-                        arrestingOfficerId: officerId,
-                    },
-                },
-            },
-        });
+        const cases = bookings.map(b => b.case).filter(Boolean);
+        const people = [...new Map(bookings.map(b => [b.person.id, b.person])).values()];
+
 
         res.render('police/management', {
             user: req.session.user,
