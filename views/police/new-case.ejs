@@ -1,0 +1,63 @@
+<div class="container mx-auto p-4">
+    <h1 class="text-4xl font-bold">Create New Arrest Report</h1>
+    <form action="/police/cases" method="POST" class="mt-8 bg-white p-6 rounded-lg shadow-md">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Case Details -->
+            <div class="col-span-1 space-y-4">
+                <h2 class="text-2xl font-semibold">Case Details</h2>
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Case Title</label>
+                    <input type="text" name="title" id="title" required
+                           class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Case Description</label>
+                    <textarea name="description" id="description" rows="4"
+                              class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                </div>
+            </div>
+
+            <!-- Arrest Details -->
+            <div class="col-span-1 space-y-4">
+                <h2 class="text-2xl font-semibold">Arrest Details</h2>
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700">Arrest Location</label>
+                    <input type="text" name="location" id="location" required
+                           class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="notes" class="block text-sm font-medium text-gray-700">Arrest Notes</label>
+                    <textarea name="notes" id="notes" rows="4"
+                              class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                </div>
+            </div>
+
+            <!-- Person Details -->
+            <div class="col-span-2 space-y-4 border-t pt-6 mt-6">
+                <h2 class="text-2xl font-semibold">Person Details</h2>
+                <div>
+                    <label for="personName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" name="personName" id="personName" required
+                           class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="dob" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                    <input type="date" name="dob" id="dob" required
+                           class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="email" id="email"
+                           class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <button type="submit"
+                    class="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Create Arrest Report
+            </button>
+        </div>
+    </form>
+</div>

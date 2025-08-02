@@ -101,48 +101,45 @@ exports.getManagementData = async (req, res) => {
     }
 };
 
-exports.getNewCaseStep1 = (req, res) => {
-    console.log('Session caseData:', req.session.caseData);
-    req.session.caseData = { step: 1 };
-    res.render('police/case/step1', { user: req.user, req: req });
+exports.getNewCaseForm = (req, res) => {
+    res.render('police/new-case', { title: 'New Case', user: req.user });
 };
 
-exports.postNewCaseStep1 = (req, res) => {
-    const photoUrl = req.file ? `/uploads/${req.file.filename}` : null;
-    req.session.caseData = { ...req.session.caseData, ...req.body, photoUrl, step: 2 };
-    res.redirect('/police/cases/new/step2');
-};
+exports.createCase = async (req, res) => {
+    const { title, description, location, notes, personName, dob, email } = req.body;
+    const officerId = req.user.id;
 
-exports.getNewCaseStep2 = async (req, res) => {
-    // const prisma = require('../lib/prisma'); // No longer needed
-    console.log('Session caseData:', req.session.caseData);
-    // const policeStations = await prisma.policeStation.findMany(); // Model does not exist
-    res.render('police/case/step2', {
-        user: req.user,
-        caseData: req.session.caseData,
-        policeStations: [], // Pass empty array as model does not exist
-        req: req,
-    });
-};
+    try {
+        const newCase = await prisma.case.create({
+            data: {
+                title,
+                description,
+                status: 'Open',
+                arrests: {
+                    create: {
+                        officerId,
+                        location,
+                        notes,
+                        person: {
+                            create: {
+                                name: personName,
+                                dob: new Date(dob),
+                                email,
+                            }
+                        }
+                    }
+                }
+            },
+            include: {
+                arrests: true,
+            }
+        });
 
-exports.postNewCaseStep2 = async (req, res) => {
-    console.log('Session caseData:', req.session.caseData);
-    req.session.caseData = { ...req.session.caseData, ...req.body, step: 3 };
-    res.redirect('/police/cases/new/step3');
-};
-
-exports.getNewCaseStep3 = async (req, res) => {
-    const prisma = require('../lib/prisma');
-    console.log('Session caseData:', req.session.caseData);
-    const { name, email, dob, caseNumber, status, policeStationId } = req.session.caseData;
-    const policeStation = await prisma.policeStation.findUnique({ where: { id: parseInt(policeStationId) } });
-    res.render('police/case/step3', {
-        user: req.user,
-        person: { name, email, dob },
-        caseDetails: { caseNumber, status },
-        policeStation,
-        req: req,
-    });
+        res.redirect(`/police/cases/${newCase.id}`);
+    } catch (error) {
+        console.error(error);
+        res.redirect('/police/cases/new');
+    }
 };
 
 exports.postNewCaseConfirm = async (req, res, next) => {
