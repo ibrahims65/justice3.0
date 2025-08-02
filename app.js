@@ -84,8 +84,30 @@ try {
   console.error('❌ Middleware setup failed:', err);
 }
 
+const jwt = require('jsonwebtoken');
+
+// Dev-only: issue a JWT instead of session
+app.post('/login-jwt', (req, res) => {
+  const { username, password } = req.body;
+  // replace this with real LDAP bind in prod
+  if (username === 'devuser' && password === 'password') {
+    const token = jwt.sign(
+      { uid: 'devuser', cn: 'Developer Test User' },
+      process.env.JWT_SECRET || 'super-secret-key',
+      { expiresIn: '1h' }
+    );
+    // HttpOnly & Secure in prod
+    res.cookie('auth_token', token, { httpOnly: true });
+    return res.redirect('/dashboard-jwt');
+  }
+  res.status(401).send('Invalid creds');
+});
+
 // 🛣️ Routes
 try {
+  const dashboardJwt = require('./routes/dashboardJwt');
+  app.use('/', dashboardJwt);
+
   const indexRouter = require('./routes/index');
   const authRouter  = require('./routes/auth');
 
