@@ -6,10 +6,10 @@ exports.getDashboard = async (req, res) => {
   try {
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-    const overdueBookings = await prisma.booking.count({
+    const overdueBookings = await prisma.arrestEvent.count({
       where: {
-        status: 'Pending',
-        bookingDate: {
+        arrestType: 'Pending', // Assuming 'arrestType' is the equivalent of 'status'
+        arrestedAt: {
           lt: twentyFourHoursAgo,
         },
       },

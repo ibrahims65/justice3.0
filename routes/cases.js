@@ -5,25 +5,24 @@ const prisma = new PrismaClient();
 const { checkRole } = require('../middleware/auth');
 const { createNotification } = require('./notifications');
 
-router.get('/new/:bookingId', checkRole(['Police']), async (req, res) => {
-  const booking = await prisma.booking.findUnique({
-    where: { id: parseInt(req.params.bookingId) },
-    include: { person: true },
+router.get('/new/:arrestId', checkRole(['Police']), async (req, res) => {
+  const arrestEvent = await prisma.arrestEvent.findUnique({
+    where: { id: parseInt(req.params.arrestId) },
   });
-  res.render('cases/new', { booking });
+  res.render('cases/new', { arrestEvent });
 });
 
 router.post('/', checkRole(['Police']), async (req, res) => {
-  const { bookingId, caseNumber, crimeSceneDetails, interrogationLogs, preliminaryFindings } = req.body;
+  const { arrestId, title, description, status } = req.body;
   try {
     const newCase = await prisma.case.create({
       data: {
-        bookingId: parseInt(bookingId),
-        caseNumber,
-        status: 'New Arrest',
-        crimeSceneDetails,
-        interrogationLogs,
-        preliminaryFindings,
+        title,
+        description,
+        status,
+        arrests: {
+            connect: { id: parseInt(arrestId) }
+        }
       },
     });
     await prisma.actionHistory.create({
@@ -43,12 +42,8 @@ router.get('/:id', async (req, res) => {
   const caseRecord = await prisma.case.findFirst({
     where: { id: parseInt(req.params.id) },
     include: {
-      booking: {
-        include: {
-          person: true,
-        },
-      },
-      evidence: true,
+      arrests: true,
+      evidences: true,
       witnesses: true,
       hearings: {
         include: {
@@ -290,81 +285,72 @@ router.post('/:caseId/victims', async (req, res) => {
       name,
       statement,
       caseId,
-      dob: new Date(),
+      dateOfBirth: new Date(),
+      contactInfo: 'N/A',
+      gender: 'N/A',
+      address: 'N/A',
     },
   });
-  const booking = await prisma.booking.findFirst({
-    where: {
-      caseId: caseId,
-    },
-  });
-  res.redirect(`/bookings/${booking.id}/edit`);
+  res.redirect(`/cases/${caseId}`);
 });
 
 router.post('/:caseId/evidence', async (req, res) => {
   const caseId = parseInt(req.params.caseId, 10);
-  const { evidenceType, description } = req.body;
+  const { type, description } = req.body;
   await prisma.evidence.create({
     data: {
-      evidenceType,
+      type,
       description,
       caseId,
-      fileUrl: '',
+      collectedAt: new Date(),
+      fileUpload: '',
+      chainOfCustodyStatus: 'Collected',
+      storageLocation: 'Evidence Room',
     },
   });
-  const booking = await prisma.booking.findFirst({
-    where: {
-      caseId: caseId,
-    },
-  });
-  res.redirect(`/bookings/${booking.id}/edit`);
+  res.redirect(`/cases/${caseId}`);
 });
 
 router.post('/:caseId/witnesses', async (req, res) => {
     const caseId = parseInt(req.params.caseId, 10);
-    const { name, statement } = req.body;
+    const { name, testimony } = req.body;
     await prisma.witness.create({
         data: {
-        name,
-        statement,
-        caseId,
+            name,
+            testimony,
+            caseId,
+            contactInfo: 'N/A',
+            anonymityFlag: false,
+            dateInterviewed: new Date(),
         },
     });
-    const booking = await prisma.booking.findFirst({
-        where: {
-        caseId: caseId,
-        },
-    });
-    res.redirect(`/police/bookings/${booking.id}/edit`);
+    res.redirect(`/cases/${caseId}`);
 });
 
 router.post('/:caseId/hearings', async (req, res) => {
     const caseId = parseInt(req.params.caseId, 10);
-    const { hearingDate, verdict, courtId } = req.body;
-    await prisma.hearing.create({
+    const { dateTime, outcome } = req.body;
+    await prisma.courtEvent.create({
         data: {
-        hearingDate: new Date(hearingDate),
-        verdict,
-        caseId,
-        courtId: parseInt(courtId),
+            dateTime: new Date(dateTime),
+            outcome,
+            caseId,
+            eventType: 'Hearing',
+            courtLocation: 'N/A',
+            presidingJudge: 'N/A',
         },
     });
-    const booking = await prisma.booking.findFirst({
-        where: {
-        caseId: caseId,
-        },
-    });
-    res.redirect(`/police/bookings/${booking.id}/edit`);
+    res.redirect(`/cases/${caseId}`);
 });
 
-router.post('/:bookingId/notes', async (req, res) => {
-    const bookingId = parseInt(req.params.bookingId, 10);
-    const { officerNotes } = req.body;
-    await prisma.booking.update({
-        where: { id: bookingId },
-        data: { officerNotes },
+router.post('/:arrestId/notes', async (req, res) => {
+    const arrestId = parseInt(req.params.arrestId, 10);
+    const { notes } = req.body;
+    const arrestEvent = await prisma.arrestEvent.update({
+        where: { id: arrestId },
+        data: { notes },
     });
-    res.redirect(`/police/bookings/${bookingId}/edit`);
+    res.redirect(`/cases/${arrestEvent.caseId}`);
 });
 
 module.exports = router;
