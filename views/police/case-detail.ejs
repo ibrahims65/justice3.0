@@ -2,11 +2,10 @@
 
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="flex items-center mb-8">
-        <img src="<%= caseData.booking.person.photoUrl || '/images/logo.svg' %>" alt="Person Photo" class="w-24 h-24 rounded-full mr-6 object-cover">
+        <img src="/images/logo.svg" alt="Person Photo" class="w-24 h-24 rounded-full mr-6 object-cover">
         <div>
-            <h1 class="text-3xl font-bold text-gray-800">Case #<%= caseData.caseNumber %></h1>
-            <p class="text-xl text-gray-600">Subject: <%= caseData.booking.person.name %></p>
-            <p class="text-gray-600">Status: <%= caseData.status %></p>
+            <h1 class="text-3xl font-bold text-gray-800"><%= caseData.title %></h1>
+            <p class="text-xl text-gray-600">Status: <%= caseData.status %></p>
         </div>
     </div>
 
