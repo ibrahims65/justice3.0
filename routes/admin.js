@@ -1,6 +1,6 @@
 const express = require('express');
 const router  = express.Router();
-const { ensureAuthenticated, ensureAdmin } = require('../middleware/auth');
+const { verifyToken, checkRole } = require('../middleware/authJwt');
 const adminController = require('../controllers/adminController');
 
 // 🛡️ Defensive wrapper to catch missing handlers
@@ -14,7 +14,7 @@ const safe = (handlerName) => {
 };
 
 // Dashboard
-router.get('/', ensureAuthenticated, ensureAdmin, safe('getDashboard'));
+router.get('/', verifyToken, checkRole('Admin'), safe('getDashboard'));
 
 // Regions
 router.get('/regions', safe('getRegions'));
