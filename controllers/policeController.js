@@ -208,32 +208,24 @@ exports.postNewCaseConfirm = async (req, res, next) => {
             },
         });
         // --- End Find or Create Person Logic ---
-    const booking = await prisma.booking.create({
-        data: {
-            personId: person.id,
-            policeStationId: parseInt(policeStationId),
-            bookingDate: new Date(),
-            status: 'Open',
-            arrestingOfficerId: req.session.user.id,
-            charges,
-            officerNotes,
-            custodyExpiresAt: custodyExpiresAt ? new Date(custodyExpiresAt) : null,
-        },
-    });
-    const createdCase = await prisma.case.create({
-        data: {
-            bookingId: booking.id,
-            caseNumber,
-            status,
-        },
-    });
-    await prisma.booking.update({
-        where: { id: booking.id },
+    const arrestEvent = await prisma.arrestEvent.create({
         data: {
             case: {
-                connect: { id: createdCase.id },
+                create: {
+                    title: `Case for ${person.name}`,
+                    description: officerNotes,
+                    status: 'Open',
+                }
             },
+            officerId: req.session.user.id,
+            arrestedAt: new Date(),
+            location: policeStation.name,
+            arrestType: 'On-site',
+            notes: officerNotes,
         },
+        include: {
+            case: true
+        }
     });
     delete req.session.caseData;
     res.redirect('/police/management');
@@ -246,11 +238,11 @@ exports.postNewCaseConfirm = async (req, res, next) => {
 exports.getNewRemandRequest = async (req, res, next) => {
     const prisma = require('../lib/prisma');
     try {
-        const booking = await prisma.booking.findUnique({
-            where: { id: parseInt(req.params.bookingId) },
-            include: { person: true },
+        const arrestEvent = await prisma.arrestEvent.findUnique({
+            where: { id: parseInt(req.params.arrestId) },
+            include: { case: true },
         });
-        res.render('police/new-remand', { booking, user: req.session.user, req });
+        res.render('police/new-remand', { arrestEvent, user: req.session.user, req });
     } catch (error) {
         next(error);
     }
@@ -280,21 +272,20 @@ exports.postNewRemandRequest = async (req, res, next) => {
             remandDuration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         }
 
-        await prisma.remandRequest.create({
+        await prisma.bailRemand.create({
             data: {
-                bookingId: parseInt(req.params.bookingId),
-                requestedBy: req.session.user.username,
-                reason,
-                requestedDays: parseInt(requestedDays),
-                status: 'pending',
+                caseId: parseInt(req.params.caseId),
+                decisionType: decisionType,
                 decisionDate: new Date(decisionDate),
                 bailAmount: bailAmount ? parseFloat(bailAmount) : null,
-                bailConditions,
-                remandStart: remandStart ? new Date(remandStart) : null,
-                remandEnd: remandEnd ? new Date(remandEnd) : null,
-                courtApproval: courtApproval === 'on',
-                nextHearingDate: nextHearingDate ? new Date(nextHearingDate) : null,
-                remandDuration,
+                bailConditions: bailConditions,
+                remandStartDate: new Date(remandStart),
+                remandEndDate: new Date(remandEnd),
+                courtApprovalFlag: courtApproval === 'on',
+                approvedBy: req.session.user.username,
+                approvalDate: new Date(),
+                nextHearingDate: new Date(nextHearingDate),
+                duration: remandDuration
             },
         });
 
@@ -311,18 +302,17 @@ exports.postNewRemandRequest = async (req, res, next) => {
 exports.listBookings = async (req, res) => {
     const prisma = require('../lib/prisma');
     try {
-        const bookings = await prisma.booking.findMany({
+        const arrestEvents = await prisma.arrestEvent.findMany({
             include: {
-                person: true,
                 case: true,
             },
             orderBy: {
-                bookingDate: 'desc',
+                arrestedAt: 'desc',
             },
         });
         res.render('police/bookings', {
             user: req.user,
-            bookings,
+            bookings: arrestEvents, // Keep view variable name for now
             req: req,
         });
     } catch (err) {
@@ -336,7 +326,7 @@ exports.getPerson = async (req, res) => {
     const person = await prisma.person.findUnique({
         where: { id: parseInt(req.params.id) },
         include: {
-            bookings: {
+            arrests: {
                 include: {
                     case: true,
                 },
@@ -346,47 +336,42 @@ exports.getPerson = async (req, res) => {
     res.render('police/person', { person, user: req.user, req: req });
 };
 
-exports.getBooking = async (req, res) => {
+exports.getArrestEvent = async (req, res) => {
     const prisma = require('../lib/prisma');
-    const booking = await prisma.booking.findUnique({
+    const arrestEvent = await prisma.arrestEvent.findUnique({
         where: { id: parseInt(req.params.id) },
         include: {
-            person: true,
             case: true,
-            policeStation: true,
         },
     });
-    res.render('police/booking', { booking, user: req.user, req: req });
+    res.render('police/booking', { booking: arrestEvent, user: req.user, req: req });
 };
 
-exports.getEditBooking = async (req, res) => {
+exports.getEditArrestEvent = async (req, res) => {
     const prisma = require('../lib/prisma');
-    const booking = await prisma.booking.findUnique({
+    const arrestEvent = await prisma.arrestEvent.findUnique({
         where: { id: parseInt(req.params.id) },
         include: {
-            person: true,
             case: true,
-            policeStation: true,
         },
     });
-    const policeStations = await prisma.policeStation.findMany();
-    res.render('police/edit-booking', { booking, policeStations, user: req.user, req: req });
+    res.render('police/edit-booking', { booking: arrestEvent, user: req.user, req: req });
 };
 
-exports.postEditBooking = async (req, res) => {
+exports.postEditArrestEvent = async (req, res) => {
     const prisma = require('../lib/prisma');
-    const { caseNumber, status, policeStationId } = req.body;
+    const { title, status, location } = req.body;
     await prisma.case.update({
         where: { id: parseInt(req.params.id) },
         data: {
-            caseNumber,
+            title,
             status,
         },
     });
-    await prisma.booking.update({
+    await prisma.arrestEvent.update({
         where: { id: parseInt(req.params.id) },
         data: {
-            policeStationId: parseInt(policeStationId),
+            location: location,
         },
     });
     res.redirect(`/police/bookings/${req.params.id}`);
@@ -398,16 +383,9 @@ exports.search = async (req, res) => {
     const cases = await prisma.case.findMany({
         where: {
             OR: [
-                { caseNumber: { contains: q, mode: 'insensitive' } },
-                { booking: { person: { name: { contains: q, mode: 'insensitive' } } } },
+                { title: { contains: q, mode: 'insensitive' } },
+                { description: { contains: q, mode: 'insensitive' } },
             ],
-        },
-        include: {
-            booking: {
-                include: {
-                    person: true,
-                },
-            },
         },
     });
     res.render('police/search-results', { cases, user: req.user, req: req });
