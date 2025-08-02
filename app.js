@@ -124,10 +124,11 @@ try {
   app.use('/corrections', require('./routes/corrections'));
   app.use('/remand', require('./routes/remand'));
   app.use('/warrants', require('./routes/warrants'));
+  // app.use('/search-warrants', require('./routes/searchWarrants')); // This module is broken
   app.use('/api/search', require('./routes/api/search.routes'));
   app.use('/api/bookings', require('./routes/api/bookings'));
-  app.use('/api/admin', require('./routes/api/admin'));
-  app.use('/admin', require('./routes/admin'));
+  // app.use('/api/admin', require('./routes/api/admin')); // Admin module is broken
+  // app.use('/admin', require('./routes/admin')); // Admin module is broken
 
   console.log('✅ Routes registered');
 } catch (err) {
