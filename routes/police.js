@@ -9,7 +9,7 @@ router.get('/', ensureAuthenticated, policeController.getPoliceDashboard);
 // Management
 router.get('/management', ensureAuthenticated, policeController.getManagementData);
 router.get('/cases', ensureAuthenticated, policeController.getCaseList);
-router.get('/people', ensureAuthenticated, policeController.getPersonList);
+// router.get('/people', ensureAuthenticated, policeController.getPersonList); // Removed as Person model does not exist
 
 const checkStep = (step) => (req, res, next) => {
     if (req.session.caseData && req.session.caseData.step >= step) {

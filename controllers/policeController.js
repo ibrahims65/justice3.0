@@ -43,16 +43,12 @@ exports.getCaseList = async (req, res, next) => {
     const prisma = require('../lib/prisma');
     try {
         const userId = req.session.user.id;
-        // 1. Get all bookings for this officer, including their case
-        const bookings = await prisma.booking.findMany({
-            where: { arrestingOfficerId: userId },
-            include: { case: true }
+        const arrestEvents = await prisma.arrestEvent.findMany({
+            where: { officerId: userId },
+            include: { case: true },
         });
 
-        // 2. Extract cases from those bookings
-        const cases = bookings
-            .map((b) => b.case)
-            .filter(Boolean);  // drop any nulls
+        const cases = arrestEvents.map((a) => a.case).filter(Boolean);
 
         res.render('police/case-list', { cases, user: req.session.user, req });
     } catch (err) {
@@ -60,23 +56,8 @@ exports.getCaseList = async (req, res, next) => {
     }
 };
 
-exports.getPersonList = async (req, res, next) => {
-    const prisma = require('../lib/prisma');
-    try {
-        const userId = req.session.user.id;
-        const bookings = await prisma.booking.findMany({
-            where: { arrestingOfficerId: userId },
-            include: { person: true },
-            distinct: ['personId']
-        });
-
-        const people = bookings.map(b => b.person).filter(Boolean);
-
-        res.render('police/person-list', { people, user: req.session.user, req });
-    } catch (err) {
-        next(err);
-    }
-};
+// The Person model does not exist in the schema. This function is removed.
+// exports.getPersonList = async (req, res, next) => { ... }
 
 exports.getManagementData = async (req, res) => {
     const prisma = require('../lib/prisma');
@@ -124,13 +105,13 @@ exports.postNewCaseStep1 = (req, res) => {
 };
 
 exports.getNewCaseStep2 = async (req, res) => {
-    const prisma = require('../lib/prisma');
+    // const prisma = require('../lib/prisma'); // No longer needed
     console.log('Session caseData:', req.session.caseData);
-    const policeStations = await prisma.policeStation.findMany();
+    // const policeStations = await prisma.policeStation.findMany(); // Model does not exist
     res.render('police/case/step2', {
         user: req.user,
         caseData: req.session.caseData,
-        policeStations,
+        policeStations: [], // Pass empty array as model does not exist
         req: req,
     });
 };
